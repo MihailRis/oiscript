@@ -1,7 +1,6 @@
 package mihailris.oiscript;
 
 import mihailris.oiscript.exceptions.ParsingException;
-import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.stdlib.LibMath;
 import mihailris.oiscript.stdlib.LibStd;
 
@@ -22,12 +21,7 @@ public class Main {
             Script script = OiScript.load("test.oi", sourceCode, globals);
             System.out.println("========= Runtime =========");
             long tm = System.currentTimeMillis();
-            script.execute("init");
-            OiRunHandle handle = script.start("test_proc");
-            while (!handle.isFinished()){
-                //System.out.println("...");
-                handle.continueProc();
-            }
+            script.execute("run");
             System.out.println("\n=========   End   =========");
             System.out.println((System.currentTimeMillis() - tm)+" ms");
 

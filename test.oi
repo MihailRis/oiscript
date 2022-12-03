@@ -1,8 +1,8 @@
 include std
 include math
 
-proc test_proc():
+func init():
     pass
 
-func init():
-    print(0.2)
+func run():
+    print(script)
