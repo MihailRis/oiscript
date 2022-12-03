@@ -54,7 +54,10 @@ public class Arithmetics {
             return builder.toString();
         }
         Number na = (Number) a;
-        return na.doubleValue() * nb.doubleValue();
+        if (OiUtils.isFloatingPoint(a) || OiUtils.isFloatingPoint(b)) {
+            return na.doubleValue() * nb.doubleValue();
+        }
+        return na.longValue() * nb.longValue();
     }
 
     public static Object divide(Object a, Object b) {

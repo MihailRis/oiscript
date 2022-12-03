@@ -29,6 +29,8 @@ public class Main {
             }
             System.out.println("\n=========   End   =========");
             System.out.println((System.currentTimeMillis() - tm)+" ms");
+
+            System.out.println(OiScript.eval("5 * 3"));
         } catch (ParsingException e) {
             e.printOiErrorTrace();
             e.printStackTrace();

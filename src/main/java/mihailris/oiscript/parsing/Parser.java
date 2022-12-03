@@ -20,6 +20,12 @@ public class Parser {
         position = new Position();
     }
 
+    public void setSource(Source source) {
+        this.source = source;
+        chars = source.getSource().toCharArray();
+        position.reset();
+    }
+
     private boolean expectIndent(int indent) throws ParsingException {
         int start = position.pos;
         while (position.pos < chars.length) {
@@ -509,7 +515,7 @@ public class Parser {
         throw new ParsingException(source, position, "'}' expected");
     }
 
-    private Value parseValue(int indent) throws ParsingException {
+    public Value parseValue(int indent) throws ParsingException {
         skipWhitespace();
         Position startPos = position.cpy();
         String token = expectToken();

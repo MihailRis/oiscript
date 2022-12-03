@@ -2,6 +2,7 @@ package mihailris.oiscript;
 
 import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.parsing.Parser;
+import mihailris.oiscript.parsing.Value;
 
 public class OiScript {
     public static Script load(String filename, String source, OiObject globals) throws ParsingException {
@@ -17,5 +18,12 @@ public class OiScript {
             script.execute("init");
         }
         return script;
+    }
+
+    public static Object eval(String code) throws ParsingException {
+        Parser parser = new Parser();
+        parser.setSource(new Source(code, "<eval>"));
+        Value value = parser.parseValue(0);
+        return value.eval(new Context(null, null));
     }
 }
