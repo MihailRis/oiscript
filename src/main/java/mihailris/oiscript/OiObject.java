@@ -32,4 +32,8 @@ public class OiObject {
         vector.addAll(members.keySet());
         return vector;
     }
+
+    public Object has(Object key) {
+        return members.containsKey(key);
+    }
 }

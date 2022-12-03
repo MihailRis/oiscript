@@ -28,6 +28,13 @@ public class Range implements Iterable<Long> {
         return new RangeIterator(start, end);
     }
 
+    public boolean contains(long value) {
+        if (end < start) {
+            return value >= end && value <= start;
+        }
+        return value >= start && value <= end;
+    }
+
     public static class RangeIterator implements Iterator<Long> {
         private long i;
         private final long end;

@@ -16,7 +16,7 @@ public class Operators {
             case ">": case ">=": case "<=": case "==": case "<":
             case "+": case "-": case "?":
             case "*": case "/": case "%":
-            case "to":
+            case "to": case "in":
                 return true;
             default:
                 return false;

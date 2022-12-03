@@ -1,9 +1,6 @@
 package mihailris.oiscript.stdlib;
 
-import mihailris.oiscript.OiNone;
-import mihailris.oiscript.OiObject;
-import mihailris.oiscript.OiUtils;
-import mihailris.oiscript.OiVector;
+import mihailris.oiscript.*;
 
 import java.util.Collection;
 import java.util.Random;
@@ -24,6 +21,10 @@ public class LibStd extends OiObject {
                 return (int)(char)arg;
             }
             throw new IllegalArgumentException("unable to cast "+arg.getClass().getSimpleName()+" to int");
+        }, 1));
+        set("bool", customFunc("bool", (context, args) -> {
+            Object arg = args[0];
+            return Logics.isTrue(arg);
         }, 1));
         set("rand", customFunc("rand", (context, args) -> random.nextFloat(), 0));
         set("len", customFunc("len", (context, args) -> {
