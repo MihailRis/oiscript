@@ -1,0 +1,20 @@
+.idea/
+out/
+target/
+*.oi
+*.jar
+*.iml
+build/
+bin/
+java/build/
+log/
+
+error_hotspot.xml
+hs_err_pid*
+
+*.class
+
+# Eclipse
+.classpath
+.project
+.settings/
