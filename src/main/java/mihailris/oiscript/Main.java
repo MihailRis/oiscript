@@ -20,7 +20,6 @@ public class Main {
             globals.set("math", new LibMath());
 
             Script script = OiScript.load("test.oi", sourceCode, globals);
-            System.out.println(script);
             System.out.println("========= Runtime =========");
             long tm = System.currentTimeMillis();
             script.execute("init");

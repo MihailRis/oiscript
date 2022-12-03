@@ -29,7 +29,6 @@ public class Script extends OiObject {
     }
 
     public void prepare() {
-        System.out.println(functions);
         for (Map.Entry<String, Function> entry : functions.entrySet()) {
             set(entry.getKey(), entry.getValue());
         }
