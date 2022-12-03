@@ -21,7 +21,6 @@ public class Script extends OiObject {
         this.functions = functions;
         this.procedures = procedures;
         this.includes = includes;
-        set("script", this);
     }
 
     @Override

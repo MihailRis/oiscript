@@ -16,4 +16,5 @@ public class Keywords {
     public static final String INCLUDE = "include";
     public static final String BREAK = "break";
     public static final String CONTINUE = "continue";
+    public static final String SCRIPT = "script";
 }

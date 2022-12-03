@@ -619,6 +619,8 @@ public class Parser {
             return new BooleanValue(token.equals("true"));
         } else if (token.equals("none")) {
             return OiNone.NONE;
+        } else if (token.equals(SCRIPT)) {
+            return ScriptRef.INSTANCE;
         } else if (Character.isJavaIdentifierStart(token.charAt(0))) {
             return new NamedValue(token);
         } else if (token.startsWith("\"") || token.startsWith("'")){

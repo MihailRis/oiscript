@@ -1,9 +1,11 @@
 package mihailris.oiscript;
 
+import mihailris.oiscript.parsing.Value;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class OiObject {
+public class OiObject extends Value {
     private final Map<Object, Object> members;
 
     public OiObject() {
@@ -21,6 +23,11 @@ public class OiObject {
     @Override
     public String toString() {
         return "<object "+Integer.toHexString(super.hashCode())+">";
+    }
+
+    @Override
+    public Object eval(Context context) {
+        return this;
     }
 
     public Object get(Object key) {
