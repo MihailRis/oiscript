@@ -5,4 +5,4 @@ proc test_proc():
     pass
 
 func init():
-    print("init" in script)
+    print(0.2)

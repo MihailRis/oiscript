@@ -774,6 +774,15 @@ public class Parser {
         return name;
     }
 
+    private boolean isInteger(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            if (!Character.isDigit(text.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String expectToken() throws ParsingException {
         if (position.pos >= chars.length)
             throw new ParsingException(source, position, "token expected");
@@ -782,6 +791,9 @@ public class Parser {
             throw new ParsingException(source, position, "token expected");
         if (chr == '.' || chr == '(' || chr == ')' || chr == '[' || chr == ']' || chr == ',' || chr == '{' || chr == '}') {
             position.pos++;
+            if (chr == '.' && position.pos < chars.length && Character.isDigit(chars[position.pos])) {
+                return "0."+expectToken();
+            }
             return String.valueOf(chr);
         }
         if (chr == '\'' || chr == '"'){
@@ -797,6 +809,12 @@ public class Parser {
                 String keyword = source.getSource().substring(position.pos, pos);
                 position.pos = pos;
                 skipWhitespace();
+                if (isInteger(keyword) && chr == '.') {
+                    position.pos++;
+                    skipWhitespace();
+                    String other = expectToken();
+                    return keyword+"."+other;
+                }
                 return keyword;
             } else if (chr == '\n') {
                 throw new ParsingException(source, position, "token expected");
