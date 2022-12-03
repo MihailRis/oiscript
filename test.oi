@@ -1,8 +1,8 @@
 include std
 include math
 
-func init():
+func run():
     pass
 
-func run():
-    print(script)
+a = 5
+print(a)

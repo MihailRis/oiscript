@@ -97,17 +97,13 @@ public class Parser {
         List<String> includes = new ArrayList<>();
         Script script = new Script(source.getFilename(), functions, procedures, includes);
         while (position.pos < chars.length) {
+            Position cmdpos = position.cpy();
             skipEmptyLines();
             expectIndent(0);
-            String keyword = expectKeyword();
+            String keyword = expectToken();
             if (keyword == null)
                 continue;
             switch (keyword) {
-                case INCLUDE: {
-                    String name = expectName();
-                    includes.add(name);
-                    break;
-                }
                 case PROC: {
                     Procedure procedure = parseProcedure();
                     procedures.put(procedure.getName(), procedure);
@@ -119,7 +115,21 @@ public class Parser {
                     break;
                 }
                 default:
-                    throw new ParsingException(source, position, "unexpected keyword '" + keyword + "'");
+                    position.set(cmdpos);
+                    if (chars[position.pos] == '\n') {
+                        skipEmptyLines();
+                        break;
+                    }
+                    Command command = parseCommand(false, false, 0);
+                    Function initFunction = functions.get("init");
+                    if (initFunction == null) {
+                        initFunction = new Function("init", new ArrayList<>(), new ArrayList<>());
+                        functions.put("init", initFunction);
+                    }
+                    initFunction.getCommands().add(command);
+                    seekNewLine(false);
+                    break;
+                    //throw new ParsingException(source, position, "unexpected keyword '" + keyword + "'");
             }
         }
         return script;
@@ -276,8 +286,11 @@ public class Parser {
         String token = expectToken();
         skipWhitespace();
         switch (token) {
-            case PASS: {
+            case PASS:
                 return new Pass(cmdpos);
+            case INCLUDE: {
+                String name = expectName();
+                return new Include(cmdpos, name);
             }
             case WAIT: {
                 requireProcedure(WAIT, procedure, cmdpos);
