@@ -2,6 +2,7 @@ package mihailris.oiscript;
 
 import mihailris.oiscript.runtime.OiRunHandle;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Context {
@@ -11,10 +12,10 @@ public class Context {
     public boolean returned;
     public Object returnValue;
 
-    public Context(Script script, OiRunHandle runHandle, Map<String, Object> namespace) {
+    public Context(Script script, OiRunHandle runHandle) {
         this.script = script;
         this.runHandle = runHandle;
-        this.namespace = namespace;
+        this.namespace = new HashMap<>();
     }
 
     public Object get(String name) {

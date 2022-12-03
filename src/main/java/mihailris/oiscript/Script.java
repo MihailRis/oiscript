@@ -7,7 +7,6 @@ import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.runtime.Procedure;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public class Script extends OiObject {
     }
 
     public Object execute(Function function, OiRunHandle runHandle, Object... args) {
-        Context context = new Context(this, runHandle, new HashMap<>());
+        Context context = new Context(this, runHandle);
         return function.execute(context, args);
     }
 
@@ -66,7 +65,7 @@ public class Script extends OiObject {
     }
 
     public OiRunHandle start(Procedure procedure, OiRunHandle runHandle, Object... args) {
-        Context context = new Context(this, runHandle, new HashMap<>());
+        Context context = new Context(this, runHandle);
         Thread thread = new Thread(() -> {
             procedure.execute(context, args);
             runHandle.finished = true;

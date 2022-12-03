@@ -8,6 +8,7 @@ build/
 bin/
 java/build/
 log/
+src/main/java/META-INF
 
 error_hotspot.xml
 hs_err_pid*

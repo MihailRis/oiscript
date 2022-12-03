@@ -2,9 +2,12 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiNone;
+import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.exceptions.NameException;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class CallMethod extends Value {
@@ -21,22 +24,49 @@ public class CallMethod extends Value {
     @Override
     public Object eval(Context context) {
         Object object = source.eval(context);
+        Object[] args = new Object[values.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = values.get(i).eval(context);
+        }
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
             switch (methodName) {
                 case "add":
-                    for (Value value : values) {
-                        collection.add(value.eval(context));
+                    collection.addAll(Arrays.asList(args));
+                    break;
+                case "rem":
+                    for (Object value : args) {
+                        collection.remove(value);
                     }
-                    return OiNone.NONE;
-                case "remove":
-                    for (Value value : values) {
-                        collection.remove(value.eval(context));
+                    break;
+                case "clear":
+                    OiUtils.requreArgCount("clear", 0, args);
+                    collection.clear();
+                    break;
+                default:
+                    throw new NameException(object.getClass().getSimpleName()+"."+methodName);
+            }
+        } else if (object instanceof String) {
+            String string = (String) object;
+            switch (methodName) {
+                case "join": {
+                    StringBuilder builder = new StringBuilder();
+                    OiUtils.requreArgCount("string.join", 1, args);
+                    Collection<?> collection = (Collection<?>) args[0];
+                    Iterator<?> iterator = collection.iterator();
+                    for (int i = 0; i < collection.size(); i++) {
+                        builder.append(iterator.next());
+                        if (i+1 < collection.size()) {
+                            builder.append(string);
+                        }
                     }
-                    return OiNone.NONE;
+                    return builder.toString();
+                }
+                default:
+                    throw new NameException(object.getClass().getSimpleName()+"."+methodName);
             }
         }
-        throw new NameException(object.getClass().getSimpleName()+"."+methodName);
+        return OiNone.NONE;
     }
 
     @Override

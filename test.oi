@@ -5,9 +5,9 @@ proc test_proc():
     pass
 
 func init():
-    l = []
-    for i : 10:
-        l.add(i+512)
-    l.remove(516)
-    print l
+    objects = []
+    for i : 1000000:
+        objects.add(i)
+    objects.clear()
+    print objects
     print nl

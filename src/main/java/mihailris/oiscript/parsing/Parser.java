@@ -528,6 +528,9 @@ public class Parser {
         if (token.equals("-")) {
             skipWhitespace();
             return new Negative(parseValue(indent));
+        } else if (token.equals("*")) {
+            skipWhitespace();
+            return new RestHolder(parseValue(indent));
         }
         if (token.equals("[")) {
             return parseValue(indent, parseList(indent));
@@ -569,7 +572,12 @@ public class Parser {
                 String attribute = expectName();
                 Value value = new AttributeValue(leftOperand, attribute);
                 skipWhitespace();
-                return parseValue(indent, value);
+                Value parsedValue = parseValue(indent, value);
+                if (parsedValue instanceof Call) {
+                    Call call = (Call) parsedValue;
+                    return new CallMethod(leftOperand, attribute, call.getValues());
+                }
+                return parsedValue;
             } else if (next.equals("[")) {
                 skipWhitespace();
                 Value indexValue = parseValue(indent);
