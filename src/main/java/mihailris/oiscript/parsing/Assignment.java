@@ -16,12 +16,13 @@ public class Assignment extends Command {
 
     @Override
     public void execute(Context context) {
+        Object object = value.eval(context);
         switch (operator) {
-            case "=": context.namespace.put(name, value.eval(context)); break;
-            case "-=": context.namespace.put(name, Arithmetics.subtract(context.get(name), value.eval(context))); break;
-            case "+=": context.namespace.put(name, Arithmetics.add(context.get(name), value.eval(context))); break;
-            case "*=": context.namespace.put(name, Arithmetics.multiply(context.get(name), value.eval(context))); break;
-            case "/=": context.namespace.put(name, Arithmetics.divide(context.get(name), value.eval(context))); break;
+            case "=": context.namespace.put(name, object); break;
+            case "-=": context.namespace.put(name, Arithmetics.subtract(context.get(name), object)); break;
+            case "+=": context.namespace.put(name, Arithmetics.add(context.get(name), object)); break;
+            case "*=": context.namespace.put(name, Arithmetics.multiply(context.get(name), object)); break;
+            case "/=": context.namespace.put(name, Arithmetics.divide(context.get(name), object)); break;
             default:
                 throw new IllegalStateException("not implemented for '"+operator+"'");
         }

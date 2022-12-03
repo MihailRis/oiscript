@@ -1,5 +1,6 @@
 package mihailris.oiscript.stdlib;
 
+import mihailris.oiscript.OiNone;
 import mihailris.oiscript.OiObject;
 import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.OiVector;
@@ -74,6 +75,16 @@ public class LibStd extends OiObject {
             }
             return new OiVector();
         }, 1));
-        set("nl", System.lineSeparator());
+        set("endl", System.lineSeparator());
+        set("print", customFunc("print", (context, args) -> {
+            for (int i = 0; i < args.length; i++) {
+                System.out.print(args[i]);
+                if (i+1 < args.length) {
+                    System.out.print(' ');
+                }
+            }
+            System.out.println();
+            return OiNone.NONE;
+        }, -1));
     }
 }

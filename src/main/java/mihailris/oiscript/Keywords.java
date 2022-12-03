@@ -9,7 +9,7 @@ public class Keywords {
     public static final String ELIF = "elif";
     public static final String ELSE = "else";
     public static final String WHILE = "while";
-    public static final String PRINT = "print";
+    public static final String PRINT = "_print";
     public static final String WAIT = "wait";
     public static final String SKIP = "skip";
     public static final String RETURN = "return";
