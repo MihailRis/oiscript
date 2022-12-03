@@ -111,6 +111,11 @@ public class Parser {
                 }
                 case FUNC: {
                     Function function = parseFunction();
+                    if (function.getName().equals(INIT) && functions.containsKey(INIT)) {
+                        Function initFunction = functions.get(INIT);
+                        initFunction.getCommands().addAll(function.getCommands());
+                        break;
+                    }
                     functions.put(function.getName(), function);
                     break;
                 }
@@ -121,15 +126,14 @@ public class Parser {
                         break;
                     }
                     Command command = parseCommand(false, false, 0);
-                    Function initFunction = functions.get("init");
+                    Function initFunction = functions.get(INIT);
                     if (initFunction == null) {
-                        initFunction = new Function("init", new ArrayList<>(), new ArrayList<>());
-                        functions.put("init", initFunction);
+                        initFunction = new Function(INIT, new ArrayList<>(), new ArrayList<>());
+                        functions.put(INIT, initFunction);
                     }
                     initFunction.getCommands().add(command);
                     seekNewLine(false);
                     break;
-                    //throw new ParsingException(source, position, "unexpected keyword '" + keyword + "'");
             }
         }
         return script;

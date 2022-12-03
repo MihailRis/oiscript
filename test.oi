@@ -4,5 +4,5 @@ include math
 func run():
     pass
 
-a = 5
-print(a)
+func init():
+    print(0.5)
