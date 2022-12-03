@@ -16,13 +16,16 @@ public class Main {
             OiObject globals = new OiObject();
             globals.set("std", new LibStd());
             globals.set("math", new LibMath());
+            globals.extend((OiObject) globals.get("std"));
 
             Script script = OiScript.load("test.oi", sourceCode, globals);
-            System.out.println("========= Runtime =========");
-            long tm = System.currentTimeMillis();
-            script.execute("run");
-            System.out.println("\n=========   End   =========");
-            System.out.println((System.currentTimeMillis() - tm)+" ms");
+            if (script.has("run")) {
+                System.out.println("========= Runtime =========");
+                long tm = System.currentTimeMillis();
+                script.execute("run");
+                System.out.println("\n=========   End   =========");
+                System.out.println((System.currentTimeMillis() - tm)+" ms");
+            }
         } catch (ParsingException e) {
             e.printOiErrorTrace();
             e.printStackTrace();

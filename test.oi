@@ -1,8 +1,1 @@
-include std
-include math
-
-func run():
-    pass
-
-func init():
-    print(0.5)
+print("Hello, World!")

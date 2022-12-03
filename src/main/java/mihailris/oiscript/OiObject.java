@@ -40,7 +40,7 @@ public class OiObject extends Value {
         return vector;
     }
 
-    public Object has(Object key) {
+    public boolean has(Object key) {
         return members.containsKey(key);
     }
 }
