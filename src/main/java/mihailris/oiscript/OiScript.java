@@ -3,6 +3,12 @@ package mihailris.oiscript;
 import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.parsing.Parser;
 import mihailris.oiscript.parsing.Value;
+import mihailris.oiscript.stdlib.LibMath;
+import mihailris.oiscript.stdlib.LibStd;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class OiScript {
     public static Script load(String filename, String source, OiObject globals) throws ParsingException {
@@ -20,10 +26,18 @@ public class OiScript {
         return script;
     }
 
+    static final Parser evalParser = new Parser();
+    static final Script evalScript = new Script("<eval>", new HashMap<>(), new HashMap<>(), new ArrayList<>());
+    static {
+        evalScript.extend(new LibStd());
+        evalScript.extend(new LibMath());
+    }
+    static final Context emptyContext = new Context(evalScript, null);
     public static Object eval(String code) throws ParsingException {
-        Parser parser = new Parser();
-        parser.setSource(new Source(code, "<eval>"));
-        Value value = parser.parseValue(0);
-        return value.eval(new Context(null, null));
+        synchronized (evalParser) {
+            evalParser.setSource(new Source(code, "<eval>"));
+            Value value = evalParser.parseValue(0);
+            return value.eval(emptyContext);
+        }
     }
 }

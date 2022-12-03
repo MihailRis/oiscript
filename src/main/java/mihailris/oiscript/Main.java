@@ -30,7 +30,7 @@ public class Main {
             System.out.println("\n=========   End   =========");
             System.out.println((System.currentTimeMillis() - tm)+" ms");
 
-            System.out.println(OiScript.eval("5 * 3"));
+            System.out.println(OiScript.eval("rand()"));
         } catch (ParsingException e) {
             e.printOiErrorTrace();
             e.printStackTrace();

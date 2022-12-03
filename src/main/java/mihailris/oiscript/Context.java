@@ -18,6 +18,12 @@ public class Context {
         this.namespace = new HashMap<>();
     }
 
+    public Context(Script script, OiRunHandle runHandle, Map<String, Object> namespace) {
+        this.script = script;
+        this.runHandle = runHandle;
+        this.namespace = namespace;
+    }
+
     public Object get(String name) {
         Object value = namespace.get(name);
         if (value == null) {
