@@ -1,5 +1,7 @@
 package mihailris.oiscript;
 
+import java.util.Collection;
+
 public class Logics {
     public static boolean isTrue(Object object) {
         if ((object instanceof Boolean)) {
@@ -7,10 +9,11 @@ public class Logics {
         } else if (object instanceof Number) {
             Number number = (Number) object;
             return number.doubleValue() != 0.0;
-        } else if (object instanceof String) {
+        } else if (object instanceof CharSequence) {
             return !((String)object).isEmpty();
-        }
-        return true;
+        } else if (object instanceof Collection) {
+            return !((Collection<?>)object).isEmpty();
+        } else return object != OiNone.NONE;
     }
 
     public static boolean equals(Object leftValue, Object rightValue) {

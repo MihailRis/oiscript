@@ -34,7 +34,7 @@ public class CallMethod extends Value {
                 case "add":
                     collection.addAll(Arrays.asList(args));
                     break;
-                case "rem":
+                case "remove":
                     for (Object value : args) {
                         collection.remove(value);
                     }

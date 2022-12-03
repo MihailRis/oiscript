@@ -5,9 +5,5 @@ proc test_proc():
     pass
 
 func init():
-    objects = []
-    for i : 1000000:
-        objects.add(i)
-    objects.clear()
-    print(objects)
-    print(print)
+    a = none
+    print(a)

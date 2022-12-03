@@ -1,9 +1,6 @@
 package mihailris.oiscript.parsing;
 
-import mihailris.oiscript.Operators;
-import mihailris.oiscript.Script;
-import mihailris.oiscript.Source;
-import mihailris.oiscript.Syntax;
+import mihailris.oiscript.*;
 import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.Procedure;
@@ -620,6 +617,8 @@ public class Parser {
             return NumberValue.choose(Double.parseDouble(token));
         } else if (token.equals("true") || token.equals("false")) {
             return new BooleanValue(token.equals("true"));
+        } else if (token.equals("none")) {
+            return OiNone.NONE;
         } else if (Character.isJavaIdentifierStart(token.charAt(0))) {
             return new NamedValue(token);
         } else if (token.startsWith("\"") || token.startsWith("'")){
