@@ -17,4 +17,19 @@ public class Keywords {
     public static final String BREAK = "break";
     public static final String CONTINUE = "continue";
     public static final String SCRIPT = "script";
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
+    public static final String NONE = "none";
+
+    public static boolean isReservedName(String name) {
+        switch (name) {
+            case TRUE:
+            case FALSE:
+            case NONE:
+            case SCRIPT:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

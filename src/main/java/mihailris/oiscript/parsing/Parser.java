@@ -309,6 +309,7 @@ public class Parser {
                     return parseCFor(cmdpos, procedure, loop, indent);
                 }
                 String name = expectName();
+                checkName(name);
                 skipWhitespace();
                 if (position.pos >= chars.length || chars[position.pos] != ':') {
                     return parseCFor(cmdpos, procedure, loop, indent);
@@ -348,6 +349,7 @@ public class Parser {
                     case "*=":
                     case "/=":
                     case "%=":
+                        checkName(token, cmdpos);
                         return parseAssign(indent, token, nextToken);
                     case ".": {
                         return parseAttributeCommand(indent, tokenToValue(token));
@@ -356,8 +358,17 @@ public class Parser {
                 position.set(cmdpos);
                 Value value = parseValue(indent);
                 return new ValueWrapper(cmdpos.cpy(), value);
-                //throw new IllegalStateException("not implemented for ["+token+", "+nextToken+"]");
             }
+        }
+    }
+
+    private void checkName(String name) throws ParsingException {
+        checkName(name, position);
+    }
+
+    private void checkName(String name, Position position) throws ParsingException {
+        if (Keywords.isReservedName(name)) {
+            throw new ParsingException(source, position, "name '"+name+"' is reserved");
         }
     }
 
@@ -612,16 +623,17 @@ public class Parser {
         throw new ParsingException(source, position, "',' expected");
     }
 
-    private Value tokenToValue(String token) {
+    private Value tokenToValue(String token) throws ParsingException {
         if (Character.isDigit(token.charAt(0))) {
             return NumberValue.choose(Double.parseDouble(token));
-        } else if (token.equals("true") || token.equals("false")) {
-            return new BooleanValue(token.equals("true"));
-        } else if (token.equals("none")) {
+        } else if (token.equals(TRUE) || token.equals(FALSE)) {
+            return new BooleanValue(token.equals(TRUE));
+        } else if (token.equals(NONE)) {
             return OiNone.NONE;
         } else if (token.equals(SCRIPT)) {
             return ScriptRef.INSTANCE;
         } else if (Character.isJavaIdentifierStart(token.charAt(0))) {
+            checkName(token);
             return new NamedValue(token);
         } else if (token.startsWith("\"") || token.startsWith("'")){
             return new StringValue(token.substring(1));
