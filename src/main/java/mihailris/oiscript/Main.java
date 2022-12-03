@@ -24,9 +24,6 @@ public class Main {
             script.execute("run");
             System.out.println("\n=========   End   =========");
             System.out.println((System.currentTimeMillis() - tm)+" ms");
-
-            System.out.println(OiScript.eval("rand()"));
-            System.out.println(OiScript.eval("a * 100", Collections.singletonMap("a", 4)));
         } catch (ParsingException e) {
             e.printOiErrorTrace();
             e.printStackTrace();
