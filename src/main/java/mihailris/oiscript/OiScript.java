@@ -7,8 +7,8 @@ import mihailris.oiscript.stdlib.LibMath;
 import mihailris.oiscript.stdlib.LibStd;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class OiScript {
     public static Script load(String filename, String source, OiObject globals) throws ParsingException {
@@ -37,7 +37,16 @@ public class OiScript {
         synchronized (evalParser) {
             evalParser.setSource(new Source(code, "<eval>"));
             Value value = evalParser.parseValue(0);
-            return value.eval(emptyContext);
+            Object result = value.eval(emptyContext);
+            emptyContext.namespace.clear();
+            return result;
+        }
+    }
+
+    public static Object eval(String code, Map<String, Object> args) throws ParsingException {
+        synchronized (evalParser) {
+            emptyContext.namespace.putAll(args);
+            return eval(code);
         }
     }
 }
