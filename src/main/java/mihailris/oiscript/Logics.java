@@ -60,8 +60,10 @@ public class Logics {
         return lvalue.doubleValue() >= rvalue.doubleValue();
     }
 
-    public static boolean and(Object leftValue, Object rightValue) {
-        return isTrue(leftValue) && isTrue(rightValue);
+    public static Object and(Object leftValue, Object rightValue) {
+        if (!isTrue(leftValue))
+            return leftValue;
+        return rightValue;
     }
 
     public static Object or(Object leftValue, Object rightValue) {
