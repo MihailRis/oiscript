@@ -69,7 +69,10 @@ public class Arithmetics {
     public static Object modulo(Object a, Object b) {
         Number na = (Number) a;
         Number nb = (Number) b;
-        return na.doubleValue() % nb.doubleValue();
+        if (OiUtils.isFloatingPoint(a) || OiUtils.isFloatingPoint(b)) {
+            return na.doubleValue() % nb.doubleValue();
+        }
+        return na.longValue() % nb.longValue();
     }
 
     public static Object negative(Object a) {
@@ -77,5 +80,14 @@ public class Arithmetics {
         if (number.doubleValue() == number.longValue())
             return -number.longValue();
         return -number.doubleValue();
+    }
+
+    public static Object power(Object a, Object b) {
+        Number na = (Number) a;
+        Number nb = (Number) b;
+        if (OiUtils.isFloatingPoint(a) || OiUtils.isFloatingPoint(b)) {
+            return Math.pow(na.doubleValue(), nb.doubleValue());
+        }
+        return (long)Math.pow(na.longValue(), nb.longValue());
     }
 }

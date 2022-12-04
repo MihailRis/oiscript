@@ -48,6 +48,7 @@ public class BinaryOperator extends Value {
             case "*": return Arithmetics.multiply(leftValue, rightValue);
             case "/": return Arithmetics.divide(leftValue, rightValue);
             case "%": return Arithmetics.modulo(leftValue, rightValue);
+            case "**": return Arithmetics.power(leftValue, rightValue);
             case "==": return Logics.equals(leftValue, rightValue);
             case ">": return Logics.greather(leftValue, rightValue);
             case "<": return Logics.less(leftValue, rightValue);
