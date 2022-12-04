@@ -54,6 +54,8 @@ public class BinaryOperator extends Value {
             case "!=": return !Logics.equals(leftValue, rightValue);
             case ">=": return Logics.gequals(leftValue, rightValue);
             case "<=": return Logics.lequals(leftValue, rightValue);
+            case "and": return Logics.and(leftValue, rightValue);
+            case "or": return Logics.or(leftValue, rightValue);
             case "to": return new Range(((Number)leftValue).longValue(), ((Number)rightValue).longValue());
             case "in": {
                 if (rightValue instanceof Collection) {
