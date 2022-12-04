@@ -28,7 +28,7 @@ public class Operators {
             case "?":
             case "or": return 5;
             case "and": return 6;
-            case ">": case ">=": case "==": case "<=": case "<": return 7;
+            case ">": case ">=": case "==": case "<=": case "<": case "in": return 7;
             case "to": return 8;
             case "+": case "-": return 9;
             case "*": case "/": case "%": return 10;

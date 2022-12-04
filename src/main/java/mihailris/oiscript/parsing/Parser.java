@@ -100,6 +100,8 @@ public class Parser {
             Position cmdpos = position.cpy();
             skipEmptyLines();
             expectIndent(0);
+            if (position.pos >= chars.length)
+                break;
             String keyword = expectToken();
             if (keyword == null)
                 continue;

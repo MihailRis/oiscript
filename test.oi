@@ -1,3 +1,2 @@
-values = vector(100 to 50)
-print(values)
+print(5 in 1 to 31)
 

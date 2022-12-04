@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
+    @SuppressWarnings("ConstantConditions")
     public static void main(String[] args) throws IOException {
         System.out.println("OiScript v"+OiScript.VERSION_STRING+" © MihailRis 2022");
         String sourceCode = new String(Files.readAllBytes(new File("test.oi").toPath()));
-        boolean verbose = false;
+        boolean verbose = true;
         try {
             OiObject globals = new OiObject();
             globals.set("std", new LibStd());
