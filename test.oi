@@ -1,1 +1,1 @@
-print("Hello, World!")
+print("H"[0] == 'H')

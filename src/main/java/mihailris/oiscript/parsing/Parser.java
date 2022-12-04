@@ -658,8 +658,10 @@ public class Parser {
         } else if (Character.isJavaIdentifierStart(token.charAt(0))) {
             checkName(token);
             return new NamedValue(token);
-        } else if (token.startsWith("\"") || token.startsWith("'")){
+        } else if (token.startsWith("\"")){
             return new StringValue(token.substring(1));
+        } else if (token.startsWith("'")) {
+            return new CharValue(token.charAt(1));
         } else {
             throw new IllegalStateException(token);
         }
@@ -813,7 +815,14 @@ public class Parser {
             }
             return String.valueOf(chr);
         }
-        if (chr == '\'' || chr == '"'){
+        if (chr == '\'') {
+            String literal = parseString();
+            if (literal.length() != 2) {
+                throw new ParsingException(source, position, "invalid char literal");
+            }
+            return literal;
+        }
+        if (chr == '"'){
             return parseString();
         }
         if (Operators.isOperatorChar(chr)) {
