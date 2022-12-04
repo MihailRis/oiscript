@@ -26,6 +26,8 @@ public class Operators {
     public static int operatorPriorety(String text) {
         switch (text) {
             case "?":
+            case "or": return 5;
+            case "and": return 6;
             case ">": case ">=": case "==": case "<=": case "<": return 7;
             case "to": return 8;
             case "+": case "-": return 9;
