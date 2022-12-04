@@ -1,1 +1,3 @@
-print("Hello, World!")
+values = vector(100 to 50)
+print(values)
+

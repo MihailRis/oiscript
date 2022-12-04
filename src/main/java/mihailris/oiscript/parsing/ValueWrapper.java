@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.exceptions.OiRuntimeException;
 
 public class ValueWrapper extends Command {
     private final Value value;
@@ -16,6 +17,10 @@ public class ValueWrapper extends Command {
 
     @Override
     public void execute(Context context) {
-        value.eval(context);
+        try {
+            value.eval(context);
+        } catch (RuntimeException e) {
+            throw new OiRuntimeException(position, e);
+        }
     }
 }

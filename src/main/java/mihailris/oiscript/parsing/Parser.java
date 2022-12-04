@@ -631,7 +631,7 @@ public class Parser {
                 position.pos++;
                 return parseValue(indent, new Call(leftOperand, values));
             } else {
-                throw new IllegalStateException(next);
+                throw new ParsingException(source, position, "unexpected token '"+next+"'");
             }
         }
         return leftOperand;
