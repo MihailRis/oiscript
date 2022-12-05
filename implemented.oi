@@ -47,6 +47,13 @@ for i = 0; i < x; i+=1:
 # Extend script namespace with object members
 include object
 
+skip frames # <- interrupt and skip defined count of frames
+# or
+skip # <- just interrupt
+
+wait milliseconds # <- wait defined count of milliseconds
+wait 1000 # <- wait one second
+
 types:
     number,
     char,
@@ -56,14 +63,7 @@ types:
     function,
     procedure,
 
-skip frames # <- interrupt and skip defined count of frames
-# or
-skip # <- just interrupt
-
-wait milliseconds # <- wait defined count of milliseconds
-wait 1000 # <- wait one second
-
-String:
+string:
     join(iterable) -> string
     split(pattern) -> vector
     index(substring) -> number
@@ -71,9 +71,10 @@ String:
 
 stdlib:
     functions:
-        int(x) -> number
+        int(x) -> number # convert value to integer or parse string
         bool(x) -> bool
-        rand() -> number
+        rand() -> number # Random.nextFloat()
+        vector(iterable) -> vector # create vector from iterable
 
 Operators:
     unary:
@@ -81,10 +82,14 @@ Operators:
     binary:
         +, -, *, /, %, //, **
         >, <, ==, !=, <=, >=,
+    ternary:
+        ?:
+
+Properties:
+    .len for strings and collections
 
 # TODO:
 - increment and decrement
 - R-like ranges:
     b = 1:10:2 # [1, 3, 5, 7, 9]
-- word operators: not
 - Python-like try-except

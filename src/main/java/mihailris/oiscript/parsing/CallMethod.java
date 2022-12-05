@@ -74,6 +74,19 @@ public class CallMethod extends Value {
                         return string.indexOf(String.valueOf(args[0]), ((Number)args[1]).intValue());
                     }
                 }
+                case "count": {
+                    String substring = String.valueOf(args[0]);
+                    if (substring.isEmpty())
+                        return 0;
+                    int count = 0;
+                    int index = string.indexOf(substring);
+                    while (index != -1) {
+                        count++;
+                        index += substring.length();
+                        index = string.indexOf(substring, index);
+                    }
+                    return count;
+                }
                 default:
                     throw new NameException(object.getClass().getSimpleName()+"."+methodName);
             }
