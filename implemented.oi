@@ -49,7 +49,7 @@ include object
 
 skip frames # <- interrupt and skip defined count of frames
 # or
-skip # <- just interrupt
+skip # <- just interrupt (same as skip 0)
 
 wait milliseconds # <- wait defined count of milliseconds
 wait 1000 # <- wait one second
@@ -57,11 +57,12 @@ wait 1000 # <- wait one second
 types:
     number,
     char,
+    bool,
     string,
     vector,
     object,
     function,
-    procedure,
+    process,
 
 string:
     join(iterable) -> string

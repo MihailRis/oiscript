@@ -1,4 +1,6 @@
 func randrange(range):
     return range.fit(rand())
 
-print(randrange(1 to 50))
+a = 5
+b = 3
+m = a > b ?
