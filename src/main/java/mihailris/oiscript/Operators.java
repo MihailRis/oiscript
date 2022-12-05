@@ -15,7 +15,7 @@ public class Operators {
         switch (text) {
             case ">": case ">=": case "<=": case "==": case "<":
             case "+": case "-": case "?":
-            case "*": case "/": case "%": case "**":
+            case "*": case "/": case "%": case "//": case "**":
             case "to": case "in": case "and": case "or":
                 return true;
             default:
@@ -31,7 +31,7 @@ public class Operators {
             case ">": case ">=": case "==": case "<=": case "<": case "in": return 7;
             case "to": return 8;
             case "+": case "-": return 9;
-            case "*": case "/": case "%": return 10;
+            case "*": case "/": case "%": case "//": return 10;
             case "**": return 11;
         }
         return -1;

@@ -90,4 +90,10 @@ public class Arithmetics {
         }
         return (long)Math.pow(na.longValue(), nb.longValue());
     }
+
+    public static Object divideInteger(Object a, Object b) {
+        Number na = (Number) a;
+        Number nb = (Number) b;
+        return na.longValue() / nb.longValue();
+    }
 }

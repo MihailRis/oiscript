@@ -75,6 +75,13 @@ stdlib:
         bool(x) -> bool
         rand() -> number
 
+Operators:
+    unary:
+        +, -, not, ! (same as not)
+    binary:
+        +, -, *, /, %, //, **
+        >, <, ==, !=, <=, >=,
+
 # TODO:
 - increment and decrement
 - R-like ranges:
