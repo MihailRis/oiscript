@@ -1,5 +1,8 @@
 package mihailris.oiscript.parsing;
 
+import mihailris.oiscript.Context;
+import mihailris.oiscript.Logics;
+
 public class Ternary extends Value {
     private final Value condition;
     private final Value valueA;
@@ -8,6 +11,11 @@ public class Ternary extends Value {
         this.condition = condition;
         this.valueA = valueA;
         this.valueB = valueB;
+    }
+
+    @Override
+    public Object eval(Context context) {
+        return Logics.isTrue(condition.eval(context)) ? valueA.eval(context) : valueB.eval(context);
     }
 
     @Override
