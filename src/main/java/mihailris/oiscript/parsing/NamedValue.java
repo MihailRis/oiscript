@@ -13,7 +13,7 @@ public class NamedValue extends Value {
     public Object eval(Context context) {
         Object object = context.get(name);
         if (object == null)
-            throw  new NameException(name);
+            throw new NameException(name);
         return object;
     }
 

@@ -1,2 +1,1 @@
-print(2**32)
-
+print(0.2-rand())

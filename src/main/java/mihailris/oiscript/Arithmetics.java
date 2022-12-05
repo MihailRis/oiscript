@@ -3,7 +3,7 @@ package mihailris.oiscript;
 public class Arithmetics {
     public static Object subtract(Object a, Object b) {
         if (OiUtils.isFloatingPoint(a) || OiUtils.isFloatingPoint(b)){
-            return ((Number)a).doubleValue() -  ((Number)a).doubleValue();
+            return ((Number)a).doubleValue() -  ((Number)b).doubleValue();
         }
         long da;
         long db;
