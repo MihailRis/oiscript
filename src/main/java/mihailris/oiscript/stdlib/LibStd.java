@@ -11,6 +11,7 @@ public class LibStd extends OiObject {
     public static final Random random = new Random();
 
     public LibStd() {
+        set("_version", OiScript.VERSION_STRING);
         set("int", customFunc("int", (context, args) -> {
             Object arg = args[0];
             if (arg instanceof String) {

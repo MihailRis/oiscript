@@ -1,6 +1,7 @@
 package mihailris.oiscript;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class OiVector extends ArrayList<Object> {
     public OiVector() {
@@ -22,5 +23,11 @@ public class OiVector extends ArrayList<Object> {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    public static OiVector from(String[] strings) {
+        OiVector vector = new OiVector();
+        vector.addAll(Arrays.asList(strings));
+        return vector;
     }
 }

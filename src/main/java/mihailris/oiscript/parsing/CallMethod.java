@@ -3,6 +3,7 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiNone;
 import mihailris.oiscript.OiUtils;
+import mihailris.oiscript.OiVector;
 import mihailris.oiscript.exceptions.NameException;
 
 import java.util.Arrays;
@@ -61,6 +62,17 @@ public class CallMethod extends Value {
                         }
                     }
                     return builder.toString();
+                }
+                case "split": {
+                    String[] substrings = string.split(String.valueOf(args[0]));
+                    return OiVector.from(substrings);
+                }
+                case "index": {
+                    if (args.length == 1){
+                        return string.indexOf(String.valueOf(args[0]));
+                    } else {
+                        return string.indexOf(String.valueOf(args[0]), ((Number)args[1]).intValue());
+                    }
                 }
                 default:
                     throw new NameException(object.getClass().getSimpleName()+"."+methodName);
