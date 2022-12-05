@@ -36,4 +36,16 @@ public class Operators {
         }
         return -1;
     }
+
+    public static boolean isUnaryOperator(String text) {
+        switch (text) {
+            case "-":
+            case "+":
+            case "*":
+            case "!":
+            case "not":
+                return true;
+        }
+        return false;
+    }
 }

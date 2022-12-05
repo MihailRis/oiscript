@@ -558,12 +558,21 @@ public class Parser {
             skipWhitespace();
             return valueBlock;
         }
-        if (token.equals("-")) {
+        if (Operators.isUnaryOperator(token)) {
             skipWhitespace();
-            return new Negative(parseValue(indent));
-        } else if (token.equals("*")) {
-            skipWhitespace();
-            return new RestHolder(parseValue(indent));
+            switch (token) {
+                case "-":
+                    return new Negative(parseValue(indent));
+                case "*":
+                    return new RestHolder(parseValue(indent));
+                case "+":
+                    return parseValue(indent);
+                case "!":
+                case "not":
+                    return new Not(parseValue(indent));
+                default:
+                    throw new ParsingException(source, position, "not implemented for unary '"+token+"'");
+            }
         }
         if (token.equals("[")) {
             return parseValue(indent, parseList(indent));
