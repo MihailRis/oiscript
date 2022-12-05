@@ -5,6 +5,7 @@ import mihailris.oiscript.OiNone;
 import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.OiVector;
 import mihailris.oiscript.exceptions.NameException;
+import mihailris.oiscript.stdlib.OiStringMethods;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,46 +50,14 @@ public class CallMethod extends Value {
             }
         } else if (object instanceof String) {
             String string = (String) object;
+            return OiStringMethods.call(string, methodName, args);
+        } else if (object instanceof Range) {
+            Range range = (Range) object;
             switch (methodName) {
-                case "join": {
-                    StringBuilder builder = new StringBuilder();
-                    OiUtils.requreArgCount("string.join", 1, args);
-                    Collection<?> collection = (Collection<?>) args[0];
-                    Iterator<?> iterator = collection.iterator();
-                    for (int i = 0; i < collection.size(); i++) {
-                        builder.append(iterator.next());
-                        if (i+1 < collection.size()) {
-                            builder.append(string);
-                        }
-                    }
-                    return builder.toString();
+                case "fit": {
+                    Number value = (Number) args[0];
+                    return value.doubleValue() * (range.getEnd()-range.getStart()) + range.getStart();
                 }
-                case "split": {
-                    String[] substrings = string.split(String.valueOf(args[0]));
-                    return OiVector.from(substrings);
-                }
-                case "index": {
-                    if (args.length == 1){
-                        return string.indexOf(String.valueOf(args[0]));
-                    } else {
-                        return string.indexOf(String.valueOf(args[0]), ((Number)args[1]).intValue());
-                    }
-                }
-                case "count": {
-                    String substring = String.valueOf(args[0]);
-                    if (substring.isEmpty())
-                        return 0;
-                    int count = 0;
-                    int index = string.indexOf(substring);
-                    while (index != -1) {
-                        count++;
-                        index += substring.length();
-                        index = string.indexOf(substring, index);
-                    }
-                    return count;
-                }
-                default:
-                    throw new NameException(object.getClass().getSimpleName()+"."+methodName);
             }
         }
         return OiNone.NONE;

@@ -68,6 +68,12 @@ string:
     split(pattern) -> vector
     index(substring) -> number
     index(substring, from) -> number
+range:
+    fit(x) -> number
+collection:
+    add(...x) -> none
+    remove(...x) -> none
+    clear() -> none
 
 stdlib:
     functions:
