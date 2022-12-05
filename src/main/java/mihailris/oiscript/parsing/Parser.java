@@ -556,7 +556,7 @@ public class Parser {
             ValueBlock valueBlock = new ValueBlock(parseValue(indent));
             position.pos++;
             skipWhitespace();
-            return valueBlock;
+            return parseValue(indent, valueBlock);
         }
         if (Operators.isUnaryOperator(token)) {
             skipWhitespace();

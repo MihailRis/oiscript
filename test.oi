@@ -3,5 +3,4 @@ func randrange(range):
 
 a = 5
 b = 3
-m = a > b ? a : b
-print(m)
+print((a > b) ? a : b)
