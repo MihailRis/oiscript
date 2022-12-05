@@ -16,14 +16,18 @@ public class OiScript {
     public static final int VERSION_PATCH = 0;
     public static final String VERSION_STRING = VERSION_MAJOR+"."+VERSION_MINOR+"."+VERSION_PATCH;
 
-    public static Script load(String filename, String source, OiObject globals) throws ParsingException {
-        return load(new Source(source, filename), globals);
+    public static Script load(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {
+        return load(new Source(source, filename), globals, scripts);
     }
 
-    public static Script load(Source source, OiObject globals) throws ParsingException {
+    public static Script load(Source source, OiObject globals, OiObject scripts) throws ParsingException {
         Parser parser = new Parser();
         Script script = parser.perform(source);
         script.extend(globals);
+        if (scripts != null) {
+            script.set("scripts", scripts);
+            scripts.set(source.getFilename().substring(0, source.getFilename().lastIndexOf(".oi")), script);
+        }
         script.prepare();
         if (script.get("init") != null){
             script.execute("init");
