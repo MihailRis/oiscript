@@ -4,19 +4,19 @@ import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
 
 public class Include extends Command {
-    private final String name;
-    public Include(Position position, String name) {
+    private final Value value;
+    public Include(Position position, Value value) {
         super(position);
-        this.name = name;
+        this.value = value;
     }
 
     @Override
     public void execute(Context context) {
-        context.script.extend((OiObject) context.script.get(name));
+        context.included.extend((OiObject) value.eval(context));
     }
 
     @Override
     public String toString() {
-        return "include "+name;
+        return "include "+value;
     }
 }

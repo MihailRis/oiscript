@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static mihailris.oiscript.Keywords.INIT;
+
 public class OiScript {
     public static final int VERSION_MAJOR = 0;
     public static final int VERSION_MINOR = 9;
@@ -23,14 +25,16 @@ public class OiScript {
     public static Script load(Source source, OiObject globals, OiObject scripts) throws ParsingException {
         Parser parser = new Parser();
         Script script = parser.perform(source);
-        script.extend(globals);
+        script.include(globals);
+        if (globals.has("std"))
+            script.include((OiObject) globals.get("std"));
         if (scripts != null) {
             script.set("scripts", scripts);
             scripts.set(source.getFilename().substring(0, source.getFilename().lastIndexOf(".oi")), script);
         }
         script.prepare();
-        if (script.get("init") != null){
-            script.execute("init");
+        if (script.get(INIT) != null){
+            script.execute(INIT);
         }
         return script;
     }
@@ -38,8 +42,8 @@ public class OiScript {
     static final Parser evalParser = new Parser();
     static final Script evalScript = new Script("<eval>", new HashMap<>(), new HashMap<>(), new ArrayList<>());
     static {
-        evalScript.extend(new LibStd());
-        evalScript.extend(new LibMath());
+        evalScript.include(new LibStd());
+        evalScript.include(new LibMath());
     }
     static final Context emptyContext = new Context(evalScript, null);
     public static Object eval(String code) throws ParsingException {

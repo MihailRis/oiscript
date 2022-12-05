@@ -1,0 +1,4 @@
+func randrange(range):
+    return range.fit(range)
+
+print(keys(_included))

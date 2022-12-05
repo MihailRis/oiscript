@@ -6,9 +6,12 @@ import mihailris.oiscript.exceptions.RuntimeInterruptedException;
 import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.runtime.Procedure;
+import mihailris.oiscript.stdlib.LibMath;
 
 import java.util.List;
 import java.util.Map;
+
+import static mihailris.oiscript.Keywords.INCLUDED;
 
 public class Script extends OiObject {
     private final String filename;
@@ -21,6 +24,8 @@ public class Script extends OiObject {
         this.functions = functions;
         this.procedures = procedures;
         this.includes = includes;
+
+        set(INCLUDED, new OiObject());
     }
 
     @Override
@@ -37,7 +42,7 @@ public class Script extends OiObject {
             if (object == null)
                 throw new NameException("unable to include '"+include+"' - not defined");
             OiObject included = (OiObject) object;
-            extend(included);
+            getOi(INCLUDED).extend(included);
         }
     }
 
@@ -83,5 +88,17 @@ public class Script extends OiObject {
             }
         }
         return runHandle;
+    }
+
+    public OiObject getOi(String name) {
+        Object object = get(name);
+        if (object == null)
+            return null;
+        return (OiObject) object;
+    }
+
+    public void include(OiObject oiObject) {
+        OiObject included = getOi(INCLUDED);
+        included.extend(oiObject);
     }
 }

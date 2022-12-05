@@ -295,8 +295,8 @@ public class Parser {
             case PASS:
                 return new Pass(cmdpos);
             case INCLUDE: {
-                String name = expectName();
-                return new Include(cmdpos, name);
+                Value value = parseValue(0);
+                return new Include(cmdpos, value);
             }
             case WAIT: {
                 requireProcedure(WAIT, procedure, cmdpos);

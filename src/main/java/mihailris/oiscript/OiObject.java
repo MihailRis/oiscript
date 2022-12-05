@@ -17,7 +17,15 @@ public class OiObject extends Value {
     }
 
     public void extend(OiObject object) {
-        members.putAll(object.members);
+        for (Map.Entry<Object, Object> entry : object.members.entrySet()) {
+            Object key = entry.getKey();
+            if (key instanceof String) {
+                String name = (String) key;
+                if (name.startsWith("_"))
+                    continue;
+            }
+            members.put(key, entry.getValue());
+        }
     }
 
     @Override
