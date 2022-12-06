@@ -1,0 +1,14 @@
+include math
+
+func quadratic_equation(a, b, c):
+    d = b*b - 4*a*c
+    if d < 0.0:
+        return []
+    elif d == 0.0:
+        return [(-b)/(2*a)]
+    else:
+        x1 = (-b - sqrt(d))/(2*a)
+        x2 = (-b + sqrt(d))/(2*a)
+        return [x1, x2]
+
+print(quadratic_equation(1, 2, -3))

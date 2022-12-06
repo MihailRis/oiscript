@@ -1,3 +1,4 @@
+# Work with strings
 substrings = std._version.split("\\.")
 major = int(substrings[0])
 minor = int(substrings[1])
@@ -6,3 +7,46 @@ print(major, minor, patch)
 print("test ".count(""))
 print("".count("ab"))
 print("absolute abc".count("ab"))
+
+# Power
+value = 3
+power = 3
+result = 1
+for i : power:
+    result *= value
+print(result)
+
+# This code
+for i : 1 to 10:
+    for j : 1 to 10:
+        if i * j < 10:
+            _print " "
+        _print i * j
+        _print " "
+    print()
+# Outputs:
+# 1  2  3  4  5  6  7  8  9 10
+# 2  4  6  8 10 12 14 16 18 20
+# 3  6  9 12 15 18 21 24 27 30
+# 4  8 12 16 20 24 28 32 36 40
+# 5 10 15 20 25 30 35 40 45 50
+# 6 12 18 24 30 36 42 48 54 60
+# 7 14 21 28 35 42 49 56 63 70
+# 8 16 24 32 40 48 56 64 72 80
+# 9 18 27 36 45 54 63 72 81 90
+#10 20 30 40 50 60 70 80 90 100
+
+include math
+
+func quadratic_equation(a, b, c):
+    d = b*b - 4*a*c
+    if d < 0.0:
+        return []
+    elif d == 0.0:
+        return [(-b)/(2*a)]
+    else:
+        x1 = (-b - sqrt(d))/(2*a)
+        x2 = (-b + sqrt(d))/(2*a)
+        return [x1, x2]
+
+print(quadratic_equation(1, 2, -3))

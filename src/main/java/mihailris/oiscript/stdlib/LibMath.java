@@ -6,6 +6,10 @@ import static mihailris.oiscript.OiUtils.customFunc;
 
 public class LibMath extends OiObject {
     public LibMath() {
+        set("sqrt", customFunc("sqrt", (context, args) -> {
+            double arg = ((Number)args[0]).doubleValue();
+            return Math.sqrt(arg);
+        }, 1));
         set("sin", customFunc("sin", (context, args) -> {
             double arg = ((Number)args[0]).doubleValue();
             return Math.sin(arg);
