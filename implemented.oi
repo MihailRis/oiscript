@@ -71,6 +71,7 @@ string:
     index(substring, from) -> number
 range:
     fit(x) -> number
+    unfit(x) -> number
 collection:
     add(...x) -> none
     remove(...x) -> none

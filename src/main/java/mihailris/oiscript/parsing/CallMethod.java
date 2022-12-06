@@ -58,6 +58,10 @@ public class CallMethod extends Value {
                     Number value = (Number) args[0];
                     return value.doubleValue() * (range.getEnd()-range.getStart()) + range.getStart();
                 }
+                case "unfit": {
+                    Number value = (Number) args[0];
+                    return (value.doubleValue() - range.getStart()) / (range.getEnd()-range.getStart());
+                }
             }
         }
         return OiNone.NONE;
