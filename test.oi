@@ -1,5 +1,0 @@
-func randrange(range):
-    return range.fit(rand())
-
-print((5 to 10).fit(0.5))
-print((5 to 10).unfit(7.5))
