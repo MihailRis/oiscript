@@ -82,7 +82,32 @@ stdlib:
         int(x) -> number # convert value to integer or parse string
         bool(x) -> bool
         rand() -> number # Random.nextFloat()
+        len(x) -> number # alternative of .len attribute
         vector(iterable) -> vector # create vector from iterable
+        chr(code) -> char # cast integer to char
+        keys(object) -> vector # vector of attribute names of OiObject
+        print(...) -> none
+    constants:
+        _version -> string
+        endl -> string
+
+math:
+    functions:
+        sqrt(x) -> number
+        sin(x) -> number
+        cos(x) -> number
+        tan(x) -> number
+        atan(x) -> number
+        asin(x) -> number
+        acos(x) -> number
+        min(...numbers) -> number
+        max(...numbers) -> number
+        sum(vector) -> number
+        avg(vector) -> number
+    constants:
+        PI -> number
+        E -> number
+
 
 Operators:
     unary:

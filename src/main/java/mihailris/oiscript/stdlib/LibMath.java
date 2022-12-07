@@ -22,6 +22,18 @@ public class LibMath extends OiObject {
             double arg = ((Number)args[0]).doubleValue();
             return Math.tan(arg);
         }, 1));
+        set("atan", customFunc("atan", (context, args) -> {
+            double arg = ((Number)args[0]).doubleValue();
+            return Math.atan(arg);
+        }, 1));
+        set("asin", customFunc("asin", (context, args) -> {
+            double arg = ((Number)args[0]).doubleValue();
+            return Math.asin(arg);
+        }, 1));
+        set("ascos", customFunc("acos", (context, args) -> {
+            double arg = ((Number)args[0]).doubleValue();
+            return Math.acos(arg);
+        }, 1));
         set("PI", Math.PI);
         set("E", Math.E);
         set("min", customFunc("min", (context, args) -> {
