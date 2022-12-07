@@ -1,59 +1,3 @@
-a = 1
-b = 0
-
-# functions
-func f(c, d, e):
-    pass
-
-# procedures
-proc p(f, g, h):
-    pass
-
-# if-elif-else operator
-if a:
-    pass
-elif b:
-    pass
-else:
-    pass
-
-# while loop
-while a:
-    pass
-
-# while with else
-while a:
-    pass
-else: # executed if loop wasn't broken by 'break'
-    pass
-
-# one-word operators
-break
-continue
-return
-
-# foreach loop
-for i : x:
-    pass
-
-# for loop i from 0 to 99
-for i : 100:
-    pass
-
-# C-like for-loop
-for i = 0; i < x; i+=1:
-    pass
-
-# Extend script namespace with object members
-include object
-
-skip frames # <- interrupt and skip defined count of frames
-# or
-skip # <- just interrupt (same as skip 0)
-
-wait milliseconds # <- wait defined count of milliseconds
-wait 1000 # <- wait one second
-
 types:
     number,
     char,
@@ -126,3 +70,60 @@ Properties:
 - R-like ranges:
     b = 1:10:2 # [1, 3, 5, 7, 9]
 - Python-like try-except
+
+Examples:
+a = 1
+b = 0
+
+# functions
+func f(c, d, e):
+    pass
+
+# procedures
+proc p(f, g, h):
+    pass
+
+# if-elif-else operator
+if a:
+    pass
+elif b:
+    pass
+else:
+    pass
+
+# while loop
+while a:
+    pass
+
+# while with else
+while a:
+    pass
+else: # executed if loop wasn't broken by 'break'
+    pass
+
+# one-word operators
+break
+continue
+return
+
+# foreach loop
+for i : x:
+    pass
+
+# for loop i from 0 to 99
+for i : 100:
+    pass
+
+# C-like for-loop
+for i = 0; i < x; i+=1:
+    pass
+
+# Extend script namespace with object members
+include object
+
+skip frames # <- interrupt and skip defined count of frames
+# or
+skip # <- just interrupt (same as skip 0)
+
+wait milliseconds # <- wait defined count of milliseconds
+wait 1000 # <- wait one second
