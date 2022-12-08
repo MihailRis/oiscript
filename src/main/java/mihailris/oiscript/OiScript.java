@@ -15,7 +15,7 @@ import static mihailris.oiscript.Keywords.INIT;
 public class OiScript {
     public static final int VERSION_MAJOR = 0;
     public static final int VERSION_MINOR = 9;
-    public static final int VERSION_PATCH = 1;
+    public static final int VERSION_PATCH = 2;
     public static final String VERSION_STRING = VERSION_MAJOR+"."+VERSION_MINOR+"."+VERSION_PATCH;
 
     public static Script load(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {

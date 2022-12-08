@@ -70,7 +70,11 @@ public class Script extends OiObject {
     public OiRunHandle start(Procedure procedure, OiRunHandle runHandle, Object... args) {
         Context context = new Context(this, runHandle);
         Thread thread = new Thread(() -> {
-            procedure.execute(context, args);
+            try {
+                procedure.execute(context, args);
+            } catch (Exception e) {
+                runHandle.exception = e;
+            }
             runHandle.finished = true;
             synchronized (runHandle.lock){
                 runHandle.lock.notifyAll();

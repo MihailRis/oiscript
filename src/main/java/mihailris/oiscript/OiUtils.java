@@ -46,6 +46,22 @@ public class OiUtils {
         return builder.toString();
     }
 
+    public static float asFloat(Object object) {
+        return ((Number)object).floatValue();
+    }
+
+    public static double asDouble(Object object) {
+        return ((Number)object).doubleValue();
+    }
+
+    public static int asInt(Object object) {
+        return ((Number)object).intValue();
+    }
+
+    public static long asLong(Object object) {
+        return ((Number)object).longValue();
+    }
+
     public static boolean isFloatingPoint(Object object) {
         return object instanceof Double || object instanceof Float;
     }

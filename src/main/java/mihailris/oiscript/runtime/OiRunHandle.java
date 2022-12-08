@@ -1,7 +1,5 @@
 package mihailris.oiscript.runtime;
 
-import mihailris.oiscript.exceptions.RuntimeInterruptedException;
-
 public class OiRunHandle {
     public final Object lock = new Object();
     public Thread thread;
@@ -9,6 +7,7 @@ public class OiRunHandle {
 
     public long skip;
     public long wait;
+    public Exception exception;
 
     private long lastSwitch;
 
@@ -39,6 +38,9 @@ public class OiRunHandle {
                 return;
         }
         switchControl();
+        if (exception != null) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public void switchControl() {
@@ -47,7 +49,7 @@ public class OiRunHandle {
             try {
                 lock.wait();
             } catch (InterruptedException e) {
-                throw new RuntimeInterruptedException(e);
+                throw new RuntimeException(e);
             }
         }
     }

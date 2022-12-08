@@ -5,7 +5,7 @@ import mihailris.oiscript.*;
 import java.util.Collection;
 import java.util.Random;
 
-import static mihailris.oiscript.OiUtils.customFunc;
+import static mihailris.oiscript.OiUtils.*;
 
 public class LibStd extends OiObject {
     public static final Random random = new Random();
