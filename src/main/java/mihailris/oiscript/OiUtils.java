@@ -4,6 +4,8 @@ import mihailris.oiscript.runtime.Function;
 
 import java.util.ArrayList;
 
+import static mihailris.oiscript.OiNone.NONE;
+
 public class OiUtils {
     public static void requreArgCount(String funcname, int count, Object... args) {
         if (count != args.length) {
@@ -60,6 +62,12 @@ public class OiUtils {
 
     public static long asLong(Object object) {
         return ((Number)object).longValue();
+    }
+
+    public static String asString(Object object) {
+        if (object == NONE)
+            return null;
+        return String.valueOf(object);
     }
 
     public static boolean isFloatingPoint(Object object) {
