@@ -12,6 +12,10 @@ public class OiObject extends Value {
         this.members = new HashMap<>();
     }
 
+    public OiObject(Map<Object, Object> members) {
+        this.members = members;
+    }
+
     public void set(Object key, Object value) {
         members.put(key, value);
     }

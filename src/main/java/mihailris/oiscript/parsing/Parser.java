@@ -510,7 +510,11 @@ public class Parser {
     private Value parseMap(int indent) throws ParsingException {
         skipWhitespaceAny();
         Map<Value, Value> values = new HashMap<>();
-        while (!isNewLineOrEnd()) {
+        if (chars[position.pos] == '}') {
+            position.pos++;
+            return new MapValue(values);
+        }
+        while (!isEnd()) {
             Value key = parseValue(indent);
             skipWhitespaceAny();
             if (position.pos >= chars.length || chars[position.pos] != ':') {
