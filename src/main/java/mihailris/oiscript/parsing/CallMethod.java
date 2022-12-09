@@ -2,14 +2,15 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiNone;
+import mihailris.oiscript.OiObject;
 import mihailris.oiscript.OiUtils;
-import mihailris.oiscript.OiVector;
+import mihailris.oiscript.exceptions.MethodException;
 import mihailris.oiscript.exceptions.NameException;
+import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.stdlib.OiStringMethods;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class CallMethod extends Value {
@@ -26,6 +27,21 @@ public class CallMethod extends Value {
     @Override
     public Object eval(Context context) {
         Object object = source.eval(context);
+        if (object instanceof OiObject) {
+            OiObject oiObject = (OiObject) object;
+            Object methodObject = oiObject.get(methodName);
+            if (methodObject instanceof Function) {
+                Function function = (Function) methodObject;
+                Object[] args = new Object[values.size() + 1];
+                args[0] = oiObject;
+                for (int i = 0; i < values.size(); i++) {
+                    args[i + 1] = values.get(i).eval(context);
+                }
+                return function.execute(context, args);
+            } else {
+                throw new MethodException(methodName);
+            }
+        }
         Object[] args = new Object[values.size()];
         for (int i = 0; i < args.length; i++) {
             args[i] = values.get(i).eval(context);
