@@ -29,9 +29,8 @@ public class CallMethod extends Value {
         Object object = source.eval(context);
         if (object instanceof OiObject) {
             OiObject oiObject = (OiObject) object;
-            Object methodObject = oiObject.get(methodName);
-            if (methodObject instanceof Function) {
-                Function function = (Function) methodObject;
+            Function function = oiObject.getMethod(methodName);
+            if (function != null) {
                 Object[] args = new Object[values.size() + 1];
                 args[0] = oiObject;
                 for (int i = 0; i < values.size(); i++) {

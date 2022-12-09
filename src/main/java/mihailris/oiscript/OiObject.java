@@ -1,6 +1,7 @@
 package mihailris.oiscript;
 
 import mihailris.oiscript.parsing.Value;
+import mihailris.oiscript.runtime.Function;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,16 @@ public class OiObject extends Value {
 
     public Object get(Object key) {
         return members.get(key);
+    }
+
+    public Function getMethod(Object key) {
+        Object method = get(key);
+        if (method instanceof Function)
+            return (Function) method;
+        Object prototype = get("_proto");
+        if (prototype instanceof OiObject)
+            return ((OiObject)prototype).getMethod(key);
+        return null;
     }
 
     public OiVector keys() {

@@ -1,5 +1,6 @@
 func tostr(self):
     return "User(name: "+self.name+", age: "+self.age+")"
 
-obj = {"name": none, "age": 45, "_str": tostr}
-print(obj._str())
+User = {"_str": tostr}
+user = {"name":"unknown", "age": 45, "_proto": User}
+print(user._str())
