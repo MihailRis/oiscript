@@ -21,7 +21,7 @@ public class OiObject extends Value {
         members.put(key, value);
     }
 
-    public void extend(OiObject object) {
+    public OiObject extend(OiObject object) {
         for (Map.Entry<Object, Object> entry : object.members.entrySet()) {
             Object key = entry.getKey();
             if (key instanceof String) {
@@ -31,6 +31,7 @@ public class OiObject extends Value {
             }
             members.put(key, entry.getValue());
         }
+        return this;
     }
 
     @Override

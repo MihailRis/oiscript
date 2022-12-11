@@ -1,6 +1,7 @@
 package mihailris.oiscript.stdlib;
 
 import mihailris.oiscript.*;
+import mihailris.oiscript.runtime.Function;
 
 import java.util.Collection;
 import java.util.Random;
@@ -87,6 +88,18 @@ public class LibStd extends OiObject {
             }
             System.out.println();
             return OiNone.NONE;
+        }, -1));
+
+        set("$new", customFunc("$new", (context, args) -> {
+            OiObject prototype = (OiObject) args[0];
+            OiObject object = new OiObject().extend(prototype);
+            object.set("_proto", prototype);
+            Function initMethod = object.getMethod("_init");
+            if (initMethod != null) {
+                args[0] = object;
+                initMethod.execute(context, args);
+            }
+            return object;
         }, -1));
     }
 }

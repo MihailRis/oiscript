@@ -5,10 +5,7 @@ import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.Procedure;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static mihailris.oiscript.Keywords.*;
 
@@ -574,6 +571,26 @@ public class Parser {
                 case "!":
                 case "not":
                     return new Not(parseValue(indent));
+                case "new": {
+                    String className = expectName();
+                    skipWhitespace();
+                    if (position.pos >= chars.length || chars[position.pos] != '(')
+                        throw new ParsingException(source, position, "'(' expected");
+                    position.pos++;
+                    List<Value> values = new ArrayList<>();
+                    values.add(new NamedValue(className));
+                    while (!isNewLineOrEnd()){
+                        values.add(parseValue(indent));
+                        requireCommaOrEnd();
+                        if (chars[position.pos] != ')') {
+                            position.pos++;
+                            skipWhitespace();
+                        }
+                    }
+                    position.pos++;
+                    Call callStdNew = new Call(new NamedValue("$new"), values);
+                    return parseValue(indent, callStdNew);
+                }
                 default:
                     throw new ParsingException(source, position, "not implemented for unary '"+token+"'");
             }
