@@ -104,7 +104,7 @@ User = {
 print(new User("unknown", 45).tostr())
 ```
 
-`new User(name, age)` is equialent to `std["$new"](User, name, age)`
+`new User(name, age)` is equialent to `std._included["$new"](User, name, age)`
 
 Where `User` is prototype for `user`.
 
