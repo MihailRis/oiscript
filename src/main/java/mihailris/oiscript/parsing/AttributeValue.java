@@ -2,6 +2,7 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
+import mihailris.oiscript.exceptions.AttributeException;
 
 import java.util.Collection;
 
@@ -27,7 +28,11 @@ public class AttributeValue extends Value {
             }
         }
         OiObject oiobject = (OiObject) object;
-        return oiobject.get(name);
+        Object value = oiobject.get(name);
+        if (value == null) {
+            throw new AttributeException(name);
+        }
+        return value;
     }
 
     @Override

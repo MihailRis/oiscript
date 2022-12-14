@@ -1,5 +1,8 @@
 package mihailris.oiscript.parsing;
 
+import mihailris.oiscript.Context;
+import mihailris.oiscript.OiObject;
+
 public class ItemAssignment extends Command {
     private final Value source;
     private final Value key;
@@ -12,6 +15,12 @@ public class ItemAssignment extends Command {
         this.key = key;
         this.operator = operator;
         this.value = value;
+    }
+
+    @Override
+    public void execute(Context context) {
+        OiObject source = (OiObject) this.source.eval(context);
+        source.set(key.eval(context), value.eval(context));
     }
 
     @Override

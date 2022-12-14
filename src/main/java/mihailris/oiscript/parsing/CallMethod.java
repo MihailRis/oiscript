@@ -31,12 +31,22 @@ public class CallMethod extends Value {
             OiObject oiObject = (OiObject) object;
             Function function = oiObject.getMethod(methodName);
             if (function != null) {
-                Object[] args = new Object[values.size() + 1];
+                Object[] args = new Object[function.getArgs().size()];
                 args[0] = oiObject;
+                int index = 1;
                 for (int i = 0; i < values.size(); i++) {
-                    args[i + 1] = values.get(i).eval(context);
+                    Value argValue = values.get(i);
+                    if (argValue instanceof RestHolder) {
+                        RestHolder restHolder = (RestHolder) argValue;
+                        Collection<?> rest = (Collection<?>) restHolder.getValue().eval(context);
+                        for (Object arg : rest){
+                            args[index++] = arg;
+                        }
+                        continue;
+                    }
+                    args[index++] = values.get(i).eval(context);
                 }
-                return function.execute(context, args);
+                return function.execute(new Context(context.script, context.runHandle), args);
             } else {
                 throw new MethodException(methodName);
             }

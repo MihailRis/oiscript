@@ -7,6 +7,10 @@ public class RestHolder extends Value {
         this.value = value;
     }
 
+    public Value getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return "*"+value;

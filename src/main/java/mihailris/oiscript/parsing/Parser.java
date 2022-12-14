@@ -373,9 +373,10 @@ public class Parser {
                     case "%=":
                         checkName(token, cmdpos);
                         return parseAssign(indent, token, nextToken);
-                    case ".": {
+                    case ".":
                         return parseAttributeCommand(indent, tokenToValue(token));
-                    }
+                    case "[":
+                        return parseItemCommand(indent, tokenToValue(token));
                 }
                 position.set(cmdpos);
                 Value value = parseValue(indent);
@@ -771,6 +772,16 @@ public class Parser {
                 position.pos++;
                 break;
             }
+            if (isNextChar('*')){
+                position.pos++;
+                String name = expectName();
+                skipWhitespace();
+                if (!isNextChar(')')){
+                    throw new ParsingException(source, position, "')' expected after *"+name);
+                }
+                arguments.add("*"+name);
+                continue;
+            }
             String name = expectName();
             arguments.add(name);
             skipWhitespace();
@@ -787,6 +798,12 @@ public class Parser {
             throw new ParsingException(source, position, "')' expected");
         }
         return arguments;
+    }
+
+    private boolean isNextChar(char c) {
+        if (position.pos >= chars.length)
+            return false;
+        return chars[position.pos] == c;
     }
 
     private String expectKeyword() throws ParsingException {
