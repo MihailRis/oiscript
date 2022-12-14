@@ -133,7 +133,7 @@ May be accessed only directly as `std._version` because it's hidden field.
 System line separator.
 
 ---
-`print(...values)` -> none
+`print(*values)` -> none
 
 Print all args separated with space and **endl** included.
 
@@ -175,5 +175,15 @@ Example: `some "text""` -> `"some \"text\"""`.
 Wraps strings into `""`.
 
 ---
+`$new(prototype, *args)` -> OiObject
 
+Create new instance using prototype. 
+
+```oi
+new SomeProto(arg1, arg2, arg3)
+```
+will be converted to 
+```
+std._included["$new"](SomeProto, arg1, arg2, arg3)
+```
 

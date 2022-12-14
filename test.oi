@@ -20,4 +20,4 @@ func custom_new(prototype, *args):
 script._included["$new"] = custom_new
 
 # using user-defined $new(...) implementation
-print(new User("unknown", 45)._str())
+print(new User("Tester", 90)._str())

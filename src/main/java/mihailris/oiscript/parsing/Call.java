@@ -3,6 +3,7 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.runtime.Function;
 
+import java.util.Collection;
 import java.util.List;
 
 public class Call extends Value {
@@ -24,11 +25,14 @@ public class Call extends Value {
 
     @Override
     public Object eval(Context context) {
+        Function function = (Function)source.eval(context);
         Object[] args = new Object[values.size()];
+        int index = 0;
         for (int i = 0; i < values.size(); i++) {
-            args[i] = values.get(i).eval(context);
+            Value argValue = values.get(i);
+            args[index++] = argValue.eval(context);
         }
-        return context.script.execute((Function)source.eval(context), context.runHandle, args);
+        return context.script.execute(function, context.runHandle, args);
     }
 
     @Override
