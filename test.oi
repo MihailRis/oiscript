@@ -1,23 +1,7 @@
-func tostr(self):
-    return "User(name: "+cat(self.name)+", age: "+self.age+")"
+a = 5
+b = 10
 
-func User_init(self, name, age):
-    self.name = name
-    self.age = age
-
-# define prototype User
-User = {"_init": User_init, "_str": tostr}
-
-# define object that use User as prototype
-# using default $new(...) implementation
-print(new User("unknown", 45)._str())
-
-func custom_new(prototype, *args):
-    obj = {"_proto": prototype}
-    obj._init(*args)
-    print("CUSTOM NEW USED with prototype", prototype, "args:", args)
-    return obj
-script._included["$new"] = custom_new
-
-# using user-defined $new(...) implementation
-print(new User("Tester", 90)._str())
+if a > b:
+    print(a)
+else:
+    print(b)

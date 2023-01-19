@@ -182,14 +182,28 @@ public class Parser {
 
     private void printTree(List<Command> commands, int indent) {
         for (Command command : commands) {
-            System.out.print((command.getPosition().line+1)+"| ");
-            for (int i = 0; i < indent; i++) {
-                System.out.print("  ");
+            printTree(command, indent);
+        }
+    }
+
+    private void printTree(Command command, int indent) {
+        System.out.print((command.getPosition().line+1)+"| ");
+        for (int i = 0; i < indent; i++) {
+            System.out.print("  ");
+        }
+        System.out.println(command);
+        List<Command> subcommands = command.getCommands();
+        if (subcommands != null) {
+            printTree(subcommands, indent + 1);
+        }
+        if (command instanceof If) {
+            If branch = (If) command;
+            for (Elif elif : branch.getElifs()) {
+                printTree(elif, indent);
             }
-            System.out.println(command);
-            List<Command> subcommands = command.getCommands();
-            if (subcommands != null) {
-                printTree(subcommands, indent + 1);
+            Else elseblock = branch.getElseBlock();
+            if (elseblock != null) {
+                printTree(elseblock, indent);
             }
         }
     }
@@ -223,32 +237,10 @@ public class Parser {
                         continue;
                     }
                     throw new ParsingException(source, command.position, "invalid use of elif/else ('if' missing)");
-                } else {
-                    If ifnode;
-                    if (previous instanceof If) {
-                        ifnode = (If) previous;
-                    } else {
-                        ifnode = ((Elif)previous).getIf();
-                    }
-                    assert (ifnode != null);
-                    if (ifnode.getElseBlock() != null) {
-                        throw new ParsingException(source, position, "'if' is already has 'else' block");
-                    }
-                    if (command instanceof Elif) {
-                        Elif elif = (Elif) command;
-                        elif.setIfNode(ifnode);
-                        ifnode.add(elif);
-                    } else {
-                        Else elseNode = (Else) command;
-                        ifnode.add(elseNode);
-                    }
-                    commands.remove(command);
-                    i--;
                 }
             }
             previous = command;
         }
-        //System.out.println(commands);
         return commands;
     }
 
@@ -313,18 +305,34 @@ public class Parser {
                 Value value = parseValue(indent);
                 return new Print(cmdpos, value);
             }
-            case IF:
-            case ELIF: {
+            case IF: {
                 Value condition = parseValue(indent);
-                List<Command> commands = requireBlock(procedure, true, indent+1);
-                if (token.equals(ELIF))
-                    return new Elif(cmdpos, condition, commands);
-                else
-                    return new If(cmdpos, condition, commands);
+                List<Command> commands = requireBlock(procedure, loop, indent+1);
+                If branch = new If(cmdpos, condition, commands);
+                skipEmptyLines();
+                Position initpos = position.cpy();
+                while (!isEnd()) {
+                    initpos.set(position);
+                    String keyword = expectToken();
+                    switch (keyword) {
+                        case ELIF:
+                            condition = parseValue(indent);
+                            commands = requireBlock(procedure, loop, indent+1);
+                            branch.add(new Elif(initpos.cpy(), condition, commands));
+                            break;
+                        case ELSE:
+                            commands = requireBlock(procedure, loop, indent+1);
+                            branch.add(new Else(initpos.cpy(), commands));
+                            return branch;
+                        default:
+                            position.set(initpos);
+                            return branch;
+                    }
+                }
+                return branch;
             }
             case ELSE: {
-                List<Command> commands = requireBlock(procedure, true, indent+1);
-                return new Else(cmdpos, commands);
+                throw new ParsingException(source, cmdpos, "'else' out of 'if' context");
             }
             case FOR: {
                 if (position.pos < chars.length && chars[position.pos] == ';') {
@@ -345,7 +353,19 @@ public class Parser {
             case WHILE: {
                 Value condition = parseValue(indent);
                 List<Command> commands = requireBlock(procedure, true, indent+1);
-                return new While(cmdpos, condition, commands);
+                While whileloop = new While(cmdpos, condition, commands);
+                Position initpos = position.cpy();
+                if (!isEnd()) {
+                    initpos.set(position);
+                    String keyword = expectToken();
+                    if (ELSE.equals(keyword)) {
+                        commands = requireBlock(procedure, loop, indent + 1);
+                        whileloop.add(new Else(initpos, commands));
+                    } else {
+                        position.set(initpos);
+                    }
+                }
+                return whileloop;
             }
             case RETURN: {
                 Value value = null;

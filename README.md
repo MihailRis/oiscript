@@ -8,6 +8,7 @@
   - [OiObject](#oiobject)
 - [Built-in modules](#built-in-modules):
   - [std](#std)
+- [API](#api)
 ## About:
 Simple dynamic-typed scripting engine and language with Python-like syntax 
 for use in Java applications.
@@ -187,3 +188,11 @@ will be converted to
 std._included["$new"](SomeProto, arg1, arg2, arg3)
 ```
 
+## API
+OiScript.eval(expression_string) calculates an expression result.
+```java
+OiScript.eval("20 - 5 * 3.2") -> 4.0
+OiScript.eval("2 * 3 == 6") -> true
+OiScript.eval("[]") -> mihailris.oiscript.OiVector extends ArrayList<Object>
+OiScript.eval("sqrt(81)") -> 9.0
+```
