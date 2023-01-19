@@ -743,7 +743,7 @@ public class Parser {
                 break;
             }
         }
-        return indent;
+        return Math.max(indent, position.pos-position.linepos);
     }
 
     private List<Command> requireBlock(boolean procedure, boolean loop, int leastIndent) throws ParsingException {
@@ -774,7 +774,7 @@ public class Parser {
             position.pos++;
             return;
         }
-        if (nextRequired)
+        if (isEnd() && nextRequired)
             throw new ParsingException(source, position, "unexpected end");
     }
 

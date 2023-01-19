@@ -12,7 +12,7 @@ import java.nio.file.Files;
 public class Main {
     @SuppressWarnings("ConstantConditions")
     public static void main(String[] args) throws IOException {
-        System.out.println("OiScript v"+OiScript.VERSION_STRING+" © MihailRis 2022");
+        System.out.println("OiScript v"+OiScript.VERSION_STRING+" © MihailRis 2022-2023");
         String sourceCode = new String(Files.readAllBytes(new File("test.oi").toPath()));
         boolean verbose = true;
         try {
