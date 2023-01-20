@@ -131,6 +131,7 @@ public class Parser {
                         functions.put(INIT, initFunction);
                     }
                     initFunction.getCommands().add(command);
+                    // printTree(Collections.singletonList(command), 0);
                     seekNewLine(false);
                     break;
             }
@@ -215,14 +216,14 @@ public class Parser {
             throw new ParsingException(source, position, "wrong indent (expected more)");
         }
         List<Command> commands = new ArrayList<>();
-        while (position.pos < chars.length && expectIndent(indent)) {
+        do {
             Command command = parseCommand(procedure, loop, indent);
             commands.add(command);
             if (position.getLocalPos() > 0) {
                 seekNewLine(false);
                 skipEmptyLines();
             }
-        }
+        } while (position.pos < chars.length && expectIndent(indent));
         Command previous = null;
         for (int i = 0; i < commands.size(); i++) {
             Command command = commands.get(i);
