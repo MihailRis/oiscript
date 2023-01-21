@@ -130,7 +130,9 @@ public class Parser {
                         initFunction = new Function(INIT, new ArrayList<>(), new ArrayList<>());
                         functions.put(INIT, initFunction);
                     }
-                    initFunction.getCommands().add(command);
+                    if (command != null) {
+                        initFunction.getCommands().add(command);
+                    }
                     // printTree(Collections.singletonList(command), 0);
                     seekNewLine(false);
                     break;
@@ -218,7 +220,9 @@ public class Parser {
         List<Command> commands = new ArrayList<>();
         do {
             Command command = parseCommand(procedure, loop, indent);
-            commands.add(command);
+            if (command != null) {
+                commands.add(command);
+            }
             if (position.getLocalPos() > 0) {
                 seekNewLine(false);
                 skipEmptyLines();
@@ -400,6 +404,10 @@ public class Parser {
                         return parseItemCommand(indent, tokenToValue(token));
                 }
                 position.set(cmdpos);
+                if (token.equals(";")) {
+                    position.pos++;
+                    return null;
+                }
                 Value value = parseValue(indent);
                 return new ValueWrapper(cmdpos.cpy(), value);
             }
@@ -878,6 +886,8 @@ public class Parser {
         char chr = chars[position.pos];
         if (chr == '\n')
             throw new ParsingException(source, position, "token expected");
+        if (chr == ';')
+            return String.valueOf(chr);
         if (chr == '.' || chr == '(' || chr == ')' || chr == '[' || chr == ']' || chr == ',' || chr == '{' || chr == '}') {
             position.pos++;
             if (chr == '.' && position.pos < chars.length && Character.isDigit(chars[position.pos])) {
