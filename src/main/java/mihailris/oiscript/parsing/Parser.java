@@ -283,6 +283,7 @@ public class Parser {
 
     private Command parseCommand(boolean procedure, boolean loop, int indent) throws ParsingException {
         Position cmdpos = position.cpy();
+        skipWhitespace();
         String token = expectToken();
         skipWhitespace();
         switch (token) {

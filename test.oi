@@ -1,5 +1,5 @@
-a = 15
-b = 10
-
-print(a);
-print(b)
+func run():
+    x = 0
+    for i : 1 to 1000000:
+        x += i
+    print(x)

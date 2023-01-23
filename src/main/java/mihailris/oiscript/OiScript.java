@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mihailris.oiscript.Keywords.INIT;
-
 public class OiScript {
     public static final int VERSION_MAJOR = 0;
     public static final int VERSION_MINOR = 9;
@@ -33,9 +31,6 @@ public class OiScript {
             scripts.set(source.getFilename().substring(0, source.getFilename().lastIndexOf(".oi")), script);
         }
         script.prepare();
-        if (script.get(INIT) != null){
-            script.execute(INIT);
-        }
         return script;
     }
 

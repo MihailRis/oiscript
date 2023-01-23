@@ -21,6 +21,7 @@ public class Main {
             globals.set("std", new LibStd());
             globals.set("math", new LibMath());
             Script script = OiScript.load("test.oi", sourceCode, globals, scripts);
+            script.init();
             if (script.has("run")) {
                 System.out.println("========= Runtime =========");
                 long tm = System.currentTimeMillis();

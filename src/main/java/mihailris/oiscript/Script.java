@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static mihailris.oiscript.Keywords.INCLUDED;
+import static mihailris.oiscript.Keywords.INIT;
 
 public class Script extends OiObject {
     private final String filename;
@@ -43,6 +44,12 @@ public class Script extends OiObject {
                 throw new NameException("unable to include '"+include+"' - not defined");
             OiObject included = (OiObject) object;
             getOi(INCLUDED).extend(included);
+        }
+    }
+
+    public void init() {
+        if (get(INIT) != null){
+            execute(INIT);
         }
     }
 
