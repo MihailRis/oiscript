@@ -17,15 +17,34 @@ public class OiUtils {
         Object call(Context context, Object... args);
     }
 
+    public static Function customFunc(String name, Callback callback, int argc, boolean mainThread) {
+        if (mainThread){
+            return new Function(name, new ArrayList<>(), null) {
+                @Override
+                public Object execute(Context context, Object... args) {
+                    if (argc >= 0)
+                        OiUtils.requreArgCount(getName(), argc, args);
+
+                    if (context.runHandle.thread == Thread.currentThread()) {
+                        return context.runHandle.callOutside(this, context, args);
+                    }
+                    return callback.call(context, args);
+                }
+            };
+        } else {
+            return new Function(name, new ArrayList<>(), null) {
+                @Override
+                public Object execute(Context context, Object... args) {
+                    if (argc >= 0)
+                        OiUtils.requreArgCount(getName(), argc, args);
+                    return callback.call(context, args);
+                }
+            };
+        }
+    }
+
     public static Function customFunc(String name, Callback callback, int argc) {
-        return new Function(name, new ArrayList<>(), null) {
-            @Override
-            public Object execute(Context context, Object... args) {
-                if (argc >= 0)
-                    OiUtils.requreArgCount(getName(), argc, args);
-                return callback.call(context, args);
-            }
-        };
+        return customFunc(name, callback, argc, false);
     }
 
     public static String cat(String string) {

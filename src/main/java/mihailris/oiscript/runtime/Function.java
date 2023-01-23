@@ -13,6 +13,7 @@ public class Function extends Value implements ScriptComponent {
     private final List<String> args;
     private final List<Command> commands;
     private String restArg;
+    private boolean mainThreadOnly;
 
     public Function(String name, List<String> args, List<Command> commands) {
         this.name = name;
@@ -74,5 +75,13 @@ public class Function extends Value implements ScriptComponent {
                 return context.returnValue;
         }
         return 0;
+    }
+
+    public boolean isMainThreadOnly() {
+        return mainThreadOnly;
+    }
+
+    public void setMainThreadOnly(boolean mainThreadOnly) {
+        this.mainThreadOnly = mainThreadOnly;
     }
 }

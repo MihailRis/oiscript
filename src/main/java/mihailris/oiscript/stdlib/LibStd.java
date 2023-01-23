@@ -2,13 +2,14 @@ package mihailris.oiscript.stdlib;
 
 import mihailris.oiscript.*;
 import mihailris.oiscript.runtime.Function;
+import mihailris.oiscript.runtime.OiModule;
 
 import java.util.Collection;
 import java.util.Random;
 
 import static mihailris.oiscript.OiUtils.*;
 
-public class LibStd extends OiObject {
+public class LibStd extends OiModule {
     public static final Random random = new Random();
 
     public LibStd() {
@@ -89,6 +90,11 @@ public class LibStd extends OiObject {
             System.out.println();
             return OiNone.NONE;
         }, -1));
+
+        set("_sync", customFunc("_sync", (context, args) -> {
+            System.out.println("LibStd.LibStd SYNC "+Thread.currentThread());
+            return OiNone.NONE;
+        }, 0, true));
 
         set("$new", customFunc("$new", (context, args) -> {
             OiObject prototype = (OiObject) args[0];

@@ -1,12 +1,10 @@
 package mihailris.oiscript.parsing;
 
-import mihailris.oiscript.Context;
-import mihailris.oiscript.OiNone;
-import mihailris.oiscript.OiObject;
-import mihailris.oiscript.OiUtils;
+import mihailris.oiscript.*;
 import mihailris.oiscript.exceptions.MethodException;
 import mihailris.oiscript.exceptions.NameException;
 import mihailris.oiscript.runtime.Function;
+import mihailris.oiscript.runtime.OiModule;
 import mihailris.oiscript.stdlib.OiStringMethods;
 
 import java.util.Arrays;
@@ -32,8 +30,11 @@ public class CallMethod extends Value {
             Function function = oiObject.getMethod(methodName);
             if (function != null) {
                 Object[] args = new Object[function.getArgs().size()];
-                args[0] = oiObject;
-                int index = 1;
+                int index = 0;
+
+                if (!(oiObject instanceof OiModule))
+                    args[index++] = oiObject;
+
                 for (int i = 0; i < values.size(); i++) {
                     Value argValue = values.get(i);
                     if (argValue instanceof RestHolder) {

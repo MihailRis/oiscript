@@ -2,6 +2,7 @@ package mihailris.oiscript;
 
 import mihailris.oiscript.exceptions.OiRuntimeException;
 import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.stdlib.LibMath;
 import mihailris.oiscript.stdlib.LibStd;
 
@@ -26,6 +27,17 @@ public class Main {
                 System.out.println("========= Runtime =========");
                 long tm = System.currentTimeMillis();
                 script.execute("run");
+                System.out.println("\n=========   End   =========");
+                System.out.println((System.currentTimeMillis() - tm)+" ms");
+            }
+            if (script.has("scene")) {
+                System.out.println("========= Process ==========");
+                long tm = System.currentTimeMillis();
+                OiRunHandle runHandle = script.start("scene");
+                while (!runHandle.isFinished()) {
+                    System.out.println("<step>");
+                    runHandle.continueProc();
+                }
                 System.out.println("\n=========   End   =========");
                 System.out.println((System.currentTimeMillis() - tm)+" ms");
             }

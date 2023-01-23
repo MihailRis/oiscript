@@ -38,6 +38,10 @@ public class Script extends OiObject {
         for (Map.Entry<String, Function> entry : functions.entrySet()) {
             set(entry.getKey(), entry.getValue());
         }
+
+        for (Map.Entry<String, Procedure> entry : procedures.entrySet()) {
+            set(entry.getKey(), entry.getValue());
+        }
         for (String include : includes) {
             Object object = get(include);
             if (object == null)

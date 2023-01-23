@@ -1,5 +1,7 @@
 package mihailris.oiscript.runtime;
 
+import mihailris.oiscript.Context;
+
 public class OiRunHandle {
     public final Object lock = new Object();
     public Thread thread;
@@ -52,6 +54,11 @@ public class OiRunHandle {
                 throw new RuntimeException(e);
             }
         }
+        if (outFunction != null) {
+            outReturned = outFunction.execute(outContext, outArgs);
+            outFunction = null;
+            switchControl();
+        }
     }
 
     public boolean isFinished() {
@@ -66,5 +73,22 @@ public class OiRunHandle {
     public void waitDelay(long delay) {
         wait += delay;
         switchControl();
+    }
+
+
+    Function outFunction;
+    Context outContext;
+    Object[] outArgs;
+    Object outReturned;
+
+    public Object callOutside(Function function, Context context, Object[] args) {
+        outFunction = function;
+        outContext = context;
+        outArgs = args;
+        outReturned = null;
+        switchControl();
+        outContext = null;
+        outArgs = null;
+        return outReturned;
     }
 }

@@ -1,10 +1,11 @@
 package mihailris.oiscript.stdlib;
 
 import mihailris.oiscript.OiObject;
+import mihailris.oiscript.runtime.OiModule;
 
 import static mihailris.oiscript.OiUtils.customFunc;
 
-public class LibMath extends OiObject {
+public class LibMath extends OiModule {
     public LibMath() {
         set("sqrt", customFunc("sqrt", (context, args) -> {
             double arg = ((Number)args[0]).doubleValue();

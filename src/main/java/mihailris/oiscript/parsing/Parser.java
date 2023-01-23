@@ -159,6 +159,7 @@ public class Parser {
         String name = expectName();
         List<String> arguments = parseArgsBlock();
         List<Command> commands = requireBlock(true, false, 1);
+        printTree(commands, 0);
         /*if (source.getSource().length() > position.pos) {
             System.out.println("REST:");
             System.out.println(source.getSource().substring(position.pos));
