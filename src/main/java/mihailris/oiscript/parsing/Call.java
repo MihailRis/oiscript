@@ -28,8 +28,7 @@ public class Call extends Value {
         Function function = (Function)source.eval(context);
         Object[] args = new Object[values.size()];
         int index = 0;
-        for (int i = 0; i < values.size(); i++) {
-            Value argValue = values.get(i);
+        for (Value argValue : values) {
             args[index++] = argValue.eval(context);
         }
         return context.script.execute(function, context.runHandle, args);

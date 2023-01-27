@@ -35,17 +35,16 @@ public class CallMethod extends Value {
                 if (!(oiObject instanceof OiModule))
                     args[index++] = oiObject;
 
-                for (int i = 0; i < values.size(); i++) {
-                    Value argValue = values.get(i);
+                for (Value argValue : values) {
                     if (argValue instanceof RestHolder) {
                         RestHolder restHolder = (RestHolder) argValue;
                         Collection<?> rest = (Collection<?>) restHolder.getValue().eval(context);
-                        for (Object arg : rest){
+                        for (Object arg : rest) {
                             args[index++] = arg;
                         }
                         continue;
                     }
-                    args[index++] = values.get(i).eval(context);
+                    args[index++] = argValue.eval(context);
                 }
                 return function.execute(new Context(context.script, context.runHandle), args);
             } else {
