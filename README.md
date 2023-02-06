@@ -9,8 +9,9 @@
 - [Built-in modules](#built-in-modules):
   - [std](#std)
 - [API](#api)
-  - [single-expressions](#single-expressions)
-  - [scripting](#scripting)
+  - [Single expressions](#single-expressions)
+  - [Scripting](#scripting)
+  - [Custom library](#custom-library)
 ## About:
 Simple dynamic-typed scripting engine and language with Python-like syntax 
 for use in Java applications.
