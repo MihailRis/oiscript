@@ -1,7 +1,18 @@
-func factorial(num):
-    if num == 1:
-        return 1
-    return num*factorial(num-1)
+matrix = []
+w = 6
+h = 4
+for i : h:
+    row = []
+    for j : w:
+        row.add(0)
+    matrix.add(row)
 
-func run():
-    print(factorial(10))
+func draw(matrix):
+    for row : matrix:
+        for cell : row:
+            _print cell
+            _print ' '
+        print()
+
+matrix[2][1] = 9
+draw(matrix)
