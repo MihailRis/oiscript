@@ -205,7 +205,7 @@ OI.eval("[]") -> mihailris.oiscript.OiVector extends ArrayList<Object>
 OI.eval("sqrt(81)") -> 9.0
 ```
 ### Scripting
-Initializing:
+#### Initializing:
 ```java
 // create globals namespace object
 OiObject globals = new OiObject();
@@ -216,7 +216,7 @@ globals.set("math", OI.moduleMath);
 OiObject scripts = new OiObject();
 ```
 
-Loading a script:
+#### Loading a script:
 ```java
 String sourceName = ...;
 String sourceCode = ...;
@@ -225,7 +225,7 @@ Script script = OI.load(sourceName, sourceCode, globals, scripts);
 script.init();
 ```
 
-Execute script function:
+#### Execute script function:
 
 Source:
 ```oi
@@ -239,4 +239,25 @@ Usage:
 ```java
 long num = script.execute("factorial", 10);
 System.out.println(num);
+```
+
+#### Start process:
+```java
+OiRunHandle handle = script.start(proc_name);
+```
+
+#### Continue process:
+```java
+while (!runHandle.isFinished()) {
+    System.out.println("interruption (skip or wait)");
+    runHandle.continueProc();
+}
+```
+or
+```java
+while (!runHandle.isFinished()) {
+    System.out.println("interruption (skip or wait)");
+    long delta_time_ms = ...;
+    runHandle.continueProc(delta_time_ms);
+}
 ```
