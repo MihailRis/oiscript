@@ -261,3 +261,24 @@ while (!runHandle.isFinished()) {
     runHandle.continueProc(delta_time_ms);
 }
 ```
+
+### Custom library:
+
+#### Create module:
+```java
+OiModule module = new OiModule();
+```
+
+#### Set values:
+```java
+module.set("gravity", 9.8);
+```
+
+#### Custom functions:
+```java
+module.set("shutdown", OiUtils.customFunc("shutdown", (context, args) -> {
+    Number exitCode = (Number)args[0];
+    SomeImportantClassIdk.shutdown(exitCode.intValue());
+    return OiNone.NONE;
+}, 1))
+```
