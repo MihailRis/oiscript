@@ -9,6 +9,8 @@
 - [Built-in modules](#built-in-modules):
   - [std](#std)
 - [API](#api)
+  - [single-expressions](#single-expressions)
+  - [scripting](#scripting)
 ## About:
 Simple dynamic-typed scripting engine and language with Python-like syntax 
 for use in Java applications.
@@ -176,6 +178,11 @@ Example: `some "text""` -> `"some \"text\"""`.
 Wraps strings into `""`.
 
 ---
+`nanotime()` -> float
+
+Get System.nanoTime() but in seconds.
+
+---
 `$new(prototype, *args)` -> OiObject
 
 Create new instance using prototype. 
@@ -189,10 +196,47 @@ std._included["$new"](SomeProto, arg1, arg2, arg3)
 ```
 
 ## API
+### Single expressions
 OiScript.eval(expression_string) calculates an expression result.
 ```java
-OiScript.eval("20 - 5 * 3.2") -> 4.0
-OiScript.eval("2 * 3 == 6") -> true
-OiScript.eval("[]") -> mihailris.oiscript.OiVector extends ArrayList<Object>
-OiScript.eval("sqrt(81)") -> 9.0
+OI.eval("20 - 5 * 3.2") -> 4.0
+OI.eval("2 * 3 == 6") -> true
+OI.eval("[]") -> mihailris.oiscript.OiVector extends ArrayList<Object>
+OI.eval("sqrt(81)") -> 9.0
+```
+### Scripting
+Initializing:
+```java
+// create globals namespace object
+OiObject globals = new OiObject();
+// add std-modules to globals
+globals.set("std", OI.moduleStd);
+globals.set("math", OI.moduleMath);
+// create scripts map object
+OiObject scripts = new OiObject();
+```
+
+Loading a script:
+```java
+String sourceName = ...;
+String sourceCode = ...;
+Script script = OI.load(sourceName, sourceCode, globals, scripts);
+// execute module
+script.init();
+```
+
+Execute script function:
+
+Source:
+```oi
+func factorial(num):
+    if num == 1:
+        return 1
+    return num*factorial(num-1)
+```
+
+Usage:
+```java
+long num = script.execute("factorial", 10);
+System.out.println(num);
 ```

@@ -6,7 +6,6 @@ import mihailris.oiscript.exceptions.RuntimeInterruptedException;
 import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.runtime.Procedure;
-import mihailris.oiscript.stdlib.LibMath;
 
 import java.util.List;
 import java.util.Map;
@@ -57,12 +56,13 @@ public class Script extends OiObject {
         }
     }
 
-    public Object execute(String functionName, Object... args) {
+    @SuppressWarnings("unchecked")
+    public <T> T execute(String functionName, Object... args) {
         Function function = functions.get(functionName);
         if (function == null)
             throw new MemberNotDefinedException(this, functionName, "function '"+functionName+
                     "' is not defined in script '"+filename+"'");
-        return execute(function, new OiRunHandle(), args);
+        return (T) execute(function, new OiRunHandle(), args);
     }
 
     public Object execute(Function function, OiRunHandle runHandle, Object... args) {

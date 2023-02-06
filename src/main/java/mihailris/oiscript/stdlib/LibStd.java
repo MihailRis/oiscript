@@ -13,7 +13,7 @@ public class LibStd extends OiModule {
     public static final Random random = new Random();
 
     public LibStd() {
-        set("_version", OiScript.VERSION_STRING);
+        set("_version", OI.VERSION_STRING);
         set("int", customFunc("int", (context, args) -> {
             Object arg = args[0];
             if (arg instanceof String) {
@@ -90,6 +90,8 @@ public class LibStd extends OiModule {
             System.out.println();
             return OiNone.NONE;
         }, -1));
+
+        set("nanotime", customFunc("nanotime", (context, args) -> System.nanoTime() / 1000000000.0, 0));
 
         set("_sync", customFunc("_sync", (context, args) -> {
             System.out.println("LibStd.LibStd SYNC "+Thread.currentThread());

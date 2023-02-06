@@ -3,6 +3,7 @@ package mihailris.oiscript;
 import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.parsing.Parser;
 import mihailris.oiscript.parsing.Value;
+import mihailris.oiscript.runtime.OiModule;
 import mihailris.oiscript.stdlib.LibMath;
 import mihailris.oiscript.stdlib.LibStd;
 
@@ -10,11 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OiScript {
+public class OI {
     public static final int VERSION_MAJOR = 0;
     public static final int VERSION_MINOR = 9;
-    public static final int VERSION_PATCH = 3;
+    public static final int VERSION_PATCH = 4;
     public static final String VERSION_STRING = VERSION_MAJOR+"."+VERSION_MINOR+"."+VERSION_PATCH;
+
+    public static final OiModule moduleStd = new LibStd();
+    public static final OiModule moduleMath = new LibMath();
 
     public static Script load(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {
         return load(new Source(source, filename), globals, scripts);
