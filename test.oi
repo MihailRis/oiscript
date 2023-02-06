@@ -10,8 +10,12 @@ for i : h:
 func draw(matrix):
     for row : matrix:
         for cell : row:
-            _print cell
-            _print ' '
+            _print '['
+            if cell == 0:
+                _print ' '
+            else:
+                _print cell
+            _print ']'
         print()
 
 matrix[2][1] = 9
