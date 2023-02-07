@@ -11,3 +11,7 @@ script.apply = (func(arr, fn):
 script.randint = (func(min, max):
     return int(rand() * (max - min + 1)) + min
 )
+
+script.randbool = (func(t, f):
+    return rand() <= t / (t + f)
+)
