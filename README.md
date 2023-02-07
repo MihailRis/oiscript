@@ -65,7 +65,7 @@ for i : some_iterable:
 example:
 ```nim
 for i : 10:
-    print(i) # output number from 0 to 9
+    print(i) # output numbers from 0 to 9
 ```
 example #2:
 ```nim
