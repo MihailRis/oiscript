@@ -2,17 +2,14 @@
 # (C) MihailRis 2023
 
 # Call function with all items as argument sequentally
-script.apply = (func(arr, fn):
+func apply(arr, fn):
     for i : arr:
         fn(i)
-)
 
 # Return random integer in range [min, max] inclusive
-script.randint = (func(min, max):
+func randint(min, max):
     return int(rand() * (max - min + 1)) + min
-)
 
 # Returns true with probability defined as t / f
-script.randbool = (func(t, f):
+func randbool(t, f):
     return rand() <= t / (t + f)
-)
