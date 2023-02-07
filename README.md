@@ -70,11 +70,19 @@ Java String
 
 **string.join(iterable):**
 
-```oi
+```python
 print(", ".join(1 to 5))
 
 Output:
 1, 2, 3, 4, 5
+```
+
+**string.lfill(length, placeholder_char)**
+```python
+print("txt".lfill(8, '.'))
+
+Output:
+.....txt
 ```
 
 ### OiObject:
@@ -145,6 +153,11 @@ Print all args separated with space and **endl** included.
 `bool(value)` -> bool
 
 Convert value to boolean.
+
+---
+`str(value)` -> str
+
+Convert value to string.
 
 ---
 `int(value)` -> int

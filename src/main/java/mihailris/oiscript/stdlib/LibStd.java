@@ -29,6 +29,10 @@ public class LibStd extends OiModule {
             Object arg = args[0];
             return Logics.isTrue(arg);
         }, 1));
+        set("str", customFunc("str", (context, args) -> {
+            Object arg = args[0];
+            return String.valueOf(arg);
+        }, 1));
         set("rand", customFunc("rand", (context, args) -> random.nextFloat(), 0));
         set("len", customFunc("len", (context, args) -> {
             Object arg = args[0];

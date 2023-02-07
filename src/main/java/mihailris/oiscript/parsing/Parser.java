@@ -13,7 +13,7 @@ public class Parser {
     private Source source;
     private final Position position;
     private char[] chars;
-    private boolean verbose = true;
+    private boolean verbose;
     public Parser() {
         position = new Position();
     }

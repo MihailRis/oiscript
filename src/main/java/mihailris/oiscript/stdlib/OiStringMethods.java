@@ -47,6 +47,18 @@ public class OiStringMethods {
                 }
                 return count;
             }
+            case "lfill": {
+                int length = ((Number)args[0]).intValue();
+                char chr = (Character)args[1];
+                if (string.length() >= length)
+                    return string;
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < length-string.length(); i++) {
+                    builder.append(chr);
+                }
+                builder.append(string);
+                return builder.toString();
+            }
             default:
                 throw new NameException("str."+name);
         }
