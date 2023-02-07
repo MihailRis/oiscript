@@ -52,7 +52,7 @@ for i : r:
 ```
 
 While-loop (nothing special here):
-```nim
+```python
 while condition:
     do something
 ```
