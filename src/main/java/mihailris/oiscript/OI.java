@@ -24,6 +24,12 @@ public class OI {
         return load(new Source(source, filename), globals, scripts);
     }
 
+    public static Script loadAndInit(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {
+        Script script = load(filename, source, globals, scripts);
+        script.init();
+        return script;
+    }
+
     public static Script load(Source source, OiObject globals, OiObject scripts) throws ParsingException {
         Parser parser = new Parser();
         Script script = parser.perform(source);

@@ -29,6 +29,7 @@ public class Keywords {
             case FALSE:
             case NONE:
             case SCRIPT:
+            case FOR:
                 return true;
             default:
                 return false;

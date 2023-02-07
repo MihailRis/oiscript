@@ -52,6 +52,11 @@ public class Function extends Value implements ScriptComponent {
         return commands;
     }
 
+    @Override
+    public Object eval(Context context) {
+        return this;
+    }
+
     public Object execute(Context context, Object... args) {
         if (restArg != null){
             Vector<Object> rest = new Vector<>();

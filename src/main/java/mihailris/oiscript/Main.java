@@ -19,6 +19,7 @@ public class Main {
             OiObject scripts = new OiObject();
             globals.set("std", OI.moduleStd);
             globals.set("math", OI.moduleMath);
+            globals.set("stdext", OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("stdext.oi").toPath())), globals, scripts));
             Script script = OI.load("test.oi", sourceCode, globals, scripts);
             script.init();
             if (script.has("run")) {

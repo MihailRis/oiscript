@@ -1,0 +1,4 @@
+script.apply = (func(arr, fn):
+    for i : arr:
+        fn(i)
+)
