@@ -1,5 +1,6 @@
 package mihailris.oiscript.parsing;
 
+import mihailris.oiscript.Arithmetics;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
 
@@ -27,7 +28,38 @@ public class ItemAssignment extends Command {
             ((OiObject)source).set(key.eval(context), value.eval(context));
         } else if (source instanceof List) {
             List<Object> list = (List<Object>) source;
-            list.set(((Number)key.eval(context)).intValue(), value.eval(context));
+            Object newObject = value.eval(context);
+            int index = ((Number) key.eval(context)).intValue();
+            if (operator.equals("=")) {
+                list.set(index, newObject);
+                return;
+            }
+            Object previous = list.get(index);
+            switch (operator) {
+                case "+=":
+                    list.set(index, Arithmetics.add(previous, newObject));
+                    break;
+                case "-=":
+                    list.set(index, Arithmetics.subtract(previous, newObject));
+                    break;
+                case "*=":
+                    list.set(index, Arithmetics.multiply(previous, newObject));
+                    break;
+                case "/=":
+                    list.set(index, Arithmetics.divide(previous, newObject));
+                    break;
+                case "//":
+                    list.set(index, Arithmetics.divideInteger(previous, newObject));
+                    break;
+                case "%=":
+                    list.set(index, Arithmetics.modulo(previous, newObject));
+                    break;
+                case "**=":
+                    list.set(index, Arithmetics.power(previous, newObject));
+                    break;
+                default:
+                    throw new RuntimeException("not implemented for '"+operator+"'");
+            }
         } else {
             throw new RuntimeException("unable to change item of "+source);
         }
