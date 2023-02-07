@@ -48,7 +48,7 @@ print(r.len) # output: 24
 print(r.fit(0.5)) # output: 2011.5
 print(r.unfit(1977)) # output -1.0
 for i : r:
-    print(r) # outputs all integers from 2000 to 2023 inclusive
+    print(r) # output all integers from 2000 to 2023 inclusive
 ```
 
 While-loop (nothing special here):
@@ -64,7 +64,12 @@ for i : some_iterable:
 ```
 example:
 ```nim
-for i : 0 to 100:
+for i : 10:
+    print(i) # output number from 0 to 9
+```
+example #2:
+```nim
+for i : 10 to 100:
     print(i)
 ```
 
