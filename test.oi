@@ -9,8 +9,10 @@ script.VISIBLE_BOMB = VISIBLE_BOMB
 script.FLAG = FLAG
 
 matrix = []
-w = 6
-h = 4
+w = 12
+h = 12
+script.w = w
+script.h = h
 for i : h:
     row = []
     for j : w:
@@ -18,9 +20,21 @@ for i : h:
     matrix.add(row)
 
 func draw(matrix):
+    _print "   "
+    for x : script.w:
+        _print ' '
+        _print chr('a' + x)
+        _print ' '
+    print()
+    counter = 0
     for row : matrix:
+        if counter < 10:
+            _print ' '
+        _print counter
+        counter = counter + 1
+        _print '|'
         for cell : row:
-            _print '['
+            _print ' '
             if cell == 0:
                 _print ' '
             elif cell == script.UNKNOWN or cell == script.BOMB:
@@ -29,16 +43,38 @@ func draw(matrix):
                 _print '*'
             else:
                 _print cell
-            _print ']'
-        print()
+            _print ' '
+        print('|')
 
 func open(matrix, x, y):
     value = matrix[y][x]
     if value == script.BOMB:
         matrix[y][x] = script.VISIBLE_BOMB
         return
+    matrix[y][x] = 0
+    for ly : (-1) to 1:
+        for lx : (-1) to 1:
+            cx = x + lx
+            cy = y + ly
+            if (cx < 0) or (cy < 0) or (cx >= script.w) or (cy >= script.h):
+                continue
+            if matrix[cy][cx] in [script.BOMB, script.VISIBLE_BOMB]:
+                matrix[y][x] = matrix[y][x]+ 1
 
-matrix[2][3] = BOMB
+    if matrix[y][x] == 0:
+        for ly : (-1) to 1:
+            for lx : (-1) to 1:
+                cx = x + lx
+                cy = y + ly
+                if (cx < 0) or (cy < 0) or (cx >= script.w) or (cy >= script.h):
+                    continue
+                if matrix[cy][cx] == script.UNKNOWN:
+                    open(matrix, cx, cy)
 
-open(matrix, 3, 2)
+for y : h:
+    for  x : w:
+        if rand() < 0.1:
+            matrix[y][x] = BOMB
+
+open(matrix, 0, 0)
 draw(matrix)

@@ -85,7 +85,7 @@ public class BinaryOperator extends Value {
 
     @Override
     public String toString() {
-        return left+" "+operator+" "+right;
+        return "("+left+" "+operator+" "+right+")";
     }
 
     /**

@@ -13,7 +13,7 @@ public class Parser {
     private Source source;
     private final Position position;
     private char[] chars;
-    private boolean verbose = false;
+    private boolean verbose = true;
     public Parser() {
         position = new Position();
     }
@@ -876,7 +876,9 @@ public class Parser {
         pos++;
         for (; pos < chars.length; pos++) {
             char chr = chars[pos];
-            if (Character.isWhitespace(chr) || chr == '(' || chr == ',' || chr == '.' || chr == ')' || Operators.isOperatorChar(chr) || chr == '[' || chr == ':') {
+            if (Character.isWhitespace(chr) ||
+                    chr == '(' || chr == ',' || chr == '.' || chr == ')' ||
+                    Operators.isOperatorChar(chr) || chr == '[' || chr == ':' || chr == ']') {
                 String name = source.getSource().substring(position.pos, pos);
                 position.pos = pos;
                 skipWhitespace();

@@ -40,13 +40,13 @@ public class ForLoop extends Command {
                 Iterable<?> collection = (Iterable<?>) iterableValue;
                 for (Object object : collection) {
                     context.namespace.put(name, object);
-                    for (Command command : commands) {
-                        try {
+                    try {
+                        for (Command command : commands) {
                             command.execute(context);
                             if (context.returned)
                                 return;
-                        } catch (ContinueSignal ignored) {
                         }
+                    } catch (ContinueSignal ignored) {
                     }
                 }
             }
