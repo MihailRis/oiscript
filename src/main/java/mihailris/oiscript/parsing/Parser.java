@@ -13,6 +13,7 @@ public class Parser {
     private Source source;
     private final Position position;
     private char[] chars;
+    private boolean verbose = false;
     public Parser() {
         position = new Position();
     }
@@ -21,6 +22,10 @@ public class Parser {
         this.source = source;
         chars = source.getSource().toCharArray();
         position.reset();
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     private boolean expectIndent(int indent) throws ParsingException {
@@ -133,7 +138,6 @@ public class Parser {
                     if (command != null) {
                         initFunction.getCommands().add(command);
                     }
-                    // printTree(Collections.singletonList(command), 0);
                     seekNewLine(false);
                     break;
             }
@@ -145,13 +149,9 @@ public class Parser {
         String name = expectName();
         List<String> arguments = parseArgsBlock();
         List<Command> commands = requireBlock(false, false, 1);
-        /*if (source.getSource().length() > position.pos) {
-            System.out.println("REST:");
-            System.out.println(source.getSource().substring(position.pos));
-        } else {
-            System.out.println("END");
-        }*/
-        //printTree(commands, 0);
+        if (verbose) {
+            printDebug(commands);
+        }
         return new Function(name, arguments, commands);
     }
 
@@ -159,14 +159,20 @@ public class Parser {
         String name = expectName();
         List<String> arguments = parseArgsBlock();
         List<Command> commands = requireBlock(true, false, 1);
-        printTree(commands, 0);
-        /*if (source.getSource().length() > position.pos) {
+        if (verbose) {
+            printDebug(commands);
+        }
+        return new Procedure(name, arguments, commands);
+    }
+
+    private void printDebug(List<Command> commands) {
+        if (source.getSource().length() > position.pos) {
             System.out.println("REST:");
             System.out.println(source.getSource().substring(position.pos));
         } else {
             System.out.println("END");
-        }*/
-        return new Procedure(name, arguments, commands);
+        }
+        printTree(commands, 0);
     }
 
     private void printTree(ScriptComponent component) {
