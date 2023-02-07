@@ -584,6 +584,10 @@ public class Parser {
     }
 
     public Value parseValue(int indent) throws ParsingException {
+        return parseValue(indent, false);
+    }
+
+    public Value parseValue(int indent, boolean breakOnOp) throws ParsingException {
         skipWhitespace();
         Position startPos = position.cpy();
         String token = expectToken();
@@ -611,14 +615,14 @@ public class Parser {
             skipWhitespace();
             switch (token) {
                 case "-":
-                    return new Negative(parseValue(indent));
+                    return parseValue(indent, new Negative(parseValue(indent, true)), breakOnOp);
                 case "*":
-                    return new RestHolder(parseValue(indent));
+                    return parseValue(indent, new RestHolder(parseValue(indent, true)), breakOnOp);
                 case "+":
-                    return parseValue(indent);
+                    return parseValue(indent, true);
                 case "!":
                 case "not":
-                    return new Not(parseValue(indent));
+                    return new Not(parseValue(indent, true));
                 case "new": {
                     String className = expectName();
                     skipWhitespace();
@@ -637,25 +641,30 @@ public class Parser {
                     }
                     position.pos++;
                     Call callStdNew = new Call(new NamedValue("$new"), values);
-                    return parseValue(indent, callStdNew);
+                    return parseValue(indent, callStdNew, breakOnOp);
                 }
                 default:
                     throw new ParsingException(source, position, "not implemented for unary '"+token+"'");
             }
         }
         if (token.equals("[")) {
-            return parseValue(indent, parseList(indent));
+            return parseValue(indent, parseList(indent), breakOnOp);
         }
         if (token.equals("{")) {
-            return parseValue(indent, parseMap(indent));
+            return parseValue(indent, parseMap(indent), breakOnOp);
         }
-        return parseValue(indent, tokenToValue(token));
+        return parseValue(indent, tokenToValue(token), breakOnOp);
     }
 
     private Value parseValue(int indent, Value leftOperand) throws ParsingException {
+        return parseValue(indent, leftOperand, false);
+    }
+
+    private Value parseValue(int indent, Value leftOperand, boolean breakOnOp) throws ParsingException {
         skipWhitespace();
 
         if (!isNewLineOrEnd()) {
+            Position initpos = position.cpy();
             String next = expectToken();
             if (next.equals("?")) {
                 skipWhitespace();
@@ -668,6 +677,10 @@ public class Parser {
                 return new Ternary(leftOperand, valueA, valueB);
             }
             if (Operators.isOperator(next)) {
+                if (breakOnOp) {
+                    position.set(initpos);
+                    return leftOperand;
+                }
                 skipWhitespace();
                 Value rightOperand = parseValue(indent);
                 BinaryOperator binaryOperator = new BinaryOperator(leftOperand, next, rightOperand);
