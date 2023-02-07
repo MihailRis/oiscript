@@ -14,6 +14,7 @@ script.FLAG = FLAG
 matrix = []
 w = 26
 h = 26
+
 script.w = w
 script.h = h
 for i : h:
@@ -21,6 +22,9 @@ for i : h:
     for j : w:
         row.add(-1)
     matrix.add(row)
+
+func is_on_matrix(cx, cy):
+    return cx < 0 or cy < 0 or cx >= script.w or cy >= script.h
 
 func draw(matrix):
     _print "   "
@@ -60,7 +64,7 @@ func open(matrix, x, y):
         for lx : -1 to 1:
             cx = x + lx
             cy = y + ly
-            if cx < 0 or cy < 0 or cx >= script.w or cy >= script.h:
+            if is_on_matrix(cx, cy):
                 continue
             if matrix[cy][cx] in [script.BOMB, script.VISIBLE_BOMB]:
                 matrix[y][x] = matrix[y][x]+ 1
@@ -70,7 +74,7 @@ func open(matrix, x, y):
             for lx : -1 to 1:
                 cx = x + lx
                 cy = y + ly
-                if cx < 0 or cy < 0 or cx >= script.w or cy >= script.h:
+                if is_on_matrix(cx, cy):
                     continue
                 if matrix[cy][cx] == script.UNKNOWN:
                     open(matrix, cx, cy)
