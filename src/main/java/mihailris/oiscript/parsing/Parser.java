@@ -771,7 +771,7 @@ public class Parser {
         if (position.pos >= chars.length)
             return true;
         char c = chars[position.pos];
-        return c == '\n' || c == ')' || c == ']' || c == ':' || c == ',' || c == '}' || c == ';';
+        return c == '\n' || c == ')' || c == ']' || c == ':' || c == ',' || c == '}' || c == ';' || c == '#';
     }
 
     private boolean isEnd() {

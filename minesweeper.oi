@@ -1,0 +1,84 @@
+UNKNOWN = -1 # default state of empty cells
+# 0 - 8 - digit indicators
+# 9 - reserved
+BOMB = 10
+VISIBLE_BOMB = 11
+FLAG = 20
+
+# Making it accessable in functions
+script.UNKNOWN = UNKNOWN
+script.BOMB = BOMB
+script.VISIBLE_BOMB = VISIBLE_BOMB
+script.FLAG = FLAG
+
+matrix = []
+w = 26
+h = 26
+script.w = w
+script.h = h
+for i : h:
+    row = []
+    for j : w:
+        row.add(-1)
+    matrix.add(row)
+
+func draw(matrix):
+    _print "   "
+    for x : script.w:
+        _print ' '
+        _print chr('a' + x)
+        _print ' '
+    print()
+    counter = 0
+    for row : matrix:
+        if counter < 10:
+            _print ' '
+        _print counter
+        counter = counter + 1
+        _print '|'
+        for cell : row:
+            _print ' '
+            if cell == 0:
+                _print ' '
+            elif cell == script.UNKNOWN or cell == script.BOMB:
+                _print '#'
+            elif cell == script.VISIBLE_BOMB:
+                _print '*'
+            else:
+                _print cell
+            _print ' '
+        print('|')
+
+# Make cell info visible, calculate number indicator
+func open(matrix, x, y):
+    value = matrix[y][x]
+    if value == script.BOMB:
+        matrix[y][x] = script.VISIBLE_BOMB
+        return
+    matrix[y][x] = 0
+    for ly : -1 to 1:
+        for lx : -1 to 1:
+            cx = x + lx
+            cy = y + ly
+            if cx < 0 or cy < 0 or cx >= script.w or cy >= script.h:
+                continue
+            if matrix[cy][cx] in [script.BOMB, script.VISIBLE_BOMB]:
+                matrix[y][x] = matrix[y][x]+ 1
+
+    if matrix[y][x] == 0:
+        for ly : -1 to 1:
+            for lx : -1 to 1:
+                cx = x + lx
+                cy = y + ly
+                if cx < 0 or cy < 0 or cx >= script.w or cy >= script.h:
+                    continue
+                if matrix[cy][cx] == script.UNKNOWN:
+                    open(matrix, cx, cy)
+
+for y : h:
+    for  x : w:
+        if rand() < 0.1:
+            matrix[y][x] = BOMB
+
+open(matrix, 0, 0)
+draw(matrix)
