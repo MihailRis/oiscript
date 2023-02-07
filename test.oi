@@ -1,9 +1,12 @@
-if 1:
-    if 0:
-        print("impossible")
-    print("das ist gut")
-else:
-    print("shit")
+UNKNOWN = -1
+BOMB = 10
+VISIBLE_BOMB = 11
+FLAG = 20
+
+script.UNKNOWN = UNKNOWN
+script.BOMB = BOMB
+script.VISIBLE_BOMB = VISIBLE_BOMB
+script.FLAG = FLAG
 
 matrix = []
 w = 6
@@ -11,7 +14,7 @@ h = 4
 for i : h:
     row = []
     for j : w:
-        row.add(0)
+        row.add(-1)
     matrix.add(row)
 
 func draw(matrix):
@@ -20,10 +23,22 @@ func draw(matrix):
             _print '['
             if cell == 0:
                 _print ' '
+            elif cell == script.UNKNOWN or cell == script.BOMB:
+                _print '#'
+            elif cell == script.VISIBLE_BOMB:
+                _print '*'
             else:
                 _print cell
             _print ']'
         print()
 
-matrix[2][1] = 9
+func open(matrix, x, y):
+    value = matrix[y][x]
+    if value == script.BOMB:
+        matrix[y][x] = script.VISIBLE_BOMB
+        return
+
+matrix[2][3] = BOMB
+
+open(matrix, 3, 2)
 draw(matrix)

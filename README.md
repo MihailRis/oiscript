@@ -45,7 +45,7 @@ syntax:
 
 ```
 and break continue elif else for func in is not or proc 
-return to while pass do skip wait
+return to while pass do skip wait and or
 ```
 
 types:

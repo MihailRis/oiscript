@@ -505,13 +505,17 @@ public class Parser {
         throw new IllegalStateException();
     }
 
-    private Command parseItemAssign(int indent, Value leftValue, Value indexValue, String operator) throws ParsingException {
+    private Command parseItemAssign(int indent,
+                                    Value leftValue, Value indexValue,
+                                    String operator) throws ParsingException {
         Value value = parseValue(indent);
         value = value.optimize();
         return new ItemAssignment(position.cpy(), leftValue, indexValue, operator, value);
     }
 
-    private Command parseAttributeAssign(int indent, Value source, String name, String operator) throws ParsingException {
+    private Command parseAttributeAssign(int indent,
+                                         Value source, String name,
+                                         String operator) throws ParsingException {
         Value value = parseValue(indent);
         value = value.optimize();
         return new AttributeAssignment(position.cpy(), source, name, operator, value);
@@ -674,7 +678,8 @@ public class Parser {
                 skipWhitespace();
                 if (leftOperand instanceof NumberValue) {
                     String valueRight = expectToken();
-                    return parseValue(indent, NumberValue.choose(((NumberValue) leftOperand).value + Double.parseDouble("0."+valueRight)));
+                    return parseValue(indent, NumberValue.choose(
+                            ((NumberValue) leftOperand).value + Double.parseDouble("0."+valueRight)));
                 }
                 String attribute = expectName();
                 Value value = new AttributeValue(leftOperand, attribute);
@@ -871,7 +876,7 @@ public class Parser {
         pos++;
         for (; pos < chars.length; pos++) {
             char chr = chars[pos];
-            if (Character.isWhitespace(chr) || chr == '(' || chr == ',' || chr == '.' || chr == ')' || Operators.isOperatorChar(chr) || chr == '[') {
+            if (Character.isWhitespace(chr) || chr == '(' || chr == ',' || chr == '.' || chr == ')' || Operators.isOperatorChar(chr) || chr == '[' || chr == ':') {
                 String name = source.getSource().substring(position.pos, pos);
                 position.pos = pos;
                 skipWhitespace();

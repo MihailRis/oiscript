@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.OiNone;
 
 public class Return extends Command {
     private final Value value;
@@ -12,7 +13,11 @@ public class Return extends Command {
     @Override
     public void execute(Context context) {
         context.returned = true;
-        context.returnValue = value.eval(context);
+        if (value == null) {
+            context.returnValue = OiNone.NONE;
+        } else {
+            context.returnValue = value.eval(context);
+        }
     }
 
     @Override
