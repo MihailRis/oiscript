@@ -26,12 +26,12 @@ Engine works with java interfaces:
 
 ## Syntax:
 Hello-world:
-```oi
+```nim
 print("Hello, World!")
 ```
 
 Functions:
-```oi
+```nim
 func sum(values):
     result = 0
     for value : values:
@@ -109,7 +109,7 @@ Output:
 
 Using prototypes as classes:
 
-```oi
+```nim
 func User_init(self, name, age):
     self.name = name
     self.age = age
@@ -130,7 +130,7 @@ print(new User("unknown", 45).tostr())
 Where `User` is prototype for `user`.
 
 $new - is a function that may be implemented (without constructor args) in OiScript as:
-```oi
+```nim
 func oi_new(prototype):
   obj = {"_proto": prototype}
   obj._init()
@@ -317,7 +317,7 @@ script.init();
 #### Execute script function:
 
 Source:
-```oi
+```nim
 func factorial(num):
     if num == 1:
         return 1
