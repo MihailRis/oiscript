@@ -12,6 +12,7 @@ script.randint = (func(min, max):
     return int(rand() * (max - min + 1)) + min
 )
 
+# Returns true with probability defined as t / f
 script.randbool = (func(t, f):
     return rand() <= t / (t + f)
 )
