@@ -36,12 +36,7 @@ public class LibStd extends OiModule {
         set("rand", customFunc("rand", (context, args) -> random.nextFloat(), 0));
         set("len", customFunc("len", (context, args) -> {
             Object arg = args[0];
-            if (arg instanceof String) {
-                return ((String) arg).length();
-            } else if (arg instanceof Collection) {
-                return ((Collection<?>) arg).size();
-            }
-            return -1;
+            return OiUtils.length(arg);
         }, 1));
         set("vector", customFunc("vector", (context, args) -> {
             Object arg = args[0];

@@ -1,8 +1,10 @@
 package mihailris.oiscript;
 
+import mihailris.oiscript.parsing.Range;
 import mihailris.oiscript.runtime.Function;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static mihailris.oiscript.OiNone.NONE;
 
@@ -87,6 +89,20 @@ public class OiUtils {
         if (object == NONE)
             return null;
         return String.valueOf(object);
+    }
+
+    public static long length(Object object) {
+        if (object instanceof Collection) {
+            Collection<?> collection = (Collection<?>) object;
+            return collection.size();
+        }
+        if (object instanceof CharSequence) {
+            return ((CharSequence)object).length();
+        }
+        if (object instanceof Range) {
+            return ((Range) object).length();
+        }
+        return -1;
     }
 
     public static boolean isFloatingPoint(Object object) {

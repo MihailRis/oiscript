@@ -35,6 +35,10 @@ public class Range implements Iterable<Long> {
         return value >= start && value <= end;
     }
 
+    public long length() {
+        return Math.abs(end - start) + 1;
+    }
+
     public static class RangeIterator implements Iterator<Long> {
         private long i;
         private final long end;

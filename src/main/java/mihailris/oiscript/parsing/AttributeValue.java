@@ -2,6 +2,7 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
+import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.exceptions.AttributeException;
 
 import java.util.Collection;
@@ -19,13 +20,7 @@ public class AttributeValue extends Value {
     public Object eval(Context context) {
         Object object = source.eval(context);
         if (name.equals("len")) {
-            if (object instanceof Collection) {
-                Collection<?> collection = (Collection<?>) object;
-                return collection.size();
-            }
-            if (object instanceof CharSequence) {
-                return ((CharSequence)object).length();
-            }
+            return OiUtils.length(object);
         }
         OiObject oiobject = (OiObject) object;
         Object value = oiobject.get(name);

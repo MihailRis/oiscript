@@ -30,6 +30,57 @@ Hello-world:
 print("Hello, World!")
 ```
 
+Collections, strings, ranges length:
+
+via property (preferred):
+```nim
+print("text".len)
+```
+via function:
+```nim
+print(len("text"))
+```
+
+Ranges:
+```nim
+r = 2000 to 2023
+print(r.len) # output: 24
+print(r.fit(0.5)) # output: 2011.5
+print(r.unfit(1977)) # output -1.0
+for i : r:
+    print(r) # outputs all integers from 2000 to 2023 inclusive
+```
+
+While-loop (nothing special here):
+```nim
+while condition:
+    do something
+```
+
+For-each loop:
+```nim
+for i : some_iterable:
+    print(i)
+```
+example:
+```nim
+for i : 0 to 100:
+    print(i)
+```
+
+C-like loop:
+```nim
+for i=0; i<5; i+=1:
+    print(i)
+    
+# output:
+0
+1
+2
+3
+4
+```
+
 Functions:
 ```nim
 func sum(values):
@@ -38,6 +89,22 @@ func sum(values):
         result += value
     return result
 ```
+
+Anonymous functions:
+```nim
+sum = func(values):
+    result = 0
+    for value : values:
+        result += value
+    return result
+```
+also onlined functions:
+```nim
+a = (func(a, b) return a + b)(50, 43)
+print(a) # output: 93
+```
+
+(syntax will be compacted in future versions)
 
 <details>
     <summary>Language keywords list</summary>
