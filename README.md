@@ -8,6 +8,7 @@
   - [OiObject](#oiobject)
 - [Built-in modules](#built-in-modules):
   - [std](#std)
+  - [math](#math)
 - [API](#api)
   - [Single expressions](#single-expressions)
   - [Scripting](#scripting)
@@ -96,7 +97,7 @@ txt.....
 ### OiObject:
 Map<Object, Object> wrapper.
 
-```oi
+```python
 obj = {"fieldA": 174, "fieldB": 42}
 print(obj.fieldA)
 print(obj["fieldB"])
@@ -139,7 +140,10 @@ func oi_new(prototype):
 ## Built-in modules:
 
 ### **std** 
-(included automatically like `__builtins__` in Python):
+(included automatically like `__builtins__` in Python)
+
+<details>
+    <summary>Content</summary>
 
 ---
 `_version` -> str
@@ -207,15 +211,78 @@ Get System.nanoTime() but in seconds.
 ---
 `$new(prototype, *args)` -> OiObject
 
-Create new instance using prototype. 
+Create new instance using prototype.
 
-```oi
+```java
 new SomeProto(arg1, arg2, arg3)
 ```
 will be converted to 
-```
+```java
 std._included["$new"](SomeProto, arg1, arg2, arg3)
 ```
+
+</details>
+
+### **math**
+
+<details>
+    <summary>Content</summary>
+
+`PI` -> float
+PI constant value (java Math.PI)
+
+`PI = 3.14159265358979323846`
+
+---
+
+`E` -> float
+E constant value (java Math.E)
+
+`E = 2.7182818284590452354`
+
+---
+
+`sqrt(x)` -> float
+
+Calculate square root of x.
+
+---
+
+`sin(x)` -> float
+
+Sine function for x (radians).
+
+---
+
+`cos(x)` -> float
+
+Cosine function for x (radians).
+
+---
+
+`tan(x)` -> float
+
+Tangent function for x (radians).
+
+---
+
+`abs(x)` -> float
+
+Absolute x value
+
+---
+
+`sum(iterable)` -> float
+
+Calculate sum of ___iterable___ elements.
+
+---
+
+`avg(iterable)` -> float
+
+Calculate average value of ___iterable___ elements.
+
+</details>
 
 ## API
 ### Single expressions

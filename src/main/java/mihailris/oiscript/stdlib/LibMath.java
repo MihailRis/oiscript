@@ -1,6 +1,6 @@
 package mihailris.oiscript.stdlib;
 
-import mihailris.oiscript.OiObject;
+import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.runtime.OiModule;
 
 import static mihailris.oiscript.OiUtils.customFunc;
@@ -34,6 +34,12 @@ public class LibMath extends OiModule {
         set("ascos", customFunc("acos", (context, args) -> {
             double arg = ((Number)args[0]).doubleValue();
             return Math.acos(arg);
+        }, 1));
+        set("abs", customFunc("abs", (context, args) -> {
+            if (OiUtils.isFloatingPoint(args[0])){
+                return Math.abs(((Number)args[0]).doubleValue());
+            }
+            return Math.abs(((Number)args[0]).longValue());
         }, 1));
         set("PI", Math.PI);
         set("E", Math.E);
