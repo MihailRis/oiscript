@@ -14,6 +14,7 @@ script.FLAG = FLAG
 matrix = []
 w = 26
 h = 26
+bombs_count = 100
 
 script.w = w
 script.h = h
@@ -79,10 +80,14 @@ func open(matrix, x, y):
                 if matrix[cy][cx] == script.UNKNOWN:
                     open(matrix, cx, cy)
 
-for y : h:
-    for  x : w:
-        if rand() < 0.1:
-            matrix[y][x] = BOMB
+for i : bombs_count:
+    while true:
+        x = int(rand() * w)
+        y = int(rand() * h)
+        if matrix[y][x] == BOMB:
+            continue
+        matrix[y][x] = BOMB
+        break
 
 open(matrix, 0, 0)
 draw(matrix)
