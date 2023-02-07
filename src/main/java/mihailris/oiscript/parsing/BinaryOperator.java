@@ -103,13 +103,7 @@ public class BinaryOperator extends Value {
             int otherPriorety = Operators.operatorPriorety(rightBinOp.operator);
             if (otherPriorety <= priorety) {
                 Value rbleft = rightBinOp.left;
-                if (rbleft instanceof BinaryOperator) {
-                    rbleft = ((BinaryOperator) rbleft).correction();
-                }
                 Value rbright = rightBinOp.right;
-                if (rbright instanceof BinaryOperator) {
-                    rbright = ((BinaryOperator) rbright).correction();
-                }
                 return new BinaryOperator(new BinaryOperator(left, operator, rbleft), rightBinOp.operator, rbright).correction();
             }
         }
