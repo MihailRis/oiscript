@@ -75,15 +75,16 @@ for i : 10 to 100:
 
 C-like loop:
 ```nim
-for i=0; i<5; i+=1:
+for i=5; i>=0; i-=1:
     print(i)
     
 # output:
-0
-1
-2
-3
+5
 4
+3
+2
+1
+0
 ```
 
 Functions:
@@ -103,9 +104,9 @@ sum = func(values):
         result += value
     return result
 ```
-also onlined functions:
+also onelined functions:
 ```nim
-a = (func(a, b) return a + b)(50, 43)
+a = (func(a, b): return a + b)(50, 43)
 print(a) # output: 93
 ```
 
