@@ -18,7 +18,7 @@ Simple dynamic-typed scripting engine and language with Python-like syntax
 for use in Java applications.
 
 - Status: in-development
-- Version: 0.9.4
+- Version: 0.9.5
 
 Engine works with java interfaces:
 + Collection
