@@ -11,8 +11,14 @@ import java.nio.file.Files;
 public class Main {
     @SuppressWarnings("ConstantConditions")
     public static void main(String[] args) throws IOException {
+        if (args.length == 0) {
+            System.out.println("Script filename is not specified");
+            return;
+        }
+        String filename = args[0];
+
         System.out.println("OiScript v"+ OI.VERSION_STRING+" © MihailRis 2022-2023");
-        String sourceCode = new String(Files.readAllBytes(new File("test.oi").toPath()));
+        String sourceCode = new String(Files.readAllBytes(new File(filename).toPath()));
         boolean verbose = true;
         try {
             OiObject globals = new OiObject();
@@ -20,7 +26,7 @@ public class Main {
             globals.set("std", OI.moduleStd);
             globals.set("math", OI.moduleMath);
             globals.set("stdext", OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("stdext.oi").toPath())), globals, scripts));
-            Script script = OI.load("test.oi", sourceCode, globals, scripts);
+            Script script = OI.load(filename, sourceCode, globals, scripts);
             script.init();
             if (script.has("run")) {
                 System.out.println("========= Runtime =========");
