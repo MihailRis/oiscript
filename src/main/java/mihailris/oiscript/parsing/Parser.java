@@ -316,10 +316,16 @@ public class Parser {
                 Value condition = parseValue(indent);
                 List<Command> commands = requireBlock(procedure, loop, indent+1);
                 If branch = new If(cmdpos, condition, commands);
-                skipEmptyLines();
                 Position initpos = position.cpy();
+                skipEmptyLines();
                 while (!isEnd()) {
-                    initpos.set(position);
+                    skipWhitespace();
+                    if (position.pos - position.linepos < indent) {
+                        position.set(initpos);
+                        break;
+                    }
+                    if (position.pos - position.linepos > indent)
+                        throw new IllegalStateException(cmdpos.toString()+" "+ position);
                     String keyword = expectToken();
                     switch (keyword) {
                         case ELIF:

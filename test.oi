@@ -1,3 +1,10 @@
+if 1:
+    if 0:
+        print("impossible")
+    print("das ist gut")
+else:
+    print("shit")
+
 matrix = []
 w = 6
 h = 4
