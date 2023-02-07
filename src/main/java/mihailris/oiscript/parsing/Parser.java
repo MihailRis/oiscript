@@ -291,6 +291,12 @@ public class Parser {
     private Command parseCommand(boolean procedure, boolean loop, int indent) throws ParsingException {
         Position cmdpos = position.cpy();
         skipWhitespace();
+        if (isNextChar('#')) {
+            skipOnelineComment();
+            skipEmptyLines();
+            if (position.pos >= chars.length)
+                return null;
+        }
         String token = expectToken();
         skipWhitespace();
         switch (token) {

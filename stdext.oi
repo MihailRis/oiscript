@@ -1,3 +1,5 @@
+# Std module extension implemented in OI
+
 script.apply = (func(arr, fn):
     for i : arr:
         fn(i)
