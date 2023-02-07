@@ -67,7 +67,7 @@ func open(matrix, x, y):
             if is_on_matrix(cx, cy):
                 continue
             if matrix[cy][cx] in [script.BOMB, script.VISIBLE_BOMB]:
-                matrix[y][x] = matrix[y][x]+ 1
+                matrix[y][x] += 1
 
     if matrix[y][x] == 0:
         for ly : -1 to 1:
