@@ -59,6 +59,18 @@ public class OiStringMethods {
                 builder.append(string);
                 return builder.toString();
             }
+            case "rfill": {
+                int length = ((Number)args[0]).intValue();
+                char chr = (Character)args[1];
+                if (string.length() >= length)
+                    return string;
+                StringBuilder builder = new StringBuilder();
+                builder.append(string);
+                for (int i = 0; i < length-string.length(); i++) {
+                    builder.append(chr);
+                }
+                return builder.toString();
+            }
             default:
                 throw new NameException("str."+name);
         }

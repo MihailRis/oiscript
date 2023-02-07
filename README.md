@@ -85,6 +85,14 @@ Output:
 .....txt
 ```
 
+**string.rfill(length, placeholder_char)**
+```python
+print("txt".lfill(8, '.'))
+
+Output:
+txt.....
+```
+
 ### OiObject:
 Map<Object, Object> wrapper.
 
