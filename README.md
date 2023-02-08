@@ -51,6 +51,18 @@ for i : r:
     print(r) # output all integers from 2000 to 2023 inclusive
 ```
 
+IN operator:
+```nim
+if answer in ["yes", "y"]:
+    print("confirmed")
+```
+```nim
+rng = 0 to width-1
+if x in rng:
+  ...
+
+```
+
 While-loop (nothing special here):
 ```python
 while condition:
