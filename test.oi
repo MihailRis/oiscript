@@ -10,5 +10,3 @@ for i : iters:
         f += 1
 
 print(t/iters, f/iters)
-
-print("text".len)
