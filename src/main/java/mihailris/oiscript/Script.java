@@ -4,6 +4,7 @@ import mihailris.oiscript.exceptions.MemberNotDefinedException;
 import mihailris.oiscript.exceptions.NameException;
 import mihailris.oiscript.exceptions.RuntimeInterruptedException;
 import mihailris.oiscript.runtime.Function;
+import mihailris.oiscript.runtime.OiModule;
 import mihailris.oiscript.runtime.OiRunHandle;
 import mihailris.oiscript.runtime.Procedure;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 import static mihailris.oiscript.Keywords.INCLUDED;
 import static mihailris.oiscript.Keywords.INIT;
 
-public class Script extends OiObject {
+public class Script extends OiModule {
     private final String filename;
     private final Map<String, Function> functions;
     private final Map<String, Procedure> procedures;
