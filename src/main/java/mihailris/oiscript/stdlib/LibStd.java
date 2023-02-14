@@ -17,6 +17,7 @@ public class LibStd extends OiModule {
         set("_version", OI.VERSION_STRING);
         set("_out", System.out);
         set("_err", System.err);
+        set("_scripts", new OiObject());
         set("int", customFunc("int", (context, args) -> {
             Object arg = args[0];
             if (arg instanceof String) {
