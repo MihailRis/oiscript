@@ -20,7 +20,7 @@ for use in Java applications.
 - Status: in-development
 - Version: 0.9.5
 
-Engine works with java interfaces:
+Engine works natively with java interfaces:
 + Collection
 + Iterable
 
