@@ -4,6 +4,7 @@ import mihailris.oiscript.*;
 import mihailris.oiscript.runtime.Function;
 import mihailris.oiscript.runtime.OiModule;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Random;
 
@@ -14,6 +15,9 @@ public class LibStd extends OiModule {
 
     public LibStd() {
         set("_version", OI.VERSION_STRING);
+        set("_out", System.out);
+        set("_err", System.err);
+        set("_scripts", new OiObject());
         set("int", customFunc("int", (context, args) -> {
             Object arg = args[0];
             if (arg instanceof String) {
@@ -80,13 +84,14 @@ public class LibStd extends OiModule {
         }, 1));
         set("endl", System.lineSeparator());
         set("print", customFunc("print", (context, args) -> {
+            PrintStream out = (PrintStream) get("_out");
             for (int i = 0; i < args.length; i++) {
-                System.out.print(args[i]);
+                out.print(args[i]);
                 if (i+1 < args.length) {
-                    System.out.print(' ');
+                    out.print(' ');
                 }
             }
-            System.out.println();
+            out.println();
             return OiNone.NONE;
         }, -1));
 

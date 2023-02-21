@@ -22,11 +22,10 @@ public class Main {
         boolean verbose = true;
         try {
             OiObject globals = new OiObject();
-            OiObject scripts = new OiObject();
             globals.set("std", OI.moduleStd);
             globals.set("math", OI.moduleMath);
-            globals.set("stdext", OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("stdext.oi").toPath())), globals, scripts));
-            Script script = OI.load(filename, sourceCode, globals, scripts);
+            globals.set("stdext", OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("stdext.oi").toPath())), globals));
+            Script script = OI.load(filename, sourceCode, globals);
             script.init();
             if (script.has("run")) {
                 System.out.println("========= Runtime =========");

@@ -20,8 +20,16 @@ public class OI {
     public static final OiModule moduleStd = new LibStd();
     public static final OiModule moduleMath = new LibMath();
 
+    public static Script load(String filename, String source, OiObject globals) throws ParsingException {
+        return load(new Source(source, filename), globals, extractScripts(globals));
+    }
+
     public static Script load(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {
         return load(new Source(source, filename), globals, scripts);
+    }
+
+    public static Script loadAndInit(String filename, String source, OiObject globals) throws ParsingException {
+        return loadAndInit(filename, source, globals, extractScripts(globals));
     }
 
     public static Script loadAndInit(String filename, String source, OiObject globals, OiObject scripts) throws ParsingException {
@@ -37,7 +45,6 @@ public class OI {
         if (globals.has("std"))
             script.include((OiObject) globals.get("std"));
         if (scripts != null) {
-            script.set("scripts", scripts);
             scripts.set(source.getFilename().substring(0, source.getFilename().lastIndexOf(".oi")), script);
         }
         script.prepare();
@@ -66,5 +73,16 @@ public class OI {
             emptyContext.namespace.putAll(args);
             return eval(code);
         }
+    }
+
+    public static OiObject extractScripts(OiObject globals) {
+        Object object = globals.get("std");
+        if (object == null)
+            return null;
+        OiModule module = (OiModule) object;
+        object = module.get("_scripts");
+        if (object == null)
+            return null;
+        return (OiObject) object;
     }
 }

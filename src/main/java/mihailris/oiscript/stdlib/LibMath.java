@@ -4,6 +4,7 @@ import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.runtime.OiModule;
 
 import static mihailris.oiscript.OiUtils.customFunc;
+import static mihailris.oiscript.OiUtils.requreArgCount;
 
 public class LibMath extends OiModule {
     public LibMath() {
@@ -46,6 +47,18 @@ public class LibMath extends OiModule {
         set("min", customFunc("min", (context, args) -> {
             if (args.length <= 1)
                 throw new IllegalArgumentException("at least two arguments required");
+            if (args[0] instanceof Iterable) {
+                Iterable<?> iterable = (Iterable<?>) args[0];
+                requreArgCount("min", 1, args);
+                Number min = null;
+                for (Object arg : iterable){
+                    Number other = (Number) arg;
+                    if (min == null || other.doubleValue() < min.doubleValue()) {
+                        min = other;
+                    }
+                }
+                return min;
+            }
             Number min = (Number) args[0];
             for (int i = 1; i < args.length; i++) {
                 Number other = (Number) args[i];
@@ -59,6 +72,18 @@ public class LibMath extends OiModule {
         set("max", customFunc("max", (context, args) -> {
             if (args.length <= 1)
                 throw new IllegalArgumentException("at least two arguments required");
+            if (args[0] instanceof Iterable) {
+                Iterable<?> iterable = (Iterable<?>) args[0];
+                requreArgCount("max", 1, args);
+                Number max = null;
+                for (Object arg : iterable){
+                    Number other = (Number) arg;
+                    if (max == null || other.doubleValue() > max.doubleValue()) {
+                        max = other;
+                    }
+                }
+                return max;
+            }
             Number max = (Number) args[0];
             for (int i = 1; i < args.length; i++) {
                 Number other = (Number) args[i];
