@@ -2,6 +2,8 @@
 ## Table of Contents:
 - [About](#about)
 - [Syntax](#syntax)
+  - [Literals](#literals)
+  - [Operators](#operators)
 - [Oi Types](#oi-types)
   - [number](#number)
   - [string](#string)
@@ -25,7 +27,7 @@ Engine works natively with java interfaces:
 + Iterable
 
 ## Syntax:
-Literals:
+### Literals:
 
 str:
 ```nim
@@ -171,6 +173,31 @@ values:
 none true false nan
 ```
 </details>
+
+### Operators:
+**Binary operators:**
+
+Arithmetic:
+- `+` - addition
+- `-` - substraction
+- `*` - multiplication
+- `/` - floating-point division
+- `%` - modulus
+- `//` - integer division
+- `**` - exponentation
+
+Comparsion:
+- `<` - less than
+- `>` - greather than
+- `==` - equals
+- `!=` - not equals
+- `<=` - less or equal
+- `>=` - greather or equal
+
+Bitwise:
+- `<<` - left bitwise shift
+- `>>` - right bitwise shift with sign extension
+- `>>>` - right bitwise shift with zero extension
 
 ## Oi types:
 
