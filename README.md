@@ -277,6 +277,11 @@ Get list of OiObject attributes names.
 Generate pseudo-random number in range [0.0, 1.0].
 
 ---
+`shuffle(list)` -> same list
+
+Randomly shuffle list (mutates list, does not create new one)
+
+---
 `vector(iterable)` -> vector
 
 Create vector from Iterable object.

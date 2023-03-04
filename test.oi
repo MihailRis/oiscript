@@ -1,12 +1,4 @@
-include stdext
-
-t = 0
-f = 0
-iters = 100000
-for i : iters:
-    if randbool(1, 10):
-        t += 1
-    else:
-        f += 1
-
-print(t/iters, f/iters)
+n = 10
+values = vector(1 to 20)
+shuffle(values)
+print(values)

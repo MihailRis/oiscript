@@ -6,6 +6,8 @@ import mihailris.oiscript.runtime.OiModule;
 
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static mihailris.oiscript.OiUtils.*;
@@ -38,6 +40,11 @@ public class LibStd extends OiModule {
             return String.valueOf(arg);
         }, 1));
         set("rand", customFunc("rand", (context, args) -> random.nextFloat(), 0));
+        set("shuffle", customFunc("shuffle", (context, args) -> {
+            List<?> list = (List<?>) args[0];
+            Collections.shuffle(list, random);
+            return list;
+        }, 1));
         set("len", customFunc("len", (context, args) -> {
             Object arg = args[0];
             return OiUtils.length(arg);
