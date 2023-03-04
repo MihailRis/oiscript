@@ -37,7 +37,7 @@ raw string (without string-escapes):
 ```
 
 example of regex with raw string:
-```nim
+```
 print("Some any *random text*".replace(`\*(.*)\*`, "<cite>$1</cite>"))
 
 Output:
