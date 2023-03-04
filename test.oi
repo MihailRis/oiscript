@@ -1,1 +1,1 @@
-print("Some any *random text*".replace(`\*(.*)\*`, "<cite>$1</cite>"))
+print(`before \n after`)

@@ -44,6 +44,14 @@ Output:
 Some any <cite>random text</cite>
 ```
 
+other example:
+```nim
+print(`before \n after`)
+
+Output:
+before \n after
+```
+
 Hello-world:
 ```nim
 print("Hello, World!")
