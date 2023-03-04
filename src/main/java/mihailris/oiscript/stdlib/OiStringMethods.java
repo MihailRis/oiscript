@@ -27,6 +27,15 @@ public class OiStringMethods {
                 String[] substrings = string.split(String.valueOf(args[0]));
                 return OiVector.from(substrings);
             }
+            case "replace": {
+                String left = String.valueOf(args[0]);
+                String right = String.valueOf(args[1]);
+                return string.replaceAll(left, right);
+            }
+            case "matches": {
+                String regex = String.valueOf(args[0]);
+                return string.matches(regex);
+            }
             case "index": {
                 if (args.length == 1){
                     return string.indexOf(String.valueOf(args[0]));

@@ -771,6 +771,8 @@ public class Parser {
             return new StringValue(token.substring(1));
         } else if (token.startsWith("'")) {
             return new CharValue(token.charAt(1));
+        } else if (token.startsWith("`")) {
+            return new StringValue(token.substring(1));
         } else {
             throw new IllegalStateException(token);
         }
@@ -953,6 +955,16 @@ public class Parser {
         }
         if (chr == '"'){
             return parseString();
+        }
+        if (chr == '`') {
+            for (int i = position.pos+1; i < chars.length; i++) {
+                if (chars[i] == '`') {
+                    String literal = source.getSource().substring(position.pos, i);
+                    position.pos = i+1;
+                    return literal;
+                }
+            }
+            throw new ParsingException(source, position, "non-closed '`' literal");
         }
         if (Operators.isOperatorChar(chr)) {
             return readOperator();

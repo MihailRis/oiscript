@@ -25,6 +25,25 @@ Engine works natively with java interfaces:
 + Iterable
 
 ## Syntax:
+Literals:
+
+str:
+```nim
+"text"
+```
+raw string (without string-escapes):
+```nim
+`some regex`
+```
+
+example of regex with raw string:
+```nim
+print("Some any *random text*".replace(`\*(.*)\*`, "<cite>$1</cite>"))
+
+Output:
+Some any <cite>random text</cite>
+```
+
 Hello-world:
 ```nim
 print("Hello, World!")
@@ -171,13 +190,19 @@ Output:
 .....txt
 ```
 
-**string.rfill(length, placeholder_char)**
+**string.rfill(length, placeholder_char)** -> str
 ```python
 print("txt".lfill(8, '.'))
 
 Output:
 txt.....
 ```
+
+**string.matches(regex)** -> bool
+
+**string.replace(src, dst)** -> str
+
+Java String.replaceAll(...) wrapper.
 
 ### OiObject:
 Map<Object, Object> wrapper.
