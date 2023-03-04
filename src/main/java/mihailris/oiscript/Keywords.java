@@ -13,6 +13,8 @@ public class Keywords {
     public static final String WAIT = "wait";
     public static final String SKIP = "skip";
     public static final String RETURN = "return";
+    public static final String TRY = "try";
+    public static final String EXCEPT = "except";
     public static final String INCLUDE = "include";
     public static final String BREAK = "break";
     public static final String CONTINUE = "continue";
@@ -30,6 +32,9 @@ public class Keywords {
             case NONE:
             case SCRIPT:
             case FOR:
+            case TRY:
+            case WHILE:
+            case EXCEPT:
                 return true;
             default:
                 return false;

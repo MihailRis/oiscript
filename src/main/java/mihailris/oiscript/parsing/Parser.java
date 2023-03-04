@@ -392,6 +392,15 @@ public class Parser {
                 }
                 return whileloop;
             }
+            case TRY:
+                List<Command> commands = requireBlock(procedure, true, indent+1);
+                String exceptKeyword = expectKeyword();
+                if (!EXCEPT.equals(exceptKeyword)) {
+                    throw new ParsingException(source, position, "'"+EXCEPT+"' required");
+                }
+                String name = expectName();
+                List<Command> exceptCommands = requireBlock(procedure, true, indent+1);
+                return new TryExcept(position, commands, name, exceptCommands);
             case RETURN: {
                 Value value = null;
                 if (!isNewLineOrEnd())

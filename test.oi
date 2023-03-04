@@ -1,4 +1,4 @@
-n = 10
-values = vector(1 to 20)
-shuffle(values)
-print(values)
+try:
+    print(2 // 0)
+except e:
+    print(e)
