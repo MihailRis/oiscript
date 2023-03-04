@@ -78,6 +78,9 @@ public class BinaryOperator extends Value {
                     return object.has(leftValue);
                 }
             }
+            case ">>": return (((Number)leftValue).longValue() >> ((Number)rightValue).longValue());
+            case "<<": return (((Number)leftValue).longValue() << ((Number)rightValue).longValue());
+            case ">>>": return (((Number)leftValue).longValue() >>> ((Number)rightValue).longValue());
             default:
                 throw new IllegalStateException("not implemented for operator '"+operator+"'");
         }

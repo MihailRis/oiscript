@@ -15,6 +15,7 @@ public class Operators {
         switch (text) {
             case ">": case ">=": case "<=": case "==": case "<":
             case "+": case "-": case "?":
+            case ">>": case "<<": case ">>>":
             case "*": case "/": case "%": case "//": case "**":
             case "to": case "in": case "and": case "or": case "new":
                 return true;
@@ -25,11 +26,12 @@ public class Operators {
 
     public static int operatorPriorety(String text) {
         switch (text) {
-            case "?":
-            case "or": return 5;
-            case "and": return 6;
-            case ">": case ">=": case "==": case "<=": case "<": case "in": return 7;
-            case "to": return 8;
+            case "?": return 3;
+            case "or": return 4;
+            case "and": return 5;
+            case ">": case ">=": case "==": case "<=": case "<": case "in": return 6;
+            case "to": return 7;
+            case "<<": case ">>": case ">>>": return 8;
             case "+": case "-": return 9;
             case "*": case "/": case "%": case "//": return 10;
             case "**": return 11;
