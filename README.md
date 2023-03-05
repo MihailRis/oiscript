@@ -34,7 +34,7 @@ str:
 "text"
 ```
 raw string (without string-escapes):
-```nim
+```
 `some regex`
 ```
 
