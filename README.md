@@ -1,4 +1,4 @@
-# OiScript
+# OiScript <sub>v0.9.6 [indev]</sub>
 ## Table of Contents:
 - [About](#about)
 - [Syntax](#syntax)
@@ -18,9 +18,6 @@
 ## About:
 Simple dynamic-typed scripting engine and language with Python-like syntax 
 for use in Java applications.
-
-- Status: in-development
-- Version: 0.9.6
 
 Engine works natively with java interfaces:
 + Collection
