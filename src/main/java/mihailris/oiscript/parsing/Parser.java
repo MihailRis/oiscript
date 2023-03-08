@@ -759,6 +759,13 @@ public class Parser {
 
     private Value tokenToValue(String token) throws ParsingException {
         if (Character.isDigit(token.charAt(0))) {
+            if (token.startsWith("0x")) {
+                return NumberValue.choose(Long.parseLong(token.substring(2), 16));
+            } else if (token.startsWith("0o")) {
+                return NumberValue.choose(Long.parseLong(token.substring(2), 8));
+            } else if (token.startsWith("0b")) {
+                return NumberValue.choose(Long.parseLong(token.substring(2), 2));
+            }
             return NumberValue.choose(Double.parseDouble(token));
         } else if (token.equals(TRUE) || token.equals(FALSE)) {
             return new BooleanValue(token.equals(TRUE));

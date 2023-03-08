@@ -1,1 +1,1 @@
-print(bin(-1))
+print(0xff)
