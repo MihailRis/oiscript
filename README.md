@@ -374,7 +374,12 @@ Example: `some "text""` -> `"some \"text\"""`.
 Wraps strings into `""`.
 
 ---
-`nanotime()` -> float
+`nanotime()` -> int
+
+Get System.nanoTime()
+
+---
+`time()` -> float
 
 Get System.nanoTime() but in seconds.
 

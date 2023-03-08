@@ -1,1 +1,1 @@
-print(not true)
+print(time())

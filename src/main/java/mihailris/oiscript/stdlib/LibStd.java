@@ -110,7 +110,8 @@ public class LibStd extends OiModule {
             return OiNone.NONE;
         }, -1));
 
-        set("nanotime", customFunc("nanotime", (context, args) -> System.nanoTime() / 1000000000.0, 0));
+        set("time", customFunc("nanotime", (context, args) -> System.nanoTime() / 1000000000.0, 0));
+        set("nanotime", customFunc("nanotime", (context, args) -> System.nanoTime(), 0));
 
         set("_sync", customFunc("_sync", (context, args) -> {
             System.out.println("LibStd.LibStd SYNC "+Thread.currentThread());
