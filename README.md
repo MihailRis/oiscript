@@ -195,9 +195,18 @@ Comparsion:
 - `>=` - greather or equal
 
 Bitwise:
-- `<<` - left bitwise shift
-- `>>` - right bitwise shift with sign extension
-- `>>>` - right bitwise shift with zero extension
+- `&` - bitwise AND
+- `|` - bitwise OR
+- `<<` - bitwise shift left
+- `>>` - bitwise shift right with sign extension
+- `>>>` - bitwise shift right with zero extension
+
+**Unary operators:**
+- `-` - negate
+- `not` - logic NOT
+- `~` - bitwise inversion
+  
+  example: `~1 & 0xFF` -> 254
 
 ## Oi types:
 

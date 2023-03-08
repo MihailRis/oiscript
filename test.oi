@@ -1,1 +1,1 @@
-print(~1 & 0xFF)
+print(not true)
