@@ -1,1 +1,1 @@
-print(0xff)
+print(~1 & 0xFF)
