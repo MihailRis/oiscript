@@ -381,7 +381,7 @@ Get System.nanoTime()
 ---
 `time()` -> float
 
-Get System.nanoTime() but in seconds.
+Get System.nanoTime() in seconds.
 
 ---
 `$new(prototype, *args)` -> OiObject
