@@ -1,7 +1,7 @@
 package mihailris.oiscript;
 
 public class Operators {
-    public static final String OPERATOR_CHARS = "+-*/!<>=%";
+    public static final String OPERATOR_CHARS = "+-*/!<>=%~&|^";
 
     public static boolean isOperatorChar(char c) {
         return OPERATOR_CHARS.indexOf(c) >= 0;
@@ -15,7 +15,7 @@ public class Operators {
         switch (text) {
             case ">": case ">=": case "<=": case "==": case "<":
             case "+": case "-": case "?":
-            case ">>": case "<<": case ">>>":
+            case ">>": case "<<": case ">>>": case "&": case "|": case "^": case "~":
             case "*": case "/": case "%": case "//": case "**":
             case "to": case "in": case "and": case "or": case "new":
                 return true;
@@ -34,7 +34,8 @@ public class Operators {
             case "<<": case ">>": case ">>>": return 8;
             case "+": case "-": return 9;
             case "*": case "/": case "%": case "//": return 10;
-            case "**": return 11;
+            case "&": case "|": return 11;
+            case "**": return 12;
         }
         return -1;
     }
@@ -47,6 +48,7 @@ public class Operators {
             case "!":
             case "new":
             case "not":
+            case "~":
                 return true;
         }
         return false;

@@ -96,4 +96,9 @@ public class Arithmetics {
         Number nb = (Number) b;
         return na.longValue() / nb.longValue();
     }
+
+    public static Object bitInverse(Object a) {
+        Number number = (Number) a;
+        return ~number.longValue();
+    }
 }

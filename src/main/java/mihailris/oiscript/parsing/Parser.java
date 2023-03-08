@@ -631,6 +631,8 @@ public class Parser {
             switch (token) {
                 case "-":
                     return parseValue(indent, new Negative(parseValue(indent, true)), breakOnOp);
+                case "~":
+                    return parseValue(indent, new BitInverse(parseValue(indent, true)), breakOnOp);
                 case "*":
                     return parseValue(indent, new RestHolder(parseValue(indent, true)), breakOnOp);
                 case "+":
