@@ -1,1 +1,1 @@
-print(~1 & 255)
+print(bin(-1))

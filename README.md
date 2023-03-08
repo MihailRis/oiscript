@@ -317,6 +317,20 @@ Convert value to boolean.
 Convert value to string.
 
 ---
+`hex(value)` -> str
+
+Convert integer to hex-string.
+
+example: `1970` -> `7b2`
+
+---
+`bin(value)` -> str
+
+Convert integer to binary-string.
+
+example: `1970` -> `11110110010`
+
+---
 `int(value)` -> int
 
 Convert value to integer.

@@ -39,6 +39,14 @@ public class LibStd extends OiModule {
             Object arg = args[0];
             return String.valueOf(arg);
         }, 1));
+        set("hex", customFunc("hex", (context, args) -> {
+            Number arg = (Number) args[0];
+            return Long.toHexString(arg.longValue());
+        }, 1));
+        set("bin", customFunc("bin", (context, args) -> {
+            Number arg = (Number) args[0];
+            return Long.toBinaryString(arg.longValue());
+        }, 1));
         set("rand", customFunc("rand", (context, args) -> random.nextFloat(), 0));
         set("shuffle", customFunc("shuffle", (context, args) -> {
             List<?> list = (List<?>) args[0];
