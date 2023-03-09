@@ -1,2 +1,4 @@
-values = vector(0 to 20)
-print(values[5:])
+code = `print("test")`
+print(code.len)
+for c : code:
+    print(c)

@@ -49,6 +49,20 @@ public class ForLoop extends Command {
                     } catch (ContinueSignal ignored) {
                     }
                 }
+            } else if (iterableValue instanceof String) {
+                CharSequence sequence = (CharSequence) iterableValue;
+                for (int i = 0; i < sequence.length(); i++) {
+                    char c = sequence.charAt(i);
+                    context.namespace.put(name, c);
+                    try {
+                        for (Command command : commands) {
+                            command.execute(context);
+                            if (context.returned)
+                                return;
+                        }
+                    } catch (ContinueSignal ignored) {
+                    }
+                }
             }
         } catch (BreakSignal ignored){
         }
