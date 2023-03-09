@@ -2,6 +2,10 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiUtils;
+import mihailris.oiscript.OiVector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Slice extends Value {
     private final Value value;
@@ -55,12 +59,30 @@ public class Slice extends Value {
                         builder.append(string.charAt(i));
                     }
                 } else {
-                    for (int i = 0; i < end; i += step) {
+                    for (int i = start; i < end; i += step) {
                         builder.append(string.charAt(i));
                     }
                 }
                 return builder.toString();
             }
+        } else if (object instanceof List) {
+            List<?> list = (List<?>) object;
+            List<Object> dest;
+            if (object instanceof OiVector) {
+                dest = new OiVector();
+            } else {
+                dest = new ArrayList<>();
+            }
+            if (step < 0) {
+                for (int i = end-1; i >= 0; i += step) {
+                    dest.add(list.get(i));
+                }
+            } else {
+                for (int i = start; i < end; i += step) {
+                    dest.add(list.get(i));
+                }
+            }
+            return dest;
         }
         throw new IllegalArgumentException("not implemented for "+object.getClass());
     }
