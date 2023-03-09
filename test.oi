@@ -1,4 +1,2 @@
 code = `print("test")`
-print(code.len)
-for c : code:
-    print(c)
+n = code.len

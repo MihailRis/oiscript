@@ -4,7 +4,6 @@ import mihailris.oiscript.Context;
 import mihailris.oiscript.exceptions.BreakSignal;
 import mihailris.oiscript.exceptions.ContinueSignal;
 
-import java.util.Collection;
 import java.util.List;
 
 public class ForLoop extends Command {
