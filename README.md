@@ -1,4 +1,4 @@
-# OiScript <sub>v0.9.6 [indev]</sub>
+# OiScript <sub>v0.9.7 [indev]</sub>
 ## Table of Contents:
 - [About](#about)
 - [Syntax](#syntax)
