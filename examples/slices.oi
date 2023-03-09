@@ -5,3 +5,6 @@ text = "t r u e   i n f o r m a t i o n"
 print(text[::2])
 text = "around the world"
 print(text[11:])
+
+values = vector(0 to 20)
+print(values[5:])
