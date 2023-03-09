@@ -722,7 +722,14 @@ public class Parser {
                 return parsedValue;
             } else if (next.equals("[")) {
                 skipWhitespace();
+                if (chars[position.pos] == ':'){
+                    return parseSlice(indent, leftOperand, null);
+                }
                 Value indexValue = parseValue(indent);
+                skipWhitespace();
+                if (chars[position.pos] == ':') {
+                    return parseSlice(indent, leftOperand, indexValue);
+                }
                 position.pos++;
                 Value value = new ItemValue(leftOperand, indexValue);
                 skipWhitespace();
@@ -746,6 +753,34 @@ public class Parser {
             }
         }
         return leftOperand;
+    }
+
+    private Value parseSlice(int indent, Value leftValue, Value left) throws ParsingException {
+        position.pos++;
+        skipWhitespace();
+        Value right;
+        Value step = null;
+        if (chars[position.pos] == ':') {
+            right = null;
+        } else if (chars[position.pos] == ']') {
+            position.pos++;
+            return new Slice(leftValue, left, null, null);
+        } else {
+            right = parseValue(indent);
+        }
+        skipWhitespace();
+        if (chars[position.pos] == ':') {
+            position.pos++;
+            skipWhitespace();
+            if (chars[position.pos] != ']') {
+                step = parseValue(indent);
+                skipWhitespace();
+            }
+        }
+        if (chars[position.pos] != ']')
+            throw new ParsingException(source, position, "']' expected");
+        position.pos++;
+        return new Slice(leftValue, left, right, step);
     }
 
     private void requireCommaOrEnd() throws ParsingException {

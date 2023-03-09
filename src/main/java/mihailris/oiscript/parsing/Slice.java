@@ -1,0 +1,81 @@
+package mihailris.oiscript.parsing;
+
+import mihailris.oiscript.Context;
+import mihailris.oiscript.OiUtils;
+
+public class Slice extends Value {
+    private final Value value;
+    private final Value start;
+    private final Value end;
+    private final Value step;
+
+    public Slice(Value value, Value start, Value end, Value step) {
+        this.value = value;
+        this.start = start;
+        this.end = end;
+        this.step = step;
+    }
+
+    @Override
+    public Object eval(Context context) {
+        Object object = value.eval(context);
+
+        Object start = null;
+        Object end = null;
+        Object step = null;
+        if (this.start != null) start = this.start.eval(context);
+        if (this.end != null) end = this.end.eval(context);
+        if (this.step != null) step = this.step.eval(context);
+
+        return slice(object, start, end, step);
+    }
+
+    private static Object slice(Object object, Object startObject, Object endObject, Object stepObject) {
+        int length = (int) OiUtils.length(object);
+        int start = 0;
+        int end = length;
+        int step = 1;
+        if (startObject != null) start = OiUtils.asInt(startObject);
+        if (endObject != null) end = OiUtils.asInt(endObject);
+        if (stepObject != null) step = OiUtils.asInt(stepObject);
+        if (start < 0) start += length;
+        if (end < 0) end += length;
+        return _slice(object, start, end, step);
+    }
+
+    public static Object _slice(Object object, int start, int end, int step) {
+        if (object instanceof String) {
+            String string = (String) object;
+            if (step == 1) {
+                return string.substring(start, end);
+            } else {
+                StringBuilder builder = new StringBuilder();
+                if (step < 0) {
+                    for (int i = end-1; i >= 0; i += step) {
+                        builder.append(string.charAt(i));
+                    }
+                } else {
+                    for (int i = 0; i < end; i += step) {
+                        builder.append(string.charAt(i));
+                    }
+                }
+                return builder.toString();
+            }
+        }
+        throw new IllegalArgumentException("not implemented for "+object.getClass());
+    }
+
+    @Override
+    public String toString() {
+        String string = value+"[";
+        if (start != null)
+            string += start;
+        string += ":";
+        if (end != null)
+            string += end;
+        if (step != null) {
+            string += ":"+step;
+        }
+        return string + "]";
+    }
+}
