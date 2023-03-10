@@ -220,13 +220,13 @@ Python-like slices are supported:
 print("example"[2:])
 print("text"[::-1])
 print("timer"[2:4])
-print("info.txt"[:-4])
+print("information.txt"[:-4])
 
 Output:
 ample
 txet
 me
-info
+information
 ```
 
 
