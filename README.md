@@ -249,7 +249,7 @@ Output:
 
 **string.rfill(length, placeholder_char)** -> str
 ```python
-print("txt".lfill(8, '.'))
+print("txt".rfill(8, '.'))
 
 Output:
 txt.....
