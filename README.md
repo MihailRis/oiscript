@@ -215,7 +215,7 @@ Java Integer/Long and Float/Double types combined.
 Java String
 
 
-Python-like slices are supported:
+**Python-like slices are supported:**
 ```python
 print("example"[2:])
 print("text"[::-1])
