@@ -214,6 +214,22 @@ Java Integer/Long and Float/Double types combined.
 ### string:
 Java String
 
+
+Python-like slices are supported:
+```python
+print("example"[2:])
+print("text"[::-1])
+print("timer"[2:4])
+print("info.txt"[:-4])
+
+Output:
+ample
+txet
+me
+info
+```
+
+
 **string.join(iterable):**
 
 ```python

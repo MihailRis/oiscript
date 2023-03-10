@@ -1,2 +1,1 @@
-code = `print("test")`
-n = code.len
+print("info.txt"[:-4])
