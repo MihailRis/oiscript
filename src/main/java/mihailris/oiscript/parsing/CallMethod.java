@@ -29,12 +29,14 @@ public class CallMethod extends Value {
             OiObject oiObject = (OiObject) object;
             Function function = oiObject.getMethod(methodName);
             if (function != null) {
-                Object[] args = new Object[function.getArgs().size()];
+                Object[] args;
                 int index = 0;
-
-                if (!(oiObject instanceof OiModule))
+                if (oiObject instanceof OiModule) {
+                    args = new Object[values.size()];
+                } else {
+                    args = new Object[function.getArgs().size()];
                     args[index++] = oiObject;
-
+                }
                 for (Value argValue : values) {
                     if (argValue instanceof RestHolder) {
                         RestHolder restHolder = (RestHolder) argValue;
