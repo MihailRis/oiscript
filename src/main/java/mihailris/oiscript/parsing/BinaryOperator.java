@@ -114,4 +114,16 @@ public class BinaryOperator extends Value {
         }
         return this;
     }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public Value getLeft() {
+        return left;
+    }
+
+    public Value getRight() {
+        return right;
+    }
 }

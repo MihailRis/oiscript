@@ -8,7 +8,7 @@ import mihailris.oiscript.parsing.Value;
 import java.util.List;
 import java.util.Vector;
 
-public class Function extends Value implements ScriptComponent {
+public class Function extends Value implements ScriptComponent, OiExecutable {
     private final String name;
     private final List<String> args;
     private final List<Command> commands;
@@ -57,6 +57,7 @@ public class Function extends Value implements ScriptComponent {
         return this;
     }
 
+    @Override
     public Object execute(Context context, Object... args) {
         if (restArg != null){
             Vector<Object> rest = new Vector<>();

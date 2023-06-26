@@ -17,6 +17,10 @@ public class NamedValue extends Value {
         return object;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return name;

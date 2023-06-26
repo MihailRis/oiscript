@@ -26,4 +26,8 @@ public class Return extends Command {
             return super.toString()+"return";
         return super.toString()+"return "+value;
     }
+
+    public Value getValue() {
+        return value;
+    }
 }
