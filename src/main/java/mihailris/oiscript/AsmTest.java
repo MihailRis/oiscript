@@ -25,6 +25,6 @@ public class AsmTest {
         System.out.println(executable+" "+(System.currentTimeMillis()-tm)+" ms");
         tm = System.currentTimeMillis();
         Object result = executable.execute(new Context(script, new OiRunHandle(), 1), 10_000_000);
-        System.out.println(result+" in "+(System.currentTimeMillis()-tm)+" ms");
+        System.out.println(result+" ["+result.getClass().getSimpleName()+"] in "+(System.currentTimeMillis()-tm)+" ms");
     }
 }

@@ -8,6 +8,11 @@ public class OiVector extends ArrayList<Object> {
         super();
     }
 
+    public OiVector(Object... objects) {
+        super(objects.length);
+        this.addAll(Arrays.asList(objects));
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("[");

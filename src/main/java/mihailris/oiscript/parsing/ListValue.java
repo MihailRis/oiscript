@@ -2,7 +2,10 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiVector;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListValue extends Value {
@@ -10,6 +13,20 @@ public class ListValue extends Value {
 
     public ListValue(List<Value> values) {
         this.values = values;
+    }
+
+    public List<Value> getValues() {
+        return values;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        List<Value> temp = new ArrayList<>(values);
+        values.clear();
+        for (Value value : temp) {
+            values.add(value.build(context));
+        }
+        return super.build(context);
     }
 
     @Override

@@ -9,6 +9,10 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
+    public boolean getValue() {
+        return value;
+    }
+
     @Override
     public Object eval(Context context) {
         return value;

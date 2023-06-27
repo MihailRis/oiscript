@@ -1,5 +1,6 @@
 package mihailris.oiscript.jit;
 
+import mihailris.oiscript.OiNone;
 import mihailris.oiscript.RawFunction;
 import mihailris.oiscript.parsing.*;
 import mihailris.oiscript.runtime.OiExecutable;
@@ -69,8 +70,8 @@ public class  JitCompiler extends ClassLoader {
             Return ret = (Return) command;
             Value value = ret.getValue();
             if (value == null) {
-                methodVisitor.visitFieldInsn(Opcodes.ACONST_NULL, "mihailris.oiscript.OiNone", "NONE", null);
-                log("aconst_null");
+                methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
+                log("getstatic mihailris/oiscript/OiNone.NONE");
             } else {
                 compile(ret.getValue(), context, methodVisitor);
             }
@@ -285,15 +286,42 @@ public class  JitCompiler extends ClassLoader {
             IntegerValue integerValue = (IntegerValue) value;
             lconst(methodVisitor, integerValue.getValue());
             invokeStatic(methodVisitor, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
-        } else if (value instanceof Negative) {
+        } else if (value instanceof BooleanValue) {
+            BooleanValue booleanValue = (BooleanValue) value;
+            iconst(methodVisitor, booleanValue.getValue() ? 1 : 0);
+            invokeStatic(methodVisitor, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+        } else if (value instanceof NumberValue) {
+            NumberValue numberValue = (NumberValue) value;
+            dconst(methodVisitor, numberValue.getValue());
+            invokeStatic(methodVisitor, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
+        } else if (value instanceof OiNone) {
+            methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
+            log("getstatic mihailris/oiscript/OiNone.NONE");
+        } else if (value instanceof ListValue) {
+            ListValue listValue = (ListValue) value;
+            List<Value> values = listValue.getValues();
+            iconst(methodVisitor, values.size());
+            methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+            log("anewarray java/lang/Object");
+            for (int i = 0; i < values.size(); i++) {
+                methodVisitor.visitInsn(Opcodes.DUP);
+                log("dup");
+                iconst(methodVisitor, i);
+                compile(values.get(i), context, methodVisitor);
+                methodVisitor.visitInsn(Opcodes.AASTORE);
+                log("aastore");
+            }
+            invokeStatic(methodVisitor, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+        }
+        else if (value instanceof Negative) {
             Negative negative = (Negative) value;
             compile(negative.getValue(), context, methodVisitor);
             invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
-        } else {
+        }
+        else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }
     }
-
     private static final String CLS_ARITHMETICS = "mihailris/oiscript/Arithmetics";
     private static final String CLS_LOGICS = "mihailris/oiscript/Logics";
     private static final String DESC_ARITHMETICS = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
@@ -345,6 +373,11 @@ public class  JitCompiler extends ClassLoader {
             methodVisitor.visitLdcInsn(value);
             log("ldc2_w ", value);
         }
+    }
+
+    private void dconst(MethodVisitor methodVisitor, double value) {
+        methodVisitor.visitLdcInsn(value);
+        log("ldc2_w ", value);
     }
 
     private Class<?> defineClass(String name, byte[] b) {

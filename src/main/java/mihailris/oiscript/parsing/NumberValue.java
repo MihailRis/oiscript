@@ -9,6 +9,10 @@ public class NumberValue extends Value {
         this.value = value;
     }
 
+    public double getValue() {
+        return value;
+    }
+
     public static Value choose(double value) {
         if ((long)value == value)
             return new IntegerValue((long) value);
