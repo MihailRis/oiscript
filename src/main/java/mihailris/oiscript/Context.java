@@ -11,16 +11,22 @@ public class Context {
     public final Script script;
     public final OiRunHandle runHandle;
     public final Map<String, Object> namespace;
+    public final Object[] locals;
     public boolean returned;
     public Object returnValue;
     public OiObject included;
 
-    public Context(Script script, OiRunHandle runHandle) {
+    public Context(Script script, OiRunHandle runHandle, int locals) {
         this.script = script;
         this.runHandle = runHandle;
         this.namespace = new HashMap<>();
+        this.locals = new Object[locals];
 
         included = script.getOi(INCLUDED);
+    }
+
+    public Object get(int index) {
+        return locals[index];
     }
 
     public Object get(String name) {

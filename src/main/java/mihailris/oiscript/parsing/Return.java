@@ -2,9 +2,11 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiNone;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 public class Return extends Command {
-    private final Value value;
+    private Value value;
     public Return(Position position, Value value) {
         super(position);
         this.value = value;
@@ -18,6 +20,12 @@ public class Return extends Command {
         } else {
             context.returnValue = value.eval(context);
         }
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        value = value.build(context);
+        return super.build(context);
     }
 
     @Override

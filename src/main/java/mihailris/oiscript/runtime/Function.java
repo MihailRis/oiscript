@@ -1,29 +1,41 @@
 package mihailris.oiscript.runtime;
 
 import mihailris.oiscript.Context;
-import mihailris.oiscript.parsing.Command;
 import mihailris.oiscript.parsing.ScriptComponent;
 import mihailris.oiscript.parsing.Value;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-public class Function extends Value implements ScriptComponent, OiExecutable {
-    private final String name;
-    private final List<String> args;
-    private final List<Command> commands;
-    private String restArg;
+public abstract class Function extends Value implements ScriptComponent, OiExecutable {
+    protected final String name;
+    protected final List<String> args;
+    protected final List<String> locals;
+    protected String restArg;
     private boolean mainThreadOnly;
 
-    public Function(String name, List<String> args, List<Command> commands) {
+    protected Function(String name, List<String> args) {
         this.name = name;
         this.args = args;
-        this.commands = commands;
         if (args.size() > 0 && args.get(args.size()-1).charAt(0) == '*') {
             restArg = args.get(args.size() - 1);
             args.remove(restArg);
             restArg = restArg.substring(1);
         }
+        this.locals = new ArrayList<>(args);
+    }
+
+    public int getLocalIndex(String name) {
+        return locals.indexOf(name);
+    }
+
+    public int defineLocal(String name) {
+        int index;
+        if ((index = locals.indexOf(name)) != -1) {
+            return index;
+        }
+        locals.add(name);
+        return locals.size()-1;
     }
 
     @Override
@@ -48,39 +60,9 @@ public class Function extends Value implements ScriptComponent, OiExecutable {
         return restArg;
     }
 
-    public List<Command> getCommands() {
-        return commands;
-    }
-
     @Override
     public Object eval(Context context) {
         return this;
-    }
-
-    @Override
-    public Object execute(Context context, Object... args) {
-        if (restArg != null){
-            Vector<Object> rest = new Vector<>();
-            for (int i = this.args.size(); i < args.length; i++) {
-                rest.add(args[i]);
-            }
-            context.namespace.put(restArg, rest);
-        }
-        if (args.length != this.args.size()) {
-            if (args.length < this.args.size() || restArg == null){
-                throw new IllegalArgumentException("func " + name + ": " + this.args.size() + " arguments excepted, got " + args.length);
-            }
-        }
-        for (int i = 0; i < this.args.size(); i++) {
-            String argName = this.args.get(i);
-            context.namespace.put(argName, args[i]);
-        }
-        for (Command command : commands) {
-            command.execute(context);
-            if (context.returned)
-                return context.returnValue;
-        }
-        return 0;
     }
 
     public boolean isMainThreadOnly() {
@@ -89,5 +71,9 @@ public class Function extends Value implements ScriptComponent, OiExecutable {
 
     public void setMainThreadOnly(boolean mainThreadOnly) {
         this.mainThreadOnly = mainThreadOnly;
+    }
+
+    public List<String> getLocals() {
+        return locals;
     }
 }

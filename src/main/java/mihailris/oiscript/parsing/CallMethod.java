@@ -48,7 +48,7 @@ public class CallMethod extends Value {
                     }
                     args[index++] = argValue.eval(context);
                 }
-                return function.execute(new Context(context.script, context.runHandle), args);
+                return function.execute(new Context(context.script, context.runHandle, function.getLocals().size()), args);
             } else {
                 throw new MethodException(methodName);
             }

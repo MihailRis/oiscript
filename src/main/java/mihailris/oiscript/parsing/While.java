@@ -1,13 +1,15 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
 import mihailris.oiscript.exceptions.BreakSignal;
 import mihailris.oiscript.exceptions.ContinueSignal;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.List;
 
 public class While extends Command {
-    private final Value condition;
+    private Value condition;
     private final List<Command> commands;
     private Else elseBlock;
 
@@ -15,6 +17,12 @@ public class While extends Command {
         super(position);
         this.condition = condition;
         this.commands = commands;
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        condition = condition.build(context);
+        return super.build(context);
     }
 
     @Override
@@ -44,6 +52,10 @@ public class While extends Command {
             }
         } catch (BreakSignal ignored) {
         }
+    }
+
+    public Value getCondition() {
+        return condition;
     }
 
     public Else getElseBlock() {

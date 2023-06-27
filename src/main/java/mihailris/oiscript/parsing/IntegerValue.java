@@ -18,4 +18,8 @@ public class IntegerValue extends Value {
     public String toString() {
         return String.valueOf(value);
     }
+
+    public long getValue() {
+        return value;
+    }
 }

@@ -57,7 +57,7 @@ public class OI {
         evalScript.include(new LibStd());
         evalScript.include(new LibMath());
     }
-    static final Context emptyContext = new Context(evalScript, null);
+    static final Context emptyContext = new Context(evalScript, null, 32);
     public static Object eval(String code) throws ParsingException {
         synchronized (evalParser) {
             evalParser.setSource(new Source(code, "<eval>"));

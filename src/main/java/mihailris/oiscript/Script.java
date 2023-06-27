@@ -67,7 +67,7 @@ public class Script extends OiModule {
     }
 
     public Object execute(Function function, OiRunHandle runHandle, Object... args) {
-        Context context = new Context(this, runHandle);
+        Context context = new Context(this, runHandle, function.getLocals().size());
         return function.execute(context, args);
     }
 
@@ -80,7 +80,7 @@ public class Script extends OiModule {
     }
 
     public OiRunHandle start(Procedure procedure, OiRunHandle runHandle, Object... args) {
-        Context context = new Context(this, runHandle);
+        Context context = new Context(this, runHandle, 16);
         Thread thread = new Thread(() -> {
             try {
                 procedure.execute(context, args);

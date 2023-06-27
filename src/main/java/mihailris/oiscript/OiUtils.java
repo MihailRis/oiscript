@@ -21,7 +21,7 @@ public class OiUtils {
 
     public static Function customFunc(String name, Callback callback, int argc, boolean mainThread) {
         if (mainThread){
-            return new Function(name, new ArrayList<>(), null) {
+            return new Function(name, new ArrayList<>()) {
                 @Override
                 public Object execute(Context context, Object... args) {
                     if (argc >= 0)
@@ -34,7 +34,7 @@ public class OiUtils {
                 }
             };
         } else {
-            return new Function(name, new ArrayList<>(), null) {
+            return new Function(name, new ArrayList<>()) {
                 @Override
                 public Object execute(Context context, Object... args) {
                     if (argc >= 0)

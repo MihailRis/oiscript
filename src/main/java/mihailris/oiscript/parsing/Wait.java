@@ -1,6 +1,8 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 public class Wait extends Command {
     private final Value durationValue;

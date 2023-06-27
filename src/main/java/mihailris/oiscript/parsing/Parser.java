@@ -114,9 +114,9 @@ public class Parser {
                     break;
                 }
                 case FUNC: {
-                    Function function = parseFunction();
+                    RawFunction function = parseFunction();
                     if (function.getName().equals(INIT) && functions.containsKey(INIT)) {
-                        Function initFunction = functions.get(INIT);
+                        RawFunction initFunction = (RawFunction) functions.get(INIT);
                         initFunction.getCommands().addAll(function.getCommands());
                         break;
                     }
@@ -130,9 +130,9 @@ public class Parser {
                         break;
                     }
                     Command command = parseCommand(false, false, 0);
-                    Function initFunction = functions.get(INIT);
+                    RawFunction initFunction = (RawFunction) functions.get(INIT);
                     if (initFunction == null) {
-                        initFunction = new Function(INIT, new ArrayList<>(), new ArrayList<>());
+                        initFunction = new RawFunction(INIT, new ArrayList<>(), new ArrayList<>());
                         functions.put(INIT, initFunction);
                     }
                     if (command != null) {
@@ -142,17 +142,30 @@ public class Parser {
                     break;
             }
         }
+        for (Function function : functions.values()) {
+            RawFunction rawFunction = (RawFunction) function;
+            SemanticContext context = new SemanticContext(function);
+            List<Command> commands = rawFunction.getCommands();
+            List<Command> temp = new ArrayList<>(commands);
+            commands.clear();
+            for (Command command : temp) {
+                command = command.build(context);
+                if (command != null) {
+                    commands.add(command);
+                }
+            }
+        }
         return script;
     }
 
-    private Function parseFunction() throws ParsingException {
+    private RawFunction parseFunction() throws ParsingException {
         String name = expectName();
         List<String> arguments = parseArgsBlock();
         List<Command> commands = requireBlock(false, false, 1);
         if (verbose) {
             printDebug(commands);
         }
-        return new Function(name, arguments, commands);
+        return new RawFunction(name, arguments, commands);
     }
 
     private Procedure parseProcedure() throws ParsingException {
@@ -176,8 +189,8 @@ public class Parser {
     }
 
     private void printTree(ScriptComponent component) {
-        if (component instanceof Function) {
-            Function function = (Function) component;
+        if (component instanceof RawFunction) {
+            RawFunction function = (RawFunction) component;
             String argsStr = function.getArgs().toString();
             System.out.println("<func "+function.getName()+"("+argsStr.substring(1, argsStr.length()-1)+")>");
             printTree(function.getCommands(), 0);
@@ -618,7 +631,7 @@ public class Parser {
             skipWhitespace();
 
             List<Command> commands = requireBlock(false, true, indent+1);
-            return new Function(null, arguments, commands);
+            return new RawFunction(null, arguments, commands);
         }
         if (token.equals("(")) {
             ValueBlock valueBlock = new ValueBlock(parseValue(indent));

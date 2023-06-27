@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.*;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.Collection;
 
@@ -12,6 +13,13 @@ public class BinaryOperator extends Value {
         this.left = leftOperand;
         this.right = rightOperand;
         this.operator = operator;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        left = left.build(context);
+        right = right.build(context);
+        return super.build(context);
     }
 
     @Override
