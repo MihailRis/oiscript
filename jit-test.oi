@@ -1,5 +1,9 @@
 func square(a):
-    s = 0
-    for i : a:
-        s += i
-    return s
+    t = -10
+    if t > 0:
+        a += 1
+    elif t < 0:
+        a -= 1
+    else:
+        a = 0
+    return a

@@ -2,7 +2,6 @@ package mihailris.oiscript;
 
 import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.jit.JitCompiler;
-import mihailris.oiscript.jit.OiIntegerIterator;
 import mihailris.oiscript.runtime.OiExecutable;
 import mihailris.oiscript.runtime.OiRunHandle;
 
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class AsmTest {
-    public static OiIntegerIterator iterator;
     public static void main(String[] args) throws InstantiationException, IllegalAccessException, IOException, ParsingException {
         JitCompiler jitCompiler = new JitCompiler();
 

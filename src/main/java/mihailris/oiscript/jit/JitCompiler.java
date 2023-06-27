@@ -53,7 +53,7 @@ public class  JitCompiler extends ClassLoader {
             methodVisitor.visitInsn(Opcodes.ICONST_0);
             methodVisitor.visitInsn(Opcodes.AALOAD);
             methodVisitor.visitInsn(Opcodes.ARETURN);*/
-            methodVisitor.visitMaxs(2, context.newLocal());
+            methodVisitor.visitMaxs(3, context.newLocal());
             methodVisitor.visitEnd();
         }
 
@@ -88,7 +88,7 @@ public class  JitCompiler extends ClassLoader {
                 astore(methodVisitor, context, index, () -> {
                     aload(methodVisitor, context, index);
                     compile(value, context, methodVisitor);
-                    binaryOperation(methodVisitor, operator.substring(0, operator.length()-1));
+                    binaryOperation(methodVisitor, context, operator.substring(0, operator.length()-1));
                 });
             }
         } else if (command instanceof While) {
@@ -97,17 +97,14 @@ public class  JitCompiler extends ClassLoader {
             Label start = new Label();
             Label end = new Label();
             label(methodVisitor, start);
-            compile(condition, context, methodVisitor);
-            methodVisitor.visitJumpInsn(Opcodes.IFEQ, end);
-            log("ifeq "+end);
+            compileCondition(condition, context, methodVisitor);
+            ifeq(methodVisitor, end);
 
             for (Command subcommand : loop.getCommands()) {
                 compile(subcommand, context, methodVisitor);
             }
-            methodVisitor.visitJumpInsn(Opcodes.GOTO, start);
-            log("goto "+start);
+            jmp(methodVisitor, start);
             label(methodVisitor, end);
-        } else if (command instanceof Pass) {
         } else if (command instanceof ForLoop) {
             ForLoop forLoop = (ForLoop) command;
             int index = forLoop.getIndex();
@@ -122,63 +119,79 @@ public class  JitCompiler extends ClassLoader {
             label(methodVisitor, start);
             aload(methodVisitor, context, iteratorIndex);
             invokeInterface(methodVisitor, "java/util/Iterator", "hasNext", "()Z");
-            methodVisitor.visitJumpInsn(Opcodes.IFEQ, end);
-            log("ifeq "+end);
+            ifeq(methodVisitor, end);
 
             aload(methodVisitor, context, iteratorIndex);
 
-            astore(methodVisitor, context, index, () -> {
-                invokeInterface(methodVisitor, "java/util/Iterator", "next", "()Ljava/lang/Object;");
-            });
+            astore(methodVisitor, context, index, () ->
+                    invokeInterface(methodVisitor, "java/util/Iterator", "next", "()Ljava/lang/Object;"));
 
             for (Command subcommand : forLoop.getCommands()) {
                 compile(subcommand, context, methodVisitor);
             }
-            methodVisitor.visitJumpInsn(Opcodes.GOTO, start);
-            log("goto "+start);
+            jmp(methodVisitor, start);
 
             label(methodVisitor, end);
+        } else if (command instanceof If) {
+            If branch = (If) command;
+            Value condition = branch.getCondition();
+            List<Elif> elifs = branch.getElifs();
+            Else elseblock = branch.getElseBlock();
+            Label end = new Label();
+            Label next = new Label();
 
-            log("-------");
-            /*if (value instanceof IntegerValue && false) {
-                IntegerValue integerValue = (IntegerValue) value;
-                lconst(methodVisitor, 0);
-                methodVisitor.visitVarInsn(Opcodes.LSTORE, index);
-                log("lstore "+index);
+            compileCondition(condition, context, methodVisitor);
+            ifeq(methodVisitor, next);
+            for (Command subcommand : branch.getCommands()) {
+                compile(subcommand, context, methodVisitor);
+            }
+            if (elseblock != null || !elifs.isEmpty()) {
+                jmp(methodVisitor, end);
+            }
+            label(methodVisitor, next);
 
-                Label start = new Label();
-                Label end = new Label();
-                methodVisitor.visitLabel(start);
-                log(start);
-                methodVisitor.visitVarInsn(Opcodes.LLOAD, index);
-                log("lload "+index);
+            for (int i = 0; i < elifs.size(); i++) {
+                Elif elif = elifs.get(i);
+                next = new Label();
+                compileCondition(elif.getCondition(), context, methodVisitor);
+                ifeq(methodVisitor, next);
 
-                lconst(methodVisitor, integerValue.getValue());
-                methodVisitor.visitInsn(Opcodes.LCMP);
-                log("lcmp");
-                methodVisitor.visitJumpInsn(Opcodes.IFGE, end);
-                log("ifge "+end);
-                for (Command subcommand : forLoop.getCommands()) {
+                for (Command subcommand : elif.getCommands()) {
                     compile(subcommand, context, methodVisitor);
                 }
-                methodVisitor.visitVarInsn(Opcodes.LLOAD, index);
-                log("lload "+index);
-                lconst(methodVisitor, 1);
-                methodVisitor.visitInsn(Opcodes.LADD);
-                log("ladd");
-                methodVisitor.visitVarInsn(Opcodes.LSTORE, index);
-                log("lstore "+index);
-
-                methodVisitor.visitJumpInsn(Opcodes.GOTO, start);
-                log("goto "+start);
-                label(methodVisitor, end);
-
-                log("--------");
-            }*/
+                if (elseblock != null || i+1 < elifs.size()) {
+                    jmp(methodVisitor, end);
+                }
+                label(methodVisitor, next);
+            }
+            if (elseblock != null) {
+                for (Command subcommand : elseblock.getCommands()) {
+                    compile(subcommand, context, methodVisitor);
+                }
+            }
+            label(methodVisitor, end);
         }
-        else {
+        else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
         }
+    }
+
+    private void jmp(MethodVisitor methodVisitor, Label label) {
+        methodVisitor.visitJumpInsn(Opcodes.GOTO, label);
+        log("goto ", label);
+    }
+
+    private void ifeq(MethodVisitor methodVisitor, Label label) {
+        methodVisitor.visitJumpInsn(Opcodes.IFEQ, label);
+        log("ifeq ", label);
+    }
+
+    private void compileCondition(Value condition, CompilerContext context, MethodVisitor methodVisitor) {
+        compile(condition, context, methodVisitor);
+        if (context.getLastType() != CompilerContext.Type.BOOL) {
+            invokeStatic(methodVisitor, "mihailris/oiscript/Logics", "isTrue", "(Ljava/lang/Object;)Z");
+        }
+        context.setLastType(CompilerContext.Type.OBJECT);
     }
 
     private void label(MethodVisitor methodVisitor, Label label) {
@@ -188,12 +201,12 @@ public class  JitCompiler extends ClassLoader {
 
     private void invokeInterface(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
         methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, descriptor, true);
-        log("invokeinterface "+owner+"."+name+":"+descriptor);
+        log("invokeinterface ", owner+"."+name+":"+descriptor);
     }
 
     private void invokeStatic(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
         methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, descriptor, false);
-        log("invokestatic "+owner+"."+name+":"+descriptor);
+        log("invokestatic ", owner+"."+name+":"+descriptor);
     }
 
     private void aload(MethodVisitor methodVisitor, CompilerContext context, int index) {
@@ -206,7 +219,7 @@ public class  JitCompiler extends ClassLoader {
             log("aaload");
         } else {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, index - argc + 3);
-            log("aload "+(index - argc+3));
+            log("aload ", (index - argc+3));
         }
     }
 
@@ -222,12 +235,19 @@ public class  JitCompiler extends ClassLoader {
         } else {
             value.run();
             methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            log("astore "+(index - argc+3));
+            log("astore ", (index - argc+3));
         }
     }
 
     private void log(String text) {
-        System.out.println(";  " + text);
+        System.out.print(";  ");
+        System.out.println(text);
+    }
+
+    private void log(String text, Object arg) {
+        System.out.print(";  ");
+        System.out.print(text);
+        System.out.println(arg);
     }
 
     private void log(Label label) {
@@ -246,7 +266,7 @@ public class  JitCompiler extends ClassLoader {
         } else {
             compile(value, context, methodVisitor);
             methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            log("astore "+(index - argc+3));
+            log("astore ", (index - argc+3));
         }
     }
 
@@ -256,7 +276,7 @@ public class  JitCompiler extends ClassLoader {
             BinaryOperator operator = (BinaryOperator) value;
             compile(operator.getLeft(), context, methodVisitor);
             compile(operator.getRight(), context, methodVisitor);
-            binaryOperation(methodVisitor, operator.getOperator());
+            binaryOperation(methodVisitor, context, operator.getOperator());
         } else if (value instanceof LocalName) {
             LocalName variable = (LocalName) value;
             int index = variable.getIndex();
@@ -265,6 +285,10 @@ public class  JitCompiler extends ClassLoader {
             IntegerValue integerValue = (IntegerValue) value;
             lconst(methodVisitor, integerValue.getValue());
             invokeStatic(methodVisitor, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
+        } else if (value instanceof Negative) {
+            Negative negative = (Negative) value;
+            compile(negative.getValue(), context, methodVisitor);
+            invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
         } else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }
@@ -274,20 +298,22 @@ public class  JitCompiler extends ClassLoader {
     private static final String CLS_LOGICS = "mihailris/oiscript/Logics";
     private static final String DESC_ARITHMETICS = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
     private static final String DESC_LOGICS = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
-    private void binaryOperation(MethodVisitor methodVisitor, String operator) {
+    private void binaryOperation(MethodVisitor methodVisitor, CompilerContext context, String operator) {
         String method;
         String cls = CLS_ARITHMETICS;
         String descriptor = DESC_ARITHMETICS;
+        CompilerContext.Type type = CompilerContext.Type.OBJECT;
         switch (operator) {
             case "+": method = "add"; break;
             case "-": method = "subtract"; break;
             case "*": method = "multiply"; break;
-            case ">": method = "greather"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; break;
-            case "<": method = "less"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; break;
+            case ">": method = "greather"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; type = CompilerContext.Type.BOOL; break;
+            case "<": method = "less"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; type = CompilerContext.Type.BOOL; break;
             default:
                 throw new IllegalStateException("operator '"+operator+"' is not supported yet");
         }
         invokeStatic(methodVisitor, cls, method, descriptor);
+        context.setLastType(type);
     }
 
     private void iconst(MethodVisitor methodVisitor, int value) {
@@ -298,13 +324,13 @@ public class  JitCompiler extends ClassLoader {
             int opcode;
             if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
                 opcode = Opcodes.BIPUSH;
-                log("bipush "+value);
+                log("bipush ", value);
             } else if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
                 opcode = Opcodes.SIPUSH;
-                log("sipush "+value);
+                log("sipush ", value);
             } else {
                 methodVisitor.visitLdcInsn(value);
-                log("ldc "+value);
+                log("ldc ", value);
                 return;
             }
             methodVisitor.visitIntInsn(opcode, value);
@@ -312,12 +338,12 @@ public class  JitCompiler extends ClassLoader {
     }
 
     private void lconst(MethodVisitor methodVisitor, long value) {
-        if (value >= 0 && value <= 5) {
+        if (value >= 0 && value <= 1) {
             methodVisitor.visitInsn((int) (Opcodes.LCONST_0 + value));
-            log("lconst_"+value);
+            log("lconst_", value);
         } else {
             methodVisitor.visitLdcInsn(value);
-            log("ldc2_w "+value);
+            log("ldc2_w ", value);
         }
     }
 

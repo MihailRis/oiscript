@@ -3,9 +3,13 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 
 public class IntegerValue extends Value {
-    final long value;
+    long value;
 
     public IntegerValue(long value) {
+        this.value = value;
+    }
+
+    public void setValue(long value) {
         this.value = value;
     }
 

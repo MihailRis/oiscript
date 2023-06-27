@@ -2,12 +2,14 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.Logics;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class If extends Command {
-    private final Value condition;
+    private Value condition;
     private final List<Command> commands;
     private final List<Elif> elifs;
     private Else elseBlock;
@@ -16,6 +18,22 @@ public class If extends Command {
         this.condition = condition;
         this.commands = commands;
         this.elifs = new ArrayList<>();
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        condition = condition.build(context);
+        for (Elif elif : elifs) {
+            elif.build(context);
+        }
+        if (elseBlock != null) {
+            elseBlock.build(context);
+        }
+        return super.build(context);
+    }
+
+    public Value getCondition() {
+        return condition;
     }
 
     public void add(Elif elif){
