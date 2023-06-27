@@ -312,6 +312,9 @@ public class  JitCompiler extends ClassLoader {
                 log("aastore");
             }
             invokeStatic(methodVisitor, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+        } else if (value instanceof StringValue) {
+            StringValue stringValue = (StringValue) value;
+            ldc(methodVisitor, stringValue.getValue());
         }
         else if (value instanceof Negative) {
             Negative negative = (Negative) value;
@@ -322,6 +325,7 @@ public class  JitCompiler extends ClassLoader {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }
     }
+
     private static final String CLS_ARITHMETICS = "mihailris/oiscript/Arithmetics";
     private static final String CLS_LOGICS = "mihailris/oiscript/Logics";
     private static final String DESC_ARITHMETICS = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
@@ -378,6 +382,11 @@ public class  JitCompiler extends ClassLoader {
     private void dconst(MethodVisitor methodVisitor, double value) {
         methodVisitor.visitLdcInsn(value);
         log("ldc2_w ", value);
+    }
+
+    private void ldc(MethodVisitor methodVisitor, Object value) {
+        methodVisitor.visitLdcInsn(value);
+        log("ldc ", value);
     }
 
     private Class<?> defineClass(String name, byte[] b) {

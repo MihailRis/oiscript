@@ -9,6 +9,10 @@ public class StringValue extends Value {
         this.string = string;
     }
 
+    public String getValue() {
+        return string;
+    }
+
     @Override
     public Object eval(Context context) {
         return string;
