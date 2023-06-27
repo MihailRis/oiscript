@@ -1,20 +1,41 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
 import mihailris.oiscript.exceptions.BreakSignal;
 import mihailris.oiscript.exceptions.ContinueSignal;
+import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.runtime.Function;
 
 import java.util.List;
 
 public class ForLoop extends Command {
     private final String name;
-    private final Value iterable;
+    private Value iterable;
     private final List<Command> commands;
+    private int index = -1;
+
     public ForLoop(Position position, String name, Value iterable, List<Command> commands) {
         super(position);
         this.name = name;
         this.iterable = iterable;
         this.commands = commands;
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        iterable = iterable.build(context);
+        Function function = context.getFunction();
+        index = function.defineLocal(name);
+        return super.build(context);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     @Override
@@ -75,5 +96,9 @@ public class ForLoop extends Command {
     @Override
     public List<Command> getCommands() {
         return commands;
+    }
+
+    public Value getIterable() {
+        return iterable;
     }
 }

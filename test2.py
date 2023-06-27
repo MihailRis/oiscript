@@ -1,6 +1,7 @@
 def test(n):
-    while n > 0:
-        n -= 1
-    return n
+    s = 0
+    for i in range(n):
+        s += i
+    return s
 
 print(test(10000000))

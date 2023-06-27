@@ -1,10 +1,12 @@
 package mihailris.oiscript;
 
+import mihailris.oiscript.jit.OiIntegerIterator;
 import mihailris.oiscript.parsing.Range;
 import mihailris.oiscript.runtime.Function;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import static mihailris.oiscript.OiNone.NONE;
 
@@ -107,5 +109,15 @@ public class OiUtils {
 
     public static boolean isFloatingPoint(Object object) {
         return object instanceof Double || object instanceof Float;
+    }
+
+    public static Iterator<?> iterator(Object object) {
+        if (object instanceof Number) {
+            return new OiIntegerIterator(((Number) object).longValue());
+        } else if (object instanceof Iterable) {
+            return ((Iterable<?>) object).iterator();
+        } else {
+            throw new RuntimeException(object.getClass().getSimpleName()+" is not iterable");
+        }
     }
 }
