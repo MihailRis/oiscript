@@ -12,7 +12,9 @@ import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
-public class  JitCompiler extends ClassLoader {
+public class JitCompiler extends ClassLoader {
+    private final JitLogger logger = new JitLogger();
+
     public OiExecutable compile(RawFunction function) throws InstantiationException, IllegalAccessException {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         String className = "oiscript_jit/Function$"+function.hashCode();
@@ -50,6 +52,8 @@ public class  JitCompiler extends ClassLoader {
             for (Command command : commands) {
                 compile(command, context, methodVisitor);
             }
+            returnNone(methodVisitor);
+
             methodVisitor.visitMaxs(3, context.newLocal());
             methodVisitor.visitEnd();
         }
@@ -61,18 +65,24 @@ public class  JitCompiler extends ClassLoader {
         return (OiExecutable) generatedClass.newInstance();
     }
 
+    private void returnNone(MethodVisitor methodVisitor) {
+        pushNone(methodVisitor);
+        methodVisitor.visitInsn(Opcodes.ARETURN);
+        logger.log("areturn");
+    }
+
     private void compile(Command command, CompilerContext context, MethodVisitor methodVisitor) {
         if (command instanceof Return) {
             Return ret = (Return) command;
             Value value = ret.getValue();
             if (value == null) {
-                methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
-                log("getstatic mihailris/oiscript/OiNone.NONE");
+                returnNone(methodVisitor);
+                return;
             } else {
                 compile(ret.getValue(), context, methodVisitor);
             }
             methodVisitor.visitInsn(Opcodes.ARETURN);
-            log("areturn");
+            logger.log("areturn");
         } else if (command instanceof LocalAssignment) {
             LocalAssignment assignment = (LocalAssignment) command;
             Value value = assignment.getValue();
@@ -99,8 +109,9 @@ public class  JitCompiler extends ClassLoader {
             compileCondition(condition, context, methodVisitor);
             ifeq(methodVisitor, end);
 
+            CompilerContext loopContext = context.loop(start, end);
             for (Command subcommand : loop.getCommands()) {
-                compile(subcommand, context, methodVisitor);
+                compile(subcommand, loopContext, methodVisitor);
             }
             jmp(methodVisitor, start);
             label(methodVisitor, end);
@@ -125,8 +136,9 @@ public class  JitCompiler extends ClassLoader {
             astore(methodVisitor, context, index, () ->
                     invokeInterface(methodVisitor, "java/util/Iterator", "next", "()Ljava/lang/Object;"));
 
+            CompilerContext loopContext = context.loop(start, end);
             for (Command subcommand : forLoop.getCommands()) {
-                compile(subcommand, context, methodVisitor);
+                compile(subcommand, loopContext, methodVisitor);
             }
             jmp(methodVisitor, start);
 
@@ -178,34 +190,53 @@ public class  JitCompiler extends ClassLoader {
             compileIndex(key, context, methodVisitor);
             compile(value, context, methodVisitor);
             invokeInterface(methodVisitor, "java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;");
-            methodVisitor.visitInsn(Opcodes.POP);
-            log("pop");
+            pop(methodVisitor);
         } else if (command instanceof ValueWrapper) {
             ValueWrapper wrapper = (ValueWrapper) command;
             compile(wrapper.getValue(), context, methodVisitor);
-            methodVisitor.visitInsn(Opcodes.POP);
-            log("pop");
+            pop(methodVisitor);
+        } else if (command instanceof Print) {
+            Print print = (Print) command;
+            Value value = print.getValue();
+            getstatic(methodVisitor, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            compile(value, context, methodVisitor);
+            invokeVirtual(methodVisitor, "java/io/PrintStream", "print", "(Ljava/lang/Object;)V");
+        } else if (command instanceof Break) {
+            logger.comment("break");
+            jmp(methodVisitor, context.getLoopEnd());
+        } else if (command instanceof Continue) {
+            logger.comment();
         }
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
         }
     }
 
+    private void pop(MethodVisitor methodVisitor) {
+        methodVisitor.visitInsn(Opcodes.POP);
+        logger.log("pop");
+    }
+
+    private void getstatic(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
+        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, owner, name, descriptor);
+        logger.log("getstatic ", owner+"."+name+":"+descriptor);
+    }
+
     private void compileIndex(Value value, CompilerContext context, MethodVisitor methodVisitor) {
         compile(value, context, methodVisitor);
         methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Number");
-        log("checkcast java/lang/Number");
+        logger.log("checkcast java/lang/Number");
         methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Number", "intValue", "()I", false);
     }
 
     private void jmp(MethodVisitor methodVisitor, Label label) {
         methodVisitor.visitJumpInsn(Opcodes.GOTO, label);
-        log("goto ", label);
+        logger.log("goto ", label);
     }
 
     private void ifeq(MethodVisitor methodVisitor, Label label) {
         methodVisitor.visitJumpInsn(Opcodes.IFEQ, label);
-        log("ifeq ", label);
+        logger.log("ifeq ", label);
     }
 
     private void compileCondition(Value condition, CompilerContext context, MethodVisitor methodVisitor) {
@@ -218,35 +249,35 @@ public class  JitCompiler extends ClassLoader {
 
     private void label(MethodVisitor methodVisitor, Label label) {
         methodVisitor.visitLabel(label);
-        log(label);
+        logger.log(label);
     }
 
     private void invokeInterface(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
         methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, descriptor, true);
-        log("invokeinterface ", owner+"."+name+":"+descriptor);
+        logger.log("invokeinterface ", owner+"."+name+":"+descriptor);
     }
 
     private void invokeVirtual(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
-        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, descriptor, true);
-        log("invokevirtual ", owner+"."+name+":"+descriptor);
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, descriptor, false);
+        logger.log("invokevirtual ", owner+"."+name+":"+descriptor);
     }
 
     private void invokeStatic(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
         methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, descriptor, false);
-        log("invokestatic ", owner+"."+name+":"+descriptor);
+        logger.log("invokestatic ", owner+"."+name+":"+descriptor);
     }
 
     private void aload(MethodVisitor methodVisitor, CompilerContext context, int index) {
         int argc = context.getFunction().getArgs().size();
         if (index < argc) {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            log("aload 2");
+            logger.log("aload 2");
             iconst(methodVisitor, index);
             methodVisitor.visitInsn(Opcodes.AALOAD);
-            log("aaload");
+            logger.log("aaload");
         } else {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, index - argc + 3);
-            log("aload ", (index - argc+3));
+            logger.log("aload ", (index - argc+3));
         }
     }
 
@@ -254,46 +285,31 @@ public class  JitCompiler extends ClassLoader {
         int argc = context.getFunction().getArgs().size();
         if (index < argc) {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            log("aload 2");
+            logger.log("aload 2");
             iconst(methodVisitor, index);
             value.run();
             methodVisitor.visitInsn(Opcodes.AASTORE);
-            log("aastore");
+            logger.log("aastore");
         } else {
             value.run();
             methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            log("astore ", (index - argc+3));
+            logger.log("astore ", (index - argc+3));
         }
-    }
-
-    private void log(String text) {
-        System.out.print(";  ");
-        System.out.println(text);
-    }
-
-    private void log(String text, Object arg) {
-        System.out.print(";  ");
-        System.out.print(text);
-        System.out.println(arg);
-    }
-
-    private void log(Label label) {
-        System.out.println("."+label+":");
     }
 
     private void astore(MethodVisitor methodVisitor, CompilerContext context, int index, Value value) {
         int argc = context.getFunction().getArgs().size();
         if (index < argc) {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            log("aload 2");
+            logger.log("aload 2");
             iconst(methodVisitor, index);
             compile(value, context, methodVisitor);
             methodVisitor.visitInsn(Opcodes.AASTORE);
-            log("aastore");
+            logger.log("aastore");
         } else {
             compile(value, context, methodVisitor);
             methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            log("astore ", (index - argc+3));
+            logger.log("astore ", (index - argc+3));
         }
     }
 
@@ -349,21 +365,21 @@ public class  JitCompiler extends ClassLoader {
             dconst(methodVisitor, numberValue.getValue());
             return OiType.DOUBLE;
         } else if (value instanceof OiNone) {
-            methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
-            log("getstatic mihailris/oiscript/OiNone.NONE");
+            pushNone(methodVisitor);
         } else if (value instanceof ListValue) {
+            logger.comment("list literal");
             ListValue listValue = (ListValue) value;
             List<Value> values = listValue.getValues();
             iconst(methodVisitor, values.size());
             methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            log("anewarray java/lang/Object");
+            logger.log("anewarray java/lang/Object");
             for (int i = 0; i < values.size(); i++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
-                log("dup");
+                logger.log("dup");
                 iconst(methodVisitor, i);
                 compile(values.get(i), context, methodVisitor);
                 methodVisitor.visitInsn(Opcodes.AASTORE);
-                log("aastore");
+                logger.log("aastore");
             }
             invokeStatic(methodVisitor, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
         } else if (value instanceof StringValue) {
@@ -375,11 +391,11 @@ public class  JitCompiler extends ClassLoader {
             OiType type = compileTyped(negative.getValue(), context, methodVisitor);
             if (type == OiType.LONG) {
                 methodVisitor.visitInsn(Opcodes.LNEG);
-                log("lneg");
+                logger.log("lneg");
                 return OiType.LONG;
             } else if (type == OiType.DOUBLE) {
                 methodVisitor.visitInsn(Opcodes.DNEG);
-                log("dneg");
+                logger.log("dneg");
                 return OiType.DOUBLE;
             } else {
                 invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
@@ -405,6 +421,8 @@ public class  JitCompiler extends ClassLoader {
         }
         else if (value instanceof NamedValue) {
             NamedValue namedValue = (NamedValue) value;
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+            logger.log("aload 1");
             String name = namedValue.getName();
             ldc(methodVisitor, name);
             invokeVirtual(methodVisitor, "mihailris/oiscript/Context", "get", "(Ljava/lang/String;)Ljava/lang/Object;");
@@ -414,27 +432,33 @@ public class  JitCompiler extends ClassLoader {
             Value source = call.getSource();
             List<Value> values = call.getValues();
 
+            logger.comment("calling function "+source);
+
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+            logger.log("aload 1");
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "script", "Lmihailris/oiscript/Script;");
+            logger.log("getfield ", "mihailris/oiscript/Context.script");
+
+            compile(source, context, methodVisitor);
+            methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, "mihailris/oiscript/runtime/Function");
+            logger.log("checkcast ", "mihailris/oiscript/runtime/Function");
+
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+            logger.log("aload 1");
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "runHandle", "Lmihailris/oiscript/runtime/OiRunHandle;");
+            logger.log("getfield ", "mihailris/oiscript/Context.runHandle");
+
             iconst(methodVisitor, values.size());
             methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            log("anewarray java/lang/Object");
+            logger.log("anewarray java/lang/Object");
             for (int i = 0; i < values.size(); i++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
-                log("dup");
+                logger.log("dup");
                 iconst(methodVisitor, i);
                 compile(values.get(i), context, methodVisitor);
                 methodVisitor.visitInsn(Opcodes.AASTORE);
-                log("aastore");
+                logger.log("aastore");
             }
-            compile(source, context, methodVisitor);
-
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            log("aload 1");
-            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "script", "Lmihailris/oiscript/Script;");
-            log("getfield ", "mihailris/oiscript/Context.script");
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            log("aload 1");
-            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "script", "Lmihailris/oiscript/runtime/OiRunHandle;");
-            log("getfield ", "mihailris/oiscript/Context.script");
 
             invokeVirtual(methodVisitor, "mihailris/oiscript/Script", "execute", "(Lmihailris/oiscript/runtime/Function;Lmihailris/oiscript/runtime/OiRunHandle;[Ljava/lang/Object;)Ljava/lang/Object;");
         }
@@ -444,10 +468,16 @@ public class  JitCompiler extends ClassLoader {
         return OiType.OBJECT;
     }
 
+    private void pushNone(MethodVisitor methodVisitor) {
+        logger.comment("push none");
+        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
+        logger.log("getstatic mihailris/oiscript/OiNone.NONE");
+    }
+
     private void cast(OiType a, OiType b, MethodVisitor methodVisitor) {
         if (a == OiType.DOUBLE && b == OiType.LONG) {
             methodVisitor.visitInsn(Opcodes.L2D);
-            log("l2d");
+            logger.log("l2d");
         }
     }
 
@@ -469,7 +499,7 @@ public class  JitCompiler extends ClassLoader {
                     throw new IllegalStateException("not implemented for "+operator);
             }
             methodVisitor.visitInsn(opcode);
-            log(opname);
+            logger.log(opname);
             return OiType.LONG;
         }
 
@@ -486,7 +516,7 @@ public class  JitCompiler extends ClassLoader {
                     throw new IllegalStateException("not implemented for "+operator);
             }
             methodVisitor.visitInsn(opcode);
-            log(opname);
+            logger.log(opname);
             return OiType.DOUBLE;
         }
         String method;
@@ -520,18 +550,18 @@ public class  JitCompiler extends ClassLoader {
     private void iconst(MethodVisitor methodVisitor, int value) {
         if (value >= 0 && value <= 5) {
             methodVisitor.visitInsn(Opcodes.ICONST_0 + value);
-            log("iconst_"+value);
+            logger.log("iconst_"+value);
         } else {
             int opcode;
             if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
                 opcode = Opcodes.BIPUSH;
-                log("bipush ", value);
+                logger.log("bipush ", value);
             } else if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
                 opcode = Opcodes.SIPUSH;
-                log("sipush ", value);
+                logger.log("sipush ", value);
             } else {
                 methodVisitor.visitLdcInsn(value);
-                log("ldc ", value);
+                logger.log("ldc ", value);
                 return;
             }
             methodVisitor.visitIntInsn(opcode, value);
@@ -541,21 +571,21 @@ public class  JitCompiler extends ClassLoader {
     private void lconst(MethodVisitor methodVisitor, long value) {
         if (value >= 0 && value <= 1) {
             methodVisitor.visitInsn((int) (Opcodes.LCONST_0 + value));
-            log("lconst_", value);
+            logger.log("lconst_", value);
         } else {
             methodVisitor.visitLdcInsn(value);
-            log("ldc2_w ", value);
+            logger.log("ldc2_w ", value);
         }
     }
 
     private void dconst(MethodVisitor methodVisitor, double value) {
         methodVisitor.visitLdcInsn(value);
-        log("ldc2_w ", value);
+        logger.log("ldc2_w ", value);
     }
 
     private void ldc(MethodVisitor methodVisitor, Object value) {
         methodVisitor.visitLdcInsn(value);
-        log("ldc ", value);
+        logger.log("ldc ", value);
     }
 
     private Class<?> defineClass(String name, byte[] b) {

@@ -9,6 +9,10 @@ public class Print extends Command {
         this.value = value;
     }
 
+    public Value getValue() {
+        return value;
+    }
+
     @Override
     public void execute(Context context) {
         Object object = value.eval(context);

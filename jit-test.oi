@@ -1,6 +1,10 @@
 func square(values):
-    print(values)
-    return none
+    x = 0
+    while true:
+        if x == 5:
+            break
+        x += 1
+    return x
 
 func qsort(values):
     unsorted = true

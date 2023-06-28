@@ -22,7 +22,7 @@ public class While extends Command {
     @Override
     public Command build(SemanticContext context) throws ParsingException {
         condition = condition.build(context);
-        return super.build(context);
+        return super.build(context.childLoop());
     }
 
     @Override
