@@ -205,7 +205,8 @@ public class JitCompiler extends ClassLoader {
             logger.comment("break");
             jmp(methodVisitor, context.getLoopEnd());
         } else if (command instanceof Continue) {
-            logger.comment();
+            logger.comment("continue");
+            jmp(methodVisitor, context.getLoopStart());
         }
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
