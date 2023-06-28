@@ -1,2 +1,2 @@
 func square(values):
-    return 5 in values
+    return -values.len

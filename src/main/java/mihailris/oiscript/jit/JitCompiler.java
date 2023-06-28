@@ -362,8 +362,18 @@ public class  JitCompiler extends ClassLoader {
         }
         else if (value instanceof Negative) {
             Negative negative = (Negative) value;
-            compile(negative.getValue(), context, methodVisitor);
-            invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            OiType type = compileTyped(negative.getValue(), context, methodVisitor);
+            if (type == OiType.LONG) {
+                methodVisitor.visitInsn(Opcodes.LNEG);
+                log("lneg");
+                return OiType.LONG;
+            } else if (type == OiType.DOUBLE) {
+                methodVisitor.visitInsn(Opcodes.DNEG);
+                log("dneg");
+                return OiType.DOUBLE;
+            } else {
+                invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            }
         }
         else if (value instanceof ItemValue) {
             ItemValue itemValue = (ItemValue) value;

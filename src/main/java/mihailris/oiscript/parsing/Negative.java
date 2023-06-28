@@ -2,9 +2,12 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Arithmetics;
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.jit.OiType;
 
 public class Negative extends Value {
-    private final Value value;
+    private Value value;
 
     public Negative(Value value) {
         this.value = value;
@@ -12,6 +15,17 @@ public class Negative extends Value {
 
     public Value getValue() {
         return value;
+    }
+
+    @Override
+    public OiType getType() {
+        return value.getType();
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        value = value.build(context);
+        return super.build(context);
     }
 
     @Override
