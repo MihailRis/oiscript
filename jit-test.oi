@@ -1,2 +1,4 @@
 func square(a):
-    return [5, 2, 7, a, "text"]
+    values = [5, 2, 7, a, "text"]
+    values[0] = none
+    return values

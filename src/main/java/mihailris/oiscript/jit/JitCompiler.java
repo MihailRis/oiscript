@@ -171,10 +171,28 @@ public class  JitCompiler extends ClassLoader {
                 }
             }
             label(methodVisitor, end);
+        } else if (command instanceof ItemAssignment) {
+            ItemAssignment assignment = (ItemAssignment) command;
+            Value source = assignment.getSource();
+            Value key = assignment.getKey();
+            Value value = assignment.getValue();
+            compile(source, context, methodVisitor);
+            compileIndex(key, context, methodVisitor);
+            compile(value, context, methodVisitor);
+            invokeInterface(methodVisitor, "java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;");
+            methodVisitor.visitInsn(Opcodes.POP);
+            log("pop");
         }
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
         }
+    }
+
+    private void compileIndex(Value value, CompilerContext context, MethodVisitor methodVisitor) {
+        compile(value, context, methodVisitor);
+        methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Number");
+        log("checkcast java/lang/Number");
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Number", "intValue", "()I", false);
     }
 
     private void jmp(MethodVisitor methodVisitor, Label label) {

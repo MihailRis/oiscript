@@ -3,14 +3,16 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Arithmetics;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.List;
 
 public class ItemAssignment extends Command {
-    private final Value source;
-    private final Value key;
+    private Value source;
+    private Value key;
     private final String operator;
-    private final Value value;
+    private Value value;
 
     public ItemAssignment(Position position, Value source, Value key, String operator, Value value) {
         super(position);
@@ -18,6 +20,30 @@ public class ItemAssignment extends Command {
         this.key = key;
         this.operator = operator;
         this.value = value;
+    }
+
+    public Value getValue() {
+        return value;
+    }
+
+    public Value getKey() {
+        return key;
+    }
+
+    public Value getSource() {
+        return source;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        source = source.build(context);
+        key = key.build(context);
+        value = value.build(context);
+        return super.build(context);
     }
 
     @SuppressWarnings("unchecked")
