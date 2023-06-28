@@ -3,17 +3,41 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
 import mihailris.oiscript.OiUtils;
+import mihailris.oiscript.SemanticContext;
 import mihailris.oiscript.exceptions.AttributeException;
-
-import java.util.Collection;
+import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.jit.OiType;
 
 public class AttributeValue extends Value {
-    private final Value source;
+    private Value source;
     private final String name;
+    private OiType type;
 
     public AttributeValue(Value source, String name) {
         this.source = source;
         this.name = name;
+    }
+
+    public Value getSource() {
+        return source;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public OiType getType() {
+        return type;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        source = source.build(context);
+        if (name.equals("len")) {
+            type = OiType.LONG;
+        }
+        return super.build(context);
     }
 
     @Override

@@ -2,6 +2,7 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.*;
 import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.jit.OiType;
 
 import java.util.Collection;
 
@@ -67,25 +68,7 @@ public class BinaryOperator extends Value {
             case "and": return Logics.and(leftValue, rightValue);
             case "or": return Logics.or(leftValue, rightValue);
             case "to": return new Range(((Number)leftValue).longValue(), ((Number)rightValue).longValue());
-            case "in": {
-                if (rightValue instanceof Collection) {
-                    Collection<?> collection = (Collection<?>) rightValue;
-                    return collection.contains(leftValue);
-                }
-                if (rightValue instanceof String) {
-                    String string = (String) rightValue;
-                    return string.contains(String.valueOf(leftValue));
-                }
-                if (rightValue instanceof Range) {
-                    Range range = (Range) rightValue;
-                    long value = ((Number) leftValue).longValue();
-                    return range.contains(value);
-                }
-                if (rightValue instanceof OiObject) {
-                    OiObject object = (OiObject) rightValue;
-                    return object.has(leftValue);
-                }
-            }
+            case "in": return Logics.in(leftValue, rightValue);
             case ">>": return (((Number)leftValue).longValue() >> ((Number)rightValue).longValue());
             case "<<": return (((Number)leftValue).longValue() << ((Number)rightValue).longValue());
             case ">>>": return (((Number)leftValue).longValue() >>> ((Number)rightValue).longValue());

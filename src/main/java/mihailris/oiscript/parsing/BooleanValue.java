@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.jit.OiType;
 
 public class BooleanValue extends Value {
     private final boolean value;
@@ -11,6 +12,11 @@ public class BooleanValue extends Value {
 
     public boolean getValue() {
         return value;
+    }
+
+    @Override
+    public OiType getType() {
+        return OiType.BOOL;
     }
 
     @Override

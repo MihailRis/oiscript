@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.jit.OiType;
 
 public class NumberValue extends Value {
     final double value;
@@ -11,6 +12,11 @@ public class NumberValue extends Value {
 
     public double getValue() {
         return value;
+    }
+
+    @Override
+    public OiType getType() {
+        return OiType.DOUBLE;
     }
 
     public static Value choose(double value) {

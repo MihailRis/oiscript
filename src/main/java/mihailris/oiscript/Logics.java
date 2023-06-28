@@ -1,5 +1,7 @@
 package mihailris.oiscript;
 
+import mihailris.oiscript.parsing.Range;
+
 import java.util.Collection;
 
 public class Logics {
@@ -14,6 +16,27 @@ public class Logics {
         } else if (object instanceof Collection) {
             return !((Collection<?>)object).isEmpty();
         } else return object != OiNone.NONE;
+    }
+
+    public static boolean in(Object leftValue, Object rightValue){
+        if (rightValue instanceof Collection) {
+            Collection<?> collection = (Collection<?>) rightValue;
+            return collection.contains(leftValue);
+        }
+        if (rightValue instanceof String) {
+            String string = (String) rightValue;
+            return string.contains(String.valueOf(leftValue));
+        }
+        if (rightValue instanceof Range) {
+            Range range = (Range) rightValue;
+            long value = ((Number) leftValue).longValue();
+            return range.contains(value);
+        }
+        if (rightValue instanceof OiObject) {
+            OiObject object = (OiObject) rightValue;
+            return object.has(leftValue);
+        }
+        return false;
     }
 
     public static boolean equals(Object leftValue, Object rightValue) {

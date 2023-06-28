@@ -1,6 +1,7 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.jit.OiType;
 
 public class IntegerValue extends Value {
     long value;
@@ -11,6 +12,11 @@ public class IntegerValue extends Value {
 
     public void setValue(long value) {
         this.value = value;
+    }
+
+    @Override
+    public OiType getType() {
+        return OiType.LONG;
     }
 
     @Override

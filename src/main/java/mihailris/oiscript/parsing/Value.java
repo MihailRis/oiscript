@@ -3,10 +3,15 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.SemanticContext;
 import mihailris.oiscript.exceptions.ParsingException;
+import mihailris.oiscript.jit.OiType;
 
 public class Value {
     public Value optimize() {
         return this;
+    }
+
+    public OiType getType() {
+        return OiType.OBJECT;
     }
 
     public Object eval(Context context) {

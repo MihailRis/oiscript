@@ -1,3 +1,2 @@
-func square(a):
-    values = [5, 2, 7, a, "text"]
-    return values[4]
+func square(values):
+    return 5 in values

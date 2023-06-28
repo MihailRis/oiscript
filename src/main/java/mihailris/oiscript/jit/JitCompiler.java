@@ -1,6 +1,7 @@
 package mihailris.oiscript.jit;
 
 import mihailris.oiscript.OiNone;
+import mihailris.oiscript.Operators;
 import mihailris.oiscript.RawFunction;
 import mihailris.oiscript.parsing.*;
 import mihailris.oiscript.runtime.OiExecutable;
@@ -49,11 +50,6 @@ public class  JitCompiler extends ClassLoader {
             for (Command command : commands) {
                 compile(command, context, methodVisitor);
             }
-
-            /*methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            methodVisitor.visitInsn(Opcodes.ICONST_0);
-            methodVisitor.visitInsn(Opcodes.AALOAD);
-            methodVisitor.visitInsn(Opcodes.ARETURN);*/
             methodVisitor.visitMaxs(3, context.newLocal());
             methodVisitor.visitEnd();
         }
@@ -88,8 +84,10 @@ public class  JitCompiler extends ClassLoader {
             } else {
                 astore(methodVisitor, context, index, () -> {
                     aload(methodVisitor, context, index);
-                    compile(value, context, methodVisitor);
-                    binaryOperation(methodVisitor, context, operator.substring(0, operator.length()-1));
+                    OiType tright = compileTyped(value, context, methodVisitor);
+                    boxValue(tright, methodVisitor);
+                    OiType type = binaryOperation(methodVisitor, context, operator.substring(0, operator.length()-1), OiType.OBJECT, tright);
+                    boxValue(type, methodVisitor);
                 });
             }
         } else if (command instanceof While) {
@@ -206,11 +204,11 @@ public class  JitCompiler extends ClassLoader {
     }
 
     private void compileCondition(Value condition, CompilerContext context, MethodVisitor methodVisitor) {
-        compile(condition, context, methodVisitor);
-        if (context.getLastType() != CompilerContext.Type.BOOL) {
+        OiType type = compileTyped(condition, context, methodVisitor);
+        if (type != OiType.BOOL) {
+            boxValue(type, methodVisitor);
             invokeStatic(methodVisitor, "mihailris/oiscript/Logics", "isTrue", "(Ljava/lang/Object;)Z");
         }
-        context.setLastType(CompilerContext.Type.OBJECT);
     }
 
     private void label(MethodVisitor methodVisitor, Label label) {
@@ -290,12 +288,40 @@ public class  JitCompiler extends ClassLoader {
     }
 
     private void compile(Value value, CompilerContext context, MethodVisitor methodVisitor) {
+        OiType type = compileTyped(value, context, methodVisitor);
+        if (type != OiType.OBJECT)
+            boxValue(type, methodVisitor);
+    }
+
+    private void boxValue(OiType type, MethodVisitor methodVisitor) {
+        switch (type) {
+            case BOOL: invokeStatic(methodVisitor, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"); break;
+            case LONG: invokeStatic(methodVisitor, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"); break;
+            case DOUBLE: invokeStatic(methodVisitor, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"); break;
+        }
+    }
+
+    private OiType compileTyped(Value value, CompilerContext context, MethodVisitor methodVisitor) {
         value = value.optimize();
         if (value instanceof BinaryOperator) {
             BinaryOperator operator = (BinaryOperator) value;
-            compile(operator.getLeft(), context, methodVisitor);
-            compile(operator.getRight(), context, methodVisitor);
-            binaryOperation(methodVisitor, context, operator.getOperator());
+            Value left = operator.getLeft();
+            Value right = operator.getRight();
+            OiType tleft = left.getType();
+            OiType tright = right.getType();
+
+            compileTyped(left, context, methodVisitor);
+            if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
+                boxValue(tleft, methodVisitor);
+            if (tleft == OiType.DOUBLE || tright == OiType.DOUBLE)
+                cast(tright, tleft, methodVisitor);
+
+            compileTyped(right, context, methodVisitor);
+            if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
+                boxValue(tright, methodVisitor);
+            if (tleft == OiType.DOUBLE)
+                cast(tright, tleft, methodVisitor);
+            return binaryOperation(methodVisitor, context, operator.getOperator(), tleft, tright);
         } else if (value instanceof LocalName) {
             LocalName variable = (LocalName) value;
             int index = variable.getIndex();
@@ -303,15 +329,15 @@ public class  JitCompiler extends ClassLoader {
         } else if (value instanceof IntegerValue) {
             IntegerValue integerValue = (IntegerValue) value;
             lconst(methodVisitor, integerValue.getValue());
-            invokeStatic(methodVisitor, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
+            return OiType.LONG;
         } else if (value instanceof BooleanValue) {
             BooleanValue booleanValue = (BooleanValue) value;
             iconst(methodVisitor, booleanValue.getValue() ? 1 : 0);
-            invokeStatic(methodVisitor, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+            return OiType.BOOL;
         } else if (value instanceof NumberValue) {
             NumberValue numberValue = (NumberValue) value;
             dconst(methodVisitor, numberValue.getValue());
-            invokeStatic(methodVisitor, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
+            return OiType.DOUBLE;
         } else if (value instanceof OiNone) {
             methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
             log("getstatic mihailris/oiscript/OiNone.NONE");
@@ -345,8 +371,27 @@ public class  JitCompiler extends ClassLoader {
             compileIndex(itemValue.getKey(), context, methodVisitor);
             invokeInterface(methodVisitor, "java/util/List", "get", "(I)Ljava/lang/Object;");
         }
+        else if (value instanceof AttributeValue) {
+            AttributeValue attributeValue = (AttributeValue) value;
+            Value source = attributeValue.getSource();
+            String name = attributeValue.getName();
+
+            compile(source, context, methodVisitor);
+            if (name.equals("len")) {
+                invokeStatic(methodVisitor, "mihailris/oiscript/OiUtils", "length", "(Ljava/lang/Object;)J");
+                return OiType.LONG;
+            }
+        }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
+        }
+        return OiType.OBJECT;
+    }
+
+    private void cast(OiType a, OiType b, MethodVisitor methodVisitor) {
+        if (a == OiType.DOUBLE && b == OiType.LONG) {
+            methodVisitor.visitInsn(Opcodes.L2D);
+            log("l2d");
         }
     }
 
@@ -354,22 +399,66 @@ public class  JitCompiler extends ClassLoader {
     private static final String CLS_LOGICS = "mihailris/oiscript/Logics";
     private static final String DESC_ARITHMETICS = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
     private static final String DESC_LOGICS = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
-    private void binaryOperation(MethodVisitor methodVisitor, CompilerContext context, String operator) {
+    private OiType binaryOperation(MethodVisitor methodVisitor, CompilerContext context, String operator, OiType tleft, OiType tright) {
+        if (tleft == OiType.LONG && tright == OiType.LONG) {
+            String opname;
+            int opcode;
+            switch (operator) {
+                case "+": opcode = Opcodes.LADD; opname = "ladd"; break;
+                case "-": opcode = Opcodes.LSUB; opname = "lsub"; break;
+                case "*": opcode = Opcodes.LMUL; opname = "lmul"; break;
+                case "/": opcode = Opcodes.LDIV; opname = "ldiv"; break;
+                case "%": opcode = Opcodes.LREM; opname = "lrem"; break;
+                default:
+                    throw new IllegalStateException("not implemented for "+operator);
+            }
+            methodVisitor.visitInsn(opcode);
+            log(opname);
+            return OiType.LONG;
+        }
+
+        if (tleft == OiType.DOUBLE || tright == OiType.DOUBLE) {
+            String opname;
+            int opcode;
+            switch (operator) {
+                case "+": opcode = Opcodes.DADD; opname = "dadd"; break;
+                case "-": opcode = Opcodes.DSUB; opname = "dsub"; break;
+                case "*": opcode = Opcodes.DMUL; opname = "dmul"; break;
+                case "/": opcode = Opcodes.DDIV; opname = "ddiv"; break;
+                case "%": opcode = Opcodes.DREM; opname = "drem"; break;
+                default:
+                    throw new IllegalStateException("not implemented for "+operator);
+            }
+            methodVisitor.visitInsn(opcode);
+            log(opname);
+            return OiType.DOUBLE;
+        }
         String method;
-        String cls = CLS_ARITHMETICS;
-        String descriptor = DESC_ARITHMETICS;
-        CompilerContext.Type type = CompilerContext.Type.OBJECT;
+        String descriptor = DESC_LOGICS;
+        if (Operators.isBooleanOperator(operator)) {
+            switch (operator) {
+                case ">": method = "greather"; break;
+                case "<": method = "less";  break;
+                case "==": method = "equals"; break;
+                case ">=": method = "gequals"; break;
+                case "<=": method = "lequals"; break;
+                case "in": method = "in"; descriptor = "(Ljava/lang/Object;Ljava/lang/Object;)Z"; break;
+                default:
+                    throw new IllegalStateException("boolean operator '"+operator+"' is not supported yet");
+            }
+            invokeStatic(methodVisitor, CLS_LOGICS, method, descriptor);
+            return OiType.BOOL;
+        }
         switch (operator) {
             case "+": method = "add"; break;
             case "-": method = "subtract"; break;
             case "*": method = "multiply"; break;
-            case ">": method = "greather"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; type = CompilerContext.Type.BOOL; break;
-            case "<": method = "less"; cls = CLS_LOGICS; descriptor = DESC_LOGICS; type = CompilerContext.Type.BOOL; break;
+            case "/": method = "divide"; break;
             default:
                 throw new IllegalStateException("operator '"+operator+"' is not supported yet");
         }
-        invokeStatic(methodVisitor, cls, method, descriptor);
-        context.setLastType(type);
+        invokeStatic(methodVisitor, CLS_ARITHMETICS, method, DESC_ARITHMETICS);
+        return OiType.OBJECT;
     }
 
     private void iconst(MethodVisitor methodVisitor, int value) {

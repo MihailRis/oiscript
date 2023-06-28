@@ -11,6 +11,15 @@ public class Operators {
         return (c == '-' && prev != c) || (c == '+' && prev != c);
     }
 
+    public static boolean isBooleanOperator(String operator) {
+        switch (operator) {
+            case ">": case ">=": case "<=": case "==": case "<": case "in":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static boolean isOperator(String text) {
         switch (text) {
             case ">": case ">=": case "<=": case "==": case "<":
