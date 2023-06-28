@@ -1,2 +1,15 @@
 func square(values):
-    return -values.len
+    print(values)
+    return none
+
+func qsort(values):
+    unsorted = true
+    while unsorted:
+        unsorted = false
+        for i : values.len-1:
+            if values[i] < values[i+1]:
+                tmp = values[i+1]
+                values[i+1] = values[i]
+                values[i] = tmp
+                unsorted = true
+    return values

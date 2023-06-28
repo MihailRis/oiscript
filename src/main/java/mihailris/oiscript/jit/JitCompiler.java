@@ -180,6 +180,11 @@ public class  JitCompiler extends ClassLoader {
             invokeInterface(methodVisitor, "java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;");
             methodVisitor.visitInsn(Opcodes.POP);
             log("pop");
+        } else if (command instanceof ValueWrapper) {
+            ValueWrapper wrapper = (ValueWrapper) command;
+            compile(wrapper.getValue(), context, methodVisitor);
+            methodVisitor.visitInsn(Opcodes.POP);
+            log("pop");
         }
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
@@ -219,6 +224,11 @@ public class  JitCompiler extends ClassLoader {
     private void invokeInterface(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
         methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, descriptor, true);
         log("invokeinterface ", owner+"."+name+":"+descriptor);
+    }
+
+    private void invokeVirtual(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, descriptor, true);
+        log("invokevirtual ", owner+"."+name+":"+descriptor);
     }
 
     private void invokeStatic(MethodVisitor methodVisitor, String owner, String name, String descriptor) {
@@ -391,6 +401,42 @@ public class  JitCompiler extends ClassLoader {
                 invokeStatic(methodVisitor, "mihailris/oiscript/OiUtils", "length", "(Ljava/lang/Object;)J");
                 return OiType.LONG;
             }
+            throw new IllegalStateException("not implemented for "+source+"->"+name);
+        }
+        else if (value instanceof NamedValue) {
+            NamedValue namedValue = (NamedValue) value;
+            String name = namedValue.getName();
+            ldc(methodVisitor, name);
+            invokeVirtual(methodVisitor, "mihailris/oiscript/Context", "get", "(Ljava/lang/String;)Ljava/lang/Object;");
+        }
+        else if (value instanceof Call) {
+            Call call = (Call) value;
+            Value source = call.getSource();
+            List<Value> values = call.getValues();
+
+            iconst(methodVisitor, values.size());
+            methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+            log("anewarray java/lang/Object");
+            for (int i = 0; i < values.size(); i++) {
+                methodVisitor.visitInsn(Opcodes.DUP);
+                log("dup");
+                iconst(methodVisitor, i);
+                compile(values.get(i), context, methodVisitor);
+                methodVisitor.visitInsn(Opcodes.AASTORE);
+                log("aastore");
+            }
+            compile(source, context, methodVisitor);
+
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+            log("aload 1");
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "script", "Lmihailris/oiscript/Script;");
+            log("getfield ", "mihailris/oiscript/Context.script");
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+            log("aload 1");
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, "mihailris/oiscript/Context", "script", "Lmihailris/oiscript/runtime/OiRunHandle;");
+            log("getfield ", "mihailris/oiscript/Context.script");
+
+            invokeVirtual(methodVisitor, "mihailris/oiscript/Script", "execute", "(Lmihailris/oiscript/runtime/Function;Lmihailris/oiscript/runtime/OiRunHandle;[Ljava/lang/Object;)Ljava/lang/Object;");
         }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");

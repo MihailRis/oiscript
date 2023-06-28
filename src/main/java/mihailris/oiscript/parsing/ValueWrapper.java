@@ -1,13 +1,25 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
 import mihailris.oiscript.exceptions.OiRuntimeException;
+import mihailris.oiscript.exceptions.ParsingException;
 
 public class ValueWrapper extends Command {
-    private final Value value;
+    private Value value;
     public ValueWrapper(Position position, Value value) {
         super(position);
         this.value = value;
+    }
+
+    public Value getValue() {
+        return value;
+    }
+
+    @Override
+    public Command build(SemanticContext context) throws ParsingException {
+        value = value.build(context);
+        return super.build(context);
     }
 
     @Override

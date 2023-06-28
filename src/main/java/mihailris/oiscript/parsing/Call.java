@@ -1,8 +1,11 @@
 package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.runtime.Function;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,6 +24,16 @@ public class Call extends Value {
 
     public Value getSource() {
         return source;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        List<Value> temp = new ArrayList<>(values);
+        values.clear();
+        for (Value value : temp) {
+            values.add(value.build(context));
+        }
+        return super.build(context);
     }
 
     @Override
