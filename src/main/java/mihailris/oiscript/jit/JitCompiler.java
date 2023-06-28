@@ -339,6 +339,12 @@ public class  JitCompiler extends ClassLoader {
             compile(negative.getValue(), context, methodVisitor);
             invokeStatic(methodVisitor, CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
         }
+        else if (value instanceof ItemValue) {
+            ItemValue itemValue = (ItemValue) value;
+            compile(itemValue.getSource(), context, methodVisitor);
+            compileIndex(itemValue.getKey(), context, methodVisitor);
+            invokeInterface(methodVisitor, "java/util/List", "get", "(I)Ljava/lang/Object;");
+        }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }

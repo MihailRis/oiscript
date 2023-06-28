@@ -2,19 +2,35 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiObject;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.List;
 
 public class ItemValue extends Value {
-    private final Value source;
-    private final Value key;
+    private Value source;
+    private Value key;
 
     public ItemValue(Value source, Value key) {
         this.source = source;
         this.key = key;
     }
 
-    @SuppressWarnings("unchecked")
+    public Value getSource() {
+        return source;
+    }
+
+    public Value getKey() {
+        return key;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        source = source.build(context);
+        key = key.build(context);
+        return super.build(context);
+    }
+
     @Override
     public Object eval(Context context) {
         Object sourceObject = source.eval(context);
