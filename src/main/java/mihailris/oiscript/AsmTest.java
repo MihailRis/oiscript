@@ -14,26 +14,30 @@ import java.util.Random;
 
 public class AsmTest {
     public static void main(String[] args) throws InstantiationException, IllegalAccessException, IOException, ParsingException {
-        JitCompiler jitCompiler = new JitCompiler();
+        for (int j = 0; j < 1; j++) {
+            JitCompiler jitCompiler = new JitCompiler();
 
-        OiObject globals = new OiObject();
-        globals.set("std", OI.moduleStd);
-        globals.set("math", OI.moduleMath);
-        Script script = OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("jit-test.oi").toPath())), globals);
-        RawFunction function = (RawFunction) script.get("square");
-        System.out.println(function);
+            OiObject globals = new OiObject();
+            globals.set("std", OI.moduleStd);
+            globals.set("math", OI.moduleMath);
+            Script script = OI.loadAndInit("stdext.oi", new String(Files.readAllBytes(new File("jit-test.oi").toPath())), globals);
+            RawFunction function = (RawFunction) script.get("square");
+            System.out.println(function);
 
-        long tm = System.currentTimeMillis();
-        OiExecutable executable = jitCompiler.compile(function);
-        System.out.println(executable+" "+(System.currentTimeMillis()-tm)+" ms");
+            long tm = System.currentTimeMillis();
+            OiExecutable executable = jitCompiler.compile(function);
+            System.out.println(executable+" "+(System.currentTimeMillis()-tm)+" ms");
 
-        Random random = new Random();
-        List<Object> numbers = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            numbers.add((long)random.nextInt(1000));
+            Random random = new Random();
+            List<Object> numbers = new ArrayList<>();
+            for (int i = 0; i < 1000; i++) {
+                numbers.add((long)random.nextInt(1000));
+            }
+            Context context = new Context(script, new OiRunHandle(), 1);
+            tm = System.nanoTime();
+            Object result = executable.execute(context, numbers);
+            long spent = System.nanoTime() - tm;
+            System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
         }
-        tm = System.currentTimeMillis();
-        Object result = executable.execute(new Context(script, new OiRunHandle(), 1), numbers);
-        System.out.println(result+" ["+result.getClass().getSimpleName()+"] in "+(System.currentTimeMillis()-tm)+" ms");
     }
 }
