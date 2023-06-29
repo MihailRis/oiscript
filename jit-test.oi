@@ -16,4 +16,7 @@ func square2(values):
     return values
 
 func square(values):
-    print(not 0)
+    if not values:
+        print("real false")
+    else:
+        print("fake true")

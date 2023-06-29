@@ -93,8 +93,14 @@ public class JitFunctionCompiler {
             Label start = new Label();
             Label end = new Label();
             label(start);
-            compileCondition(condition, context);
-            ifeq(end);
+
+            if (condition instanceof Not) {
+                compileCondition(((Not) condition).getValue(), context);
+                ifne(end);
+            } else {
+                compileCondition(condition, context);
+                ifeq(end);
+            }
 
             CompilerContext loopContext = context.loop(start, end);
             for (Command subcommand : loop.getCommands()) {
@@ -137,8 +143,13 @@ public class JitFunctionCompiler {
             Label end = new Label();
             Label next = new Label();
 
-            compileCondition(condition, context);
-            ifeq(next);
+            if (condition instanceof Not) {
+                compileCondition(((Not) condition).getValue(), context);
+                ifne(next);
+            } else {
+                compileCondition(condition, context);
+                ifeq(next);
+            }
             for (Command subcommand : branch.getCommands()) {
                 compile(subcommand, context);
             }
@@ -150,9 +161,14 @@ public class JitFunctionCompiler {
             for (int i = 0; i < elifs.size(); i++) {
                 Elif elif = elifs.get(i);
                 next = new Label();
-                compileCondition(elif.getCondition(), context);
-                ifeq(next);
-
+                Value elifCondition = elif.getCondition();
+                if (elifCondition instanceof Not) {
+                    compileCondition(((Not) elifCondition).getValue(), context);
+                    ifne(next);
+                } else {
+                    compileCondition(elifCondition, context);
+                    ifeq(next);
+                }
                 for (Command subcommand : elif.getCommands()) {
                     compile(subcommand, context);
                 }
@@ -214,6 +230,11 @@ public class JitFunctionCompiler {
     private void ifeq(Label label) {
         methodVisitor.visitJumpInsn(Opcodes.IFEQ, label);
         logger.log("ifeq ", label);
+    }
+
+    private void ifne(Label label) {
+        methodVisitor.visitJumpInsn(Opcodes.IFNE, label);
+        logger.log("ifne ", label);
     }
 
     private void compileCondition(Value condition, CompilerContext context) {
@@ -437,11 +458,11 @@ public class JitFunctionCompiler {
             Label elseblock = new Label();
             Label end = new Label();
             // there's no an opcode for NOT-operator
-            // javac actually compiles NOT-operator as
-            // if operand:
-            //    iconst_0
-            // else:
-            //    iconst_1
+            // javac actually compiles NOT-operator as:
+            // #1 IFNE #4
+            // #2 ICONST_1
+            // #3 GOTO #5
+            // #4 ICONST_0
             methodVisitor.visitJumpInsn(Opcodes.IFNE, elseblock);
             logger.log("ifne ", elseblock);
             iconst(1);
