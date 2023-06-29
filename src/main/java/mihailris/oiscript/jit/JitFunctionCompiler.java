@@ -11,6 +11,7 @@ import org.objectweb.asm.Opcodes;
 import java.util.List;
 
 public class JitFunctionCompiler {
+    private static final String CLS_MATH = "java/lang/Math";
     private static final String CLS_ARITHMETICS = "mihailris/oiscript/Arithmetics";
     private static final String CLS_LOGICS = "mihailris/oiscript/Logics";
     private static final String CLS_OIUTILS = "mihailris/oiscript/OiUtils";
@@ -223,6 +224,15 @@ public class JitFunctionCompiler {
         }
     }
 
+    private void compileLong(Value condition, CompilerContext context) {
+        OiType type = compileTyped(condition, context);
+        if (type != OiType.LONG) {
+            boxValue(type);
+            checkcast("java/lang/Number");
+            invokeVirtual("java/lang/Number", "longValue", "()J");
+        }
+    }
+
     private void label(Label label) {
         methodVisitor.visitLabel(label);
         logger.log(label);
@@ -337,8 +347,7 @@ public class JitFunctionCompiler {
             ListValue listValue = (ListValue) value;
             List<Value> values = listValue.getValues();
             iconst(values.size());
-            methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            logger.log("anewarray java/lang/Object");
+            anewarray();
             for (int i = 0; i < values.size(); i++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
                 logger.log("dup");
@@ -400,8 +409,7 @@ public class JitFunctionCompiler {
             getfield("mihailris/oiscript/Context", "runHandle", "Lmihailris/oiscript/runtime/OiRunHandle;");
 
             iconst(values.size());
-            methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            logger.log("anewarray java/lang/Object");
+            anewarray();
             for (int i = 0; i < values.size(); i++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
                 logger.log("dup");
@@ -414,10 +422,44 @@ public class JitFunctionCompiler {
             invokeVirtual(CLS_SCRIPT, "execute", DESC_EXECUTE);
             logger.comment("calling function "+source+" END");
         }
+        else if (value instanceof BitInverse) {
+            BitInverse inverse = (BitInverse) value;
+            compileLong(inverse.getValue(), context);
+            // javac compiles `~x` as `x ^ -1`
+            lconst(-1);
+            methodVisitor.visitInsn(Opcodes.LXOR);
+            logger.log("lxor");
+            return OiType.LONG;
+        }
+        else if (value instanceof Not) {
+            Not not = (Not) value;
+            compileCondition(not.getValue(), context);
+            Label elseblock = new Label();
+            Label end = new Label();
+            // there's no an opcode for NOT-operator
+            // javac actually compiles NOT-operator as
+            // if operand:
+            //    iconst_0
+            // else:
+            //    iconst_1
+            methodVisitor.visitJumpInsn(Opcodes.IFNE, elseblock);
+            logger.log("ifne ", elseblock);
+            iconst(1);
+            jmp(end);
+            label(elseblock);
+            iconst(0);
+            label(end);
+            return OiType.BOOL;
+        }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }
         return OiType.OBJECT;
+    }
+
+    private void anewarray() {
+        methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+        logger.log("anewarray ", "java/lang/Object");
     }
 
     private OiType negate(OiType type) {
@@ -469,6 +511,12 @@ public class JitFunctionCompiler {
                 case "*": opcode = Opcodes.LMUL; opname = "lmul"; break;
                 case "/": opcode = Opcodes.LDIV; opname = "ldiv"; break;
                 case "%": opcode = Opcodes.LREM; opname = "lrem"; break;
+                case "&": opcode = Opcodes.LAND; opname = "land"; break;
+                case "|": opcode = Opcodes.LOR; opname = "lor"; break;
+                case "^": opcode = Opcodes.LXOR; opname = "lxor"; break;
+                case "**":
+                    invokeStatic(CLS_ARITHMETICS, "pow", "(JJ)J");
+                    return OiType.LONG;
                 default:
                     throw new IllegalStateException("not implemented for "+operator);
             }
@@ -486,6 +534,9 @@ public class JitFunctionCompiler {
                 case "*": opcode = Opcodes.DMUL; opname = "dmul"; break;
                 case "/": opcode = Opcodes.DDIV; opname = "ddiv"; break;
                 case "%": opcode = Opcodes.DREM; opname = "drem"; break;
+                case "**":
+                    invokeStatic(CLS_MATH, "pow", "(DD)D");
+                    return OiType.DOUBLE;
                 default:
                     throw new IllegalStateException("not implemented for "+operator);
             }
@@ -514,6 +565,8 @@ public class JitFunctionCompiler {
             case "-": method = "subtract"; break;
             case "*": method = "multiply"; break;
             case "/": method = "divide"; break;
+            case "%": method = "modulo"; break;
+            case "**": method = "power"; break;
             default:
                 throw new IllegalStateException("operator '"+operator+"' is not supported yet");
         }

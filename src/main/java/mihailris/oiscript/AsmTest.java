@@ -45,18 +45,6 @@ public class AsmTest {
             System.out.println(executable+" "+(System.currentTimeMillis()-tm)+" ms");
 
             Random random = new Random();
-            List<Object> numbers = new ArrayList<>();
-            for (int i = 0; i < 10000; i++) {
-                numbers.add((long)random.nextInt(1000));
-            }
-            Context context = new Context(script, new OiRunHandle(), 1);
-            {
-                tm = System.nanoTime();
-                Object result = executable.execute(context, numbers);
-                long spent = System.nanoTime() - tm;
-                System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
-            }
-
             List<Long> array = new ArrayList<>();
             for (int i = 0; i < 1000; i++) {
                 array.add((long)random.nextInt(1000));
@@ -66,6 +54,18 @@ public class AsmTest {
                 bsort(array);
                 long spent = System.nanoTime() - tm;
                 System.out.println("JAVA in " + spent / 1000_000.0 + " ms");
+            }
+
+            List<Object> numbers = new ArrayList<>();
+            for (int i = 0; i < 1000; i++) {
+                numbers.add((long)random.nextInt(1000));
+            }
+            Context context = new Context(script, new OiRunHandle(), 1);
+            {
+                tm = System.nanoTime();
+                Object result = executable.execute(context, numbers);
+                long spent = System.nanoTime() - tm;
+                System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
             }
         }
     }

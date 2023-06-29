@@ -2,9 +2,6 @@ package mihailris.oiscript.parsing;
 
 import mihailris.oiscript.*;
 import mihailris.oiscript.exceptions.ParsingException;
-import mihailris.oiscript.jit.OiType;
-
-import java.util.Collection;
 
 public class BinaryOperator extends Value {
     private Value left;
@@ -36,7 +33,11 @@ public class BinaryOperator extends Value {
                 case "-": value = lvalue - rvalue; break;
                 case "*": value = lvalue * rvalue; break;
                 case "/": value = lvalue / rvalue; break;
+                case "&": value = ((long)lvalue) & ((long)rvalue); break;
+                case "|": value = ((long)lvalue) | ((long)rvalue); break;
+                case "^": value = ((long)lvalue) ^ ((long)rvalue); break;
                 case "to":
+                case "**":
                     return this;
                 default:
                     throw new IllegalStateException("not implemented for operator '"+operator+"'");
@@ -74,6 +75,7 @@ public class BinaryOperator extends Value {
             case ">>>": return (((Number)leftValue).longValue() >>> ((Number)rightValue).longValue());
             case "&": return (((Number)leftValue).longValue() & ((Number)rightValue).longValue());
             case "|": return (((Number)leftValue).longValue() | ((Number)rightValue).longValue());
+            case "^": return (((Number)leftValue).longValue() ^ ((Number)rightValue).longValue());
             default:
                 throw new IllegalStateException("not implemented for operator '"+operator+"'");
         }

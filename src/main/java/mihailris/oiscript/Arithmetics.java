@@ -101,4 +101,8 @@ public class Arithmetics {
         Number number = (Number) a;
         return ~number.longValue();
     }
+
+    public static long pow(long a, long b) {
+        return (long) Math.pow(a, b);
+    }
 }
