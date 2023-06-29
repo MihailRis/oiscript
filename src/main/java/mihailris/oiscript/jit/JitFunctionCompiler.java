@@ -94,14 +94,7 @@ public class JitFunctionCompiler {
             Label end = new Label();
             label(start);
 
-            if (condition instanceof Not) {
-                compileCondition(((Not) condition).getValue(), context);
-                ifne(end);
-            } else {
-                compileCondition(condition, context);
-                ifeq(end);
-            }
-
+            ifelse(condition, end, context);
             CompilerContext loopContext = context.loop(start, end);
             for (Command subcommand : loop.getCommands()) {
                 compile(subcommand, loopContext);
@@ -143,13 +136,7 @@ public class JitFunctionCompiler {
             Label end = new Label();
             Label next = new Label();
 
-            if (condition instanceof Not) {
-                compileCondition(((Not) condition).getValue(), context);
-                ifne(next);
-            } else {
-                compileCondition(condition, context);
-                ifeq(next);
-            }
+            ifelse(condition, next, context);
             for (Command subcommand : branch.getCommands()) {
                 compile(subcommand, context);
             }
@@ -162,13 +149,7 @@ public class JitFunctionCompiler {
                 Elif elif = elifs.get(i);
                 next = new Label();
                 Value elifCondition = elif.getCondition();
-                if (elifCondition instanceof Not) {
-                    compileCondition(((Not) elifCondition).getValue(), context);
-                    ifne(next);
-                } else {
-                    compileCondition(elifCondition, context);
-                    ifeq(next);
-                }
+                ifelse(elifCondition, next, context);
                 for (Command subcommand : elif.getCommands()) {
                     compile(subcommand, context);
                 }
@@ -212,6 +193,16 @@ public class JitFunctionCompiler {
         }
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
+        }
+    }
+
+    private void ifelse(Value condition, Label elselabel, CompilerContext context) {
+        if (condition instanceof Not) {
+            compileCondition(((Not) condition).getValue(), context);
+            ifne(elselabel);
+        } else {
+            compileCondition(condition, context);
+            ifeq(elselabel);
         }
     }
 
