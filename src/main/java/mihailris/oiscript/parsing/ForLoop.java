@@ -46,7 +46,7 @@ public class ForLoop extends Command {
                 Number number = (Number) iterableValue;
                 long count = number.longValue();
                 for (int i = 0; i < count; i++) {
-                    context.namespace.put(name, i);
+                    context.locals[index] = i;
                     for (Command command : commands) {
                         try {
                             command.execute(context);
@@ -59,7 +59,7 @@ public class ForLoop extends Command {
             } else if (iterableValue instanceof Iterable) {
                 Iterable<?> collection = (Iterable<?>) iterableValue;
                 for (Object object : collection) {
-                    context.namespace.put(name, object);
+                    context.locals[index] = object;
                     try {
                         for (Command command : commands) {
                             command.execute(context);
@@ -73,7 +73,7 @@ public class ForLoop extends Command {
                 CharSequence sequence = (CharSequence) iterableValue;
                 for (int i = 0; i < sequence.length(); i++) {
                     char c = sequence.charAt(i);
-                    context.namespace.put(name, c);
+                    context.locals[index] = c;
                     try {
                         for (Command command : commands) {
                             command.execute(context);

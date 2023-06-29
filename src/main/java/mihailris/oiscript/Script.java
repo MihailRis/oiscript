@@ -68,6 +68,7 @@ public class Script extends OiModule {
 
     public Object execute(Function function, OiRunHandle runHandle, Object... args) {
         Context context = new Context(this, runHandle, function.getLocals().size());
+        System.arraycopy(args, 0, context.locals, 0, function.getArgs().size());
         return function.execute(context, args);
     }
 

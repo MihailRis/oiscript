@@ -14,8 +14,8 @@ def bsort(numbers):
 
 
 numbers = []
-for i in range(1000):
-    numbers.append(random.random())
+for i in range(10000):
+    numbers.append(random.randint(0, 1000))
 tm = time.time()
 bsort(numbers)
 print(int((time.time()-tm) * 1000))

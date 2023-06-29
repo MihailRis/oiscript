@@ -28,23 +28,33 @@ public class JitFunctionCompiler {
         this.methodVisitor = methodVisitor;
     }
 
-    public void compileFunction(CompilerContext context) {
+    public void compileFunction(CompilerContext context, String methodName, String descriptor) {
+        logger.comment("========= "+methodName+":"+descriptor+" =========");
         List<Command> commands = function.getCommands();
         for (Command command : commands) {
             compile(command, context);
         }
         returnNone();
+        logger.comment("===============================");
     }
 
-    private void returnNone() {
-        pushNone();
+    public void compileAdapter(String className, String name, String descriptor) {
+        logger.comment("========= execute (ADAPTER) =========");
+        List<String> args = function.getArgs();
+
+        loadThis();
+        pushContext();
+
+        for (int i = 0; i < args.size(); i++) {
+            aload(0);
+            iconst(i);
+            methodVisitor.visitInsn(Opcodes.AALOAD);
+            logger.log("aaload");
+        }
+        invokeVirtual(className, name, descriptor);
         methodVisitor.visitInsn(Opcodes.ARETURN);
         logger.log("areturn");
-    }
-
-    private void pushContext() {
-        methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-        logger.log("aload 1 ", "// context");
+        logger.comment("===============================");
     }
 
     private void compile(Command command, CompilerContext context) {
@@ -68,8 +78,8 @@ public class JitFunctionCompiler {
             if (operator.equals("=")) {
                 astore(context, index, value);
             } else {
-                astore(context, index, () -> {
-                    aload(context, index);
+                astore(index, () -> {
+                    aload(index);
                     OiType tright = compileTyped(value, context);
                     boxValue(tright);
                     OiType type = binaryOperation(operator.substring(0, operator.length()-1), OiType.OBJECT, tright);
@@ -97,18 +107,18 @@ public class JitFunctionCompiler {
             Value value = forLoop.getIterable();
             int iteratorIndex = context.newLocal();
             compile(value, context);
-            astore(context, iteratorIndex, () ->
+            astore(iteratorIndex, () ->
                     invokeStatic(CLS_OIUTILS, "iterator", "(Ljava/lang/Object;)Ljava/util/Iterator;"));
             Label start = new Label();
             Label end = new Label();
             label(start);
-            aload(context, iteratorIndex);
+            aload(iteratorIndex);
             invokeInterface("java/util/Iterator", "hasNext", "()Z");
             ifeq(end);
 
-            aload(context, iteratorIndex);
+            aload(iteratorIndex);
 
-            astore(context, index, () ->
+            astore(index, () ->
                     invokeInterface("java/util/Iterator", "next", "()Ljava/lang/Object;"));
 
             CompilerContext loopContext = context.loop(start, end);
@@ -188,11 +198,6 @@ public class JitFunctionCompiler {
         }
     }
 
-    private void pop() {
-        methodVisitor.visitInsn(Opcodes.POP);
-        logger.log("pop");
-    }
-
     private void compileIndex(Value value, CompilerContext context) {
         compile(value, context);
 
@@ -238,50 +243,24 @@ public class JitFunctionCompiler {
         logger.log("invokestatic ", owner+"."+name+":"+descriptor);
     }
 
-    private void aload(CompilerContext context, int index) {
-        int argc = context.getFunction().getArgs().size();
-        if (index < argc) {
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            logger.log("aload 2");
-            iconst(index);
-            methodVisitor.visitInsn(Opcodes.AALOAD);
-            logger.log("aaload");
-        } else {
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, index - argc + 3);
-            logger.log("aload ", (index - argc+3));
-        }
+    /**
+     * @param index index of local variable. Actual JVM index is index+2
+     */
+    private void aload(int index) {
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, index+2);
+        logger.log("aload ", index+2);
     }
 
-    private void astore(CompilerContext context, int index, Runnable value) {
-        int argc = context.getFunction().getArgs().size();
-        if (index < argc) {
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            logger.log("aload 2");
-            iconst(index);
-            value.run();
-            methodVisitor.visitInsn(Opcodes.AASTORE);
-            logger.log("aastore");
-        } else {
-            value.run();
-            methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            logger.log("astore ", (index - argc+3));
-        }
+    private void astore(int index, Runnable value) {
+        value.run();
+        methodVisitor.visitVarInsn(Opcodes.ASTORE, index + 2);
+        logger.log("astore ", index+2);
     }
 
     private void astore(CompilerContext context, int index, Value value) {
-        int argc = context.getFunction().getArgs().size();
-        if (index < argc) {
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 2);
-            logger.log("aload 2");
-            iconst(index);
-            compile(value, context);
-            methodVisitor.visitInsn(Opcodes.AASTORE);
-            logger.log("aastore");
-        } else {
-            compile(value, context);
-            methodVisitor.visitVarInsn(Opcodes.ASTORE, index - argc + 3);
-            logger.log("astore ", (index - argc+3));
-        }
+        compile(value, context);
+        methodVisitor.visitVarInsn(Opcodes.ASTORE, index + 2);
+        logger.log("astore ",index + 2);
     }
 
     private void compile(Value value, CompilerContext context) {
@@ -292,52 +271,68 @@ public class JitFunctionCompiler {
 
     private void boxValue(OiType type) {
         switch (type) {
-            case BOOL: invokeStatic("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"); break;
-            case LONG: invokeStatic("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"); break;
-            case DOUBLE: invokeStatic("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"); break;
+            case BOOL:
+                invokeStatic("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+                break;
+            case LONG:
+                invokeStatic("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
+                break;
+            case DOUBLE:
+                invokeStatic("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
+                break;
         }
+    }
+
+    private OiType binaryOperation(BinaryOperator operator, CompilerContext context) {
+        Value left = operator.getLeft();
+        Value right = operator.getRight();
+        OiType tleft = left.getType();
+        OiType tright = right.getType();
+
+        compileTyped(left, context);
+        if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
+            boxValue(tleft);
+        if (tleft == OiType.DOUBLE || tright == OiType.DOUBLE)
+            cast(tright, tleft);
+
+        compileTyped(right, context);
+        if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
+            boxValue(tright);
+        if (tleft == OiType.DOUBLE)
+            cast(tright, tleft);
+        return binaryOperation(operator.getOperator(), tleft, tright);
     }
 
     private OiType compileTyped(Value value, CompilerContext context) {
         value = value.optimize();
         if (value instanceof BinaryOperator) {
             BinaryOperator operator = (BinaryOperator) value;
-            Value left = operator.getLeft();
-            Value right = operator.getRight();
-            OiType tleft = left.getType();
-            OiType tright = right.getType();
-
-            compileTyped(left, context);
-            if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
-                boxValue(tleft);
-            if (tleft == OiType.DOUBLE || tright == OiType.DOUBLE)
-                cast(tright, tleft);
-
-            compileTyped(right, context);
-            if (tleft == OiType.OBJECT || tright == OiType.OBJECT)
-                boxValue(tright);
-            if (tleft == OiType.DOUBLE)
-                cast(tright, tleft);
-            return binaryOperation(operator.getOperator(), tleft, tright);
-        } else if (value instanceof LocalName) {
+            return binaryOperation(operator, context);
+        }
+        else if (value instanceof LocalName) {
             LocalName variable = (LocalName) value;
             int index = variable.getIndex();
-            aload(context, index);
-        } else if (value instanceof IntegerValue) {
+            aload(index);
+        }
+        else if (value instanceof IntegerValue) {
             IntegerValue integerValue = (IntegerValue) value;
             lconst(integerValue.getValue());
             return OiType.LONG;
-        } else if (value instanceof BooleanValue) {
+        }
+        else if (value instanceof BooleanValue) {
             BooleanValue booleanValue = (BooleanValue) value;
             iconst(booleanValue.getValue() ? 1 : 0);
             return OiType.BOOL;
-        } else if (value instanceof NumberValue) {
+        }
+        else if (value instanceof NumberValue) {
             NumberValue numberValue = (NumberValue) value;
             dconst(numberValue.getValue());
             return OiType.DOUBLE;
-        } else if (value instanceof OiNone) {
+        }
+        else if (value instanceof OiNone) {
             pushNone();
-        } else if (value instanceof ListValue) {
+        }
+        else if (value instanceof ListValue) {
             logger.comment("list literal");
             ListValue listValue = (ListValue) value;
             List<Value> values = listValue.getValues();
@@ -353,24 +348,15 @@ public class JitFunctionCompiler {
                 logger.log("aastore");
             }
             invokeStatic("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
-        } else if (value instanceof StringValue) {
+        }
+        else if (value instanceof StringValue) {
             StringValue stringValue = (StringValue) value;
             ldc(stringValue.getValue());
         }
         else if (value instanceof Negative) {
             Negative negative = (Negative) value;
             OiType type = compileTyped(negative.getValue(), context);
-            if (type == OiType.LONG) {
-                methodVisitor.visitInsn(Opcodes.LNEG);
-                logger.log("lneg");
-                return OiType.LONG;
-            } else if (type == OiType.DOUBLE) {
-                methodVisitor.visitInsn(Opcodes.DNEG);
-                logger.log("dneg");
-                return OiType.DOUBLE;
-            } else {
-                invokeStatic(CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
-            }
+            return negate(type);
         }
         else if (value instanceof ItemValue) {
             ItemValue itemValue = (ItemValue) value;
@@ -434,6 +420,21 @@ public class JitFunctionCompiler {
         return OiType.OBJECT;
     }
 
+    private OiType negate(OiType type) {
+        if (type == OiType.LONG) {
+            methodVisitor.visitInsn(Opcodes.LNEG);
+            logger.log("lneg");
+            return OiType.LONG;
+        } else if (type == OiType.DOUBLE) {
+            methodVisitor.visitInsn(Opcodes.DNEG);
+            logger.log("dneg");
+            return OiType.DOUBLE;
+        } else {
+            invokeStatic(CLS_ARITHMETICS, "negative", "(Ljava/lang/Object;)Ljava/lang/Object;");
+        }
+        return type;
+    }
+
     @SuppressWarnings("SameParameterValue")
     private void getstatic(String owner, String name, String descriptor) {
         methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, owner, name, descriptor);
@@ -449,11 +450,6 @@ public class JitFunctionCompiler {
     private void checkcast(String cls) {
         methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, cls);
         logger.log("checkcast ", cls);
-    }
-
-    private void pushNone() {
-        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
-        logger.log("getstatic ", "mihailris/oiscript/OiNone.NONE // push none");
     }
 
     private void cast(OiType a, OiType b) {
@@ -564,5 +560,31 @@ public class JitFunctionCompiler {
     private void ldc(Object value) {
         methodVisitor.visitLdcInsn(value);
         logger.log("ldc ", value);
+    }
+
+    private void loadThis() {
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
+        logger.log("aload ", "0 // this");
+    }
+
+    private void pushNone() {
+        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
+        logger.log("getstatic ", "mihailris/oiscript/OiNone.NONE // push none");
+    }
+
+    private void returnNone() {
+        pushNone();
+        methodVisitor.visitInsn(Opcodes.ARETURN);
+        logger.log("areturn");
+    }
+
+    private void pop() {
+        methodVisitor.visitInsn(Opcodes.POP);
+        logger.log("pop");
+    }
+
+    private void pushContext() {
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+        logger.log("aload ", "1 // context");
     }
 }
