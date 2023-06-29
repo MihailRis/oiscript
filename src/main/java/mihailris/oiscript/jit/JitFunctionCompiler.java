@@ -42,6 +42,11 @@ public class JitFunctionCompiler {
         logger.log("areturn");
     }
 
+    private void pushContext() {
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+        logger.log("aload 1 ", "// context");
+    }
+
     private void compile(Command command, CompilerContext context) {
         if (command instanceof Return) {
             Return ret = (Return) command;
@@ -387,8 +392,7 @@ public class JitFunctionCompiler {
         }
         else if (value instanceof NamedValue) {
             NamedValue namedValue = (NamedValue) value;
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            logger.log("aload 1");
+            pushContext();
             String name = namedValue.getName();
             ldc(name);
             invokeVirtual("mihailris/oiscript/Context", "get", "(Ljava/lang/String;)Ljava/lang/Object;");
@@ -398,17 +402,15 @@ public class JitFunctionCompiler {
             Value source = call.getSource();
             List<Value> values = call.getValues();
 
-            logger.comment("calling function "+source);
+            logger.comment("calling function "+source+" BEGIN");
 
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            logger.log("aload 1");
+            pushContext();
             getfield("mihailris/oiscript/Context", "script", "Lmihailris/oiscript/Script;");
 
             compile(source, context);
             checkcast("mihailris/oiscript/runtime/Function");
 
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            logger.log("aload 1");
+            pushContext();
             getfield("mihailris/oiscript/Context", "runHandle", "Lmihailris/oiscript/runtime/OiRunHandle;");
 
             iconst(values.size());
@@ -424,6 +426,7 @@ public class JitFunctionCompiler {
             }
 
             invokeVirtual(CLS_SCRIPT, "execute", DESC_EXECUTE);
+            logger.comment("calling function "+source+" END");
         }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
@@ -449,9 +452,8 @@ public class JitFunctionCompiler {
     }
 
     private void pushNone() {
-        logger.comment("push none");
         methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "mihailris/oiscript/OiNone", "NONE", "Lmihailris/oiscript/OiNone;");
-        logger.log("getstatic mihailris/oiscript/OiNone.NONE");
+        logger.log("getstatic ", "mihailris/oiscript/OiNone.NONE // push none");
     }
 
     private void cast(OiType a, OiType b) {

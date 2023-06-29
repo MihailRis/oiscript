@@ -8,4 +8,5 @@ func square(values):
                 values[i+1] = values[i]
                 values[i] = tmp
                 unsorted = true
+    print(values)
     return values
