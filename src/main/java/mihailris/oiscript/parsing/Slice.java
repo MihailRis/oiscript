@@ -3,21 +3,48 @@ package mihailris.oiscript.parsing;
 import mihailris.oiscript.Context;
 import mihailris.oiscript.OiUtils;
 import mihailris.oiscript.OiVector;
+import mihailris.oiscript.SemanticContext;
+import mihailris.oiscript.exceptions.ParsingException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Slice extends Value {
-    private final Value value;
-    private final Value start;
-    private final Value end;
-    private final Value step;
+    private Value value;
+    private Value start;
+    private Value end;
+    private Value step;
 
     public Slice(Value value, Value start, Value end, Value step) {
         this.value = value;
         this.start = start;
         this.end = end;
         this.step = step;
+    }
+
+    public Value getValue() {
+        return value;
+    }
+
+    public Value getStart() {
+        return start;
+    }
+
+    public Value getEnd() {
+        return end;
+    }
+
+    public Value getStep() {
+        return step;
+    }
+
+    @Override
+    public Value build(SemanticContext context) throws ParsingException {
+        value = value.build(context);
+        if (start != null) start = start.build(context);
+        if (end != null) end = end.build(context);
+        if (step != null) step = step.build(context);
+        return super.build(context);
     }
 
     @Override
@@ -34,7 +61,7 @@ public class Slice extends Value {
         return slice(object, start, end, step);
     }
 
-    private static Object slice(Object object, Object startObject, Object endObject, Object stepObject) {
+    public static Object slice(Object object, Object startObject, Object endObject, Object stepObject) {
         int length = (int) OiUtils.length(object);
         int start = 0;
         int end = length;

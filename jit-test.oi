@@ -16,4 +16,4 @@ func square2(values):
     return values
 
 func square(values):
-    return square2(values)
+    print("test"[1:])

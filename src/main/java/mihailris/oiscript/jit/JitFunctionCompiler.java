@@ -472,10 +472,28 @@ public class JitFunctionCompiler {
             label(end);
             return OiType.BOOL;
         }
+        else if (value instanceof Slice) {
+            Slice slice = (Slice) value;
+            Value val = slice.getValue();
+            Value start = slice.getStart();
+            Value end = slice.getEnd();
+            Value step = slice.getStep();
+            compile(val, context);
+            if (start != null) compile(start, context); else aconstNull();
+            if (end != null) compile(end, context); else aconstNull();
+            if (step != null) compile(step, context); else aconstNull();
+            invokeStatic("mihailris/oiscript/parsing/Slice", "slice",
+                    "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        }
         else {
             throw new IllegalStateException(value.getClass().getSimpleName()+" is not supported yet");
         }
         return OiType.OBJECT;
+    }
+
+    private void aconstNull() {
+        methodVisitor.visitInsn(Opcodes.ACONST_NULL);
+        logger.log("aconst_null");
     }
 
     private void anewarray() {
