@@ -88,82 +88,11 @@ public class JitFunctionCompiler {
                 });
             }
         } else if (command instanceof While) {
-            While loop = (While) command;
-            Value condition = loop.getCondition();
-            Label start = new Label();
-            Label end = new Label();
-            label(start);
-
-            ifelse(condition, end, context);
-            CompilerContext loopContext = context.loop(start, end);
-            for (Command subcommand : loop.getCommands()) {
-                compile(subcommand, loopContext);
-            }
-            jmp(start);
-            label(end);
+            compileWhileLoop((While) command, context);
         } else if (command instanceof ForLoop) {
-            ForLoop forLoop = (ForLoop) command;
-            int index = forLoop.getIndex();
-            Value value = forLoop.getIterable();
-            int iteratorIndex = context.newLocal();
-            compile(value, context);
-            astore(iteratorIndex, () ->
-                    invokeStatic(CLS_OIUTILS, "iterator", "(Ljava/lang/Object;)Ljava/util/Iterator;"));
-            Label start = new Label();
-            Label end = new Label();
-            label(start);
-            aload(iteratorIndex);
-            invokeInterface("java/util/Iterator", "hasNext", "()Z");
-            ifeq(end);
-
-            aload(iteratorIndex);
-
-            astore(index, () ->
-                    invokeInterface("java/util/Iterator", "next", "()Ljava/lang/Object;"));
-
-            CompilerContext loopContext = context.loop(start, end);
-            for (Command subcommand : forLoop.getCommands()) {
-                compile(subcommand, loopContext);
-            }
-            jmp(start);
-
-            label(end);
+            compileForLoop((ForLoop)command, context);
         } else if (command instanceof If) {
-            If branch = (If) command;
-            Value condition = branch.getCondition();
-            List<Elif> elifs = branch.getElifs();
-            Else elseblock = branch.getElseBlock();
-            Label end = new Label();
-            Label next = new Label();
-
-            ifelse(condition, next, context);
-            for (Command subcommand : branch.getCommands()) {
-                compile(subcommand, context);
-            }
-            if (elseblock != null || !elifs.isEmpty()) {
-                jmp(end);
-            }
-            label(next);
-
-            for (int i = 0; i < elifs.size(); i++) {
-                Elif elif = elifs.get(i);
-                next = new Label();
-                Value elifCondition = elif.getCondition();
-                ifelse(elifCondition, next, context);
-                for (Command subcommand : elif.getCommands()) {
-                    compile(subcommand, context);
-                }
-                if (elseblock != null || i+1 < elifs.size()) {
-                    jmp(end);
-                }
-                label(next);
-            }
-            if (elseblock != null) {
-                for (Command subcommand : elseblock.getCommands()) {
-                    compile(subcommand, context);
-                }
-            }
-            label(end);
+            compileIfElifElse((If) command, context);
         } else if (command instanceof ItemAssignment) {
             ItemAssignment assignment = (ItemAssignment) command;
             Value source = assignment.getSource();
@@ -194,6 +123,86 @@ public class JitFunctionCompiler {
         else if (!(command instanceof Pass)){
             throw new IllegalStateException(command.getClass().getSimpleName()+" is not supported yet");
         }
+    }
+
+    private void compileWhileLoop(While loop, CompilerContext context) {
+        Value condition = loop.getCondition();
+        Label start = new Label();
+        Label end = new Label();
+        label(start);
+
+        ifelse(condition, end, context);
+        CompilerContext loopContext = context.loop(start, end);
+        for (Command subcommand : loop.getCommands()) {
+            compile(subcommand, loopContext);
+        }
+        jmp(start);
+        label(end);
+    }
+
+    private void compileForLoop(ForLoop forLoop, CompilerContext context) {
+        int index = forLoop.getIndex();
+        Value value = forLoop.getIterable();
+        int iteratorIndex = context.newLocal();
+        compile(value, context);
+        astore(iteratorIndex, () ->
+                invokeStatic(CLS_OIUTILS, "iterator", "(Ljava/lang/Object;)Ljava/util/Iterator;"));
+        Label start = new Label();
+        Label end = new Label();
+        label(start);
+        aload(iteratorIndex);
+        invokeInterface("java/util/Iterator", "hasNext", "()Z");
+        ifeq(end);
+
+        aload(iteratorIndex);
+
+        astore(index, () ->
+                invokeInterface("java/util/Iterator", "next", "()Ljava/lang/Object;"));
+
+        CompilerContext loopContext = context.loop(start, end);
+        for (Command subcommand : forLoop.getCommands()) {
+            compile(subcommand, loopContext);
+        }
+        jmp(start);
+
+        label(end);
+    }
+
+    private void compileIfElifElse(If branch, CompilerContext context) {
+        Value condition = branch.getCondition();
+        List<Elif> elifs = branch.getElifs();
+        Else elseblock = branch.getElseBlock();
+        Label end = new Label();
+        Label next = new Label();
+
+        ifelse(condition, next, context);
+        for (Command subcommand : branch.getCommands()) {
+            compile(subcommand, context);
+        }
+        if (elseblock != null || !elifs.isEmpty()) {
+            jmp(end);
+        }
+        label(next);
+
+        for (int i = 0; i < elifs.size(); i++) {
+            Elif elif = elifs.get(i);
+            next = new Label();
+            Value elifCondition = elif.getCondition();
+            ifelse(elifCondition, next, context);
+            for (Command subcommand : elif.getCommands()) {
+                compile(subcommand, context);
+            }
+            if (elseblock != null || i+1 < elifs.size()) {
+                jmp(end);
+            }
+            label(next);
+        }
+        if (elseblock != null) {
+            for (Command subcommand : elseblock.getCommands()) {
+                compile(subcommand, context);
+            }
+        }
+        label(end);
     }
 
     private void ifelse(Value condition, Label elselabel, CompilerContext context) {
