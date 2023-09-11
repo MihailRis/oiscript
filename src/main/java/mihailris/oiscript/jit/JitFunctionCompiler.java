@@ -60,8 +60,9 @@ public class JitFunctionCompiler {
 
     private void compile(Command command, CompilerContext context) {
         Label label = new Label();
-        methodVisitor.visitLineNumber(command.getPosition().getLine()+1, label);
         methodVisitor.visitLabel(label);
+        methodVisitor.visitLineNumber(command.getPosition().getLine()+1, label);
+        logger.log("linenum ", command.getPosition().getLine()+1);
 
         if (command instanceof Return) {
             Return ret = (Return) command;

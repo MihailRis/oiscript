@@ -13,7 +13,6 @@ func square(values):
                 values[i+1] = values[i]
                 values[i] = tmp
                 unsorted = true
-                a = 2/0
     return values
 
 func square2(values):
