@@ -12,6 +12,7 @@ src/main/java/META-INF
 
 error_hotspot.xml
 hs_err_pid*
+.attach_*
 
 *.class
 

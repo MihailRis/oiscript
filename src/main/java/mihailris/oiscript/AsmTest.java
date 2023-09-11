@@ -27,25 +27,35 @@ public class AsmTest {
 
             long tm = System.currentTimeMillis();
             OiExecutable executable = jitCompiler.compile(source, function);
-            System.out.println(executable+" "+(System.currentTimeMillis()-tm)+" ms");
+            System.out.println(executable+" JIT COMPILE "+(System.currentTimeMillis()-tm)+" ms");
 
             Random random = new Random();
 
-            List<Object> numbers = new ArrayList<>();
-            for (int i = 0; i < 1000; i++) {
-                numbers.add((long)random.nextInt(1000));
-            }
-            Context context = new Context(script, new OiRunHandle(), 1);
-            try {
-                tm = System.nanoTime();
-                Object result = executable.execute(context, numbers);
-                long spent = System.nanoTime() - tm;
-                System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
-            } catch (Throwable e) {
-                /*StackTraceElement[] cleanedUpStackTrace = new StackTraceElement[e.getStackTrace().length -1];
-                System.arraycopy(e.getStackTrace(), 1, cleanedUpStackTrace, 0, cleanedUpStackTrace.length);
-                e.setStackTrace(cleanedUpStackTrace);*/
-                throw e;
+            for (int k = 0; k < 5; k++) {
+                {
+                    List<Object> numbers = new ArrayList<>();
+                    for (int i = 0; i < 1000; i++) {
+                        numbers.add((long) random.nextInt(1000));
+                    }
+                    Context context = new Context(script, new OiRunHandle(), 1);
+
+                    tm = System.nanoTime();
+                    Object result = executable.execute(context, numbers);
+                    long spent = System.nanoTime() - tm;
+                    System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
+                }
+                {
+                    List<Object> numbers = new ArrayList<>();
+                    for (int i = 0; i < 1000; i++) {
+                        numbers.add((long) random.nextInt(1000));
+                    }
+                    Context context = new Context(script, new OiRunHandle(), 5);
+
+                    tm = System.nanoTime();
+                    Object result = function.execute(context, numbers);
+                    long spent = System.nanoTime() - tm;
+                    System.out.println("PURE OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
+                }
             }
         }
     }

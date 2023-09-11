@@ -33,8 +33,7 @@ public class RawFunction extends Function {
             }
         }
         for (int i = 0; i < this.args.size(); i++) {
-            String argName = this.args.get(i);
-            context.namespace.put(argName, args[i]);
+            context.locals[i] = args[i];
         }
         for (Command command : commands) {
             command.execute(context);
