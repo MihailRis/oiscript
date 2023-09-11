@@ -550,9 +550,10 @@ public class Parser {
     }
 
     private Command parseAssign(int indent, String name, String operator) throws ParsingException {
+        Position cmdpos = position.cpy();
         Value value = parseValue(indent);
         value = value.optimize();
-        return new Assignment(position.cpy(), name, operator, value);
+        return new Assignment(cmdpos, name, operator, value);
     }
 
     private Value parseList(int indent) throws ParsingException {

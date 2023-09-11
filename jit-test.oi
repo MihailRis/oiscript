@@ -3,7 +3,7 @@ func println(a):
     _print a
     print(">")
 
-func square2(values):
+func square(values):
     unsorted = true
     while unsorted:
         unsorted = false
@@ -13,7 +13,8 @@ func square2(values):
                 values[i+1] = values[i]
                 values[i] = tmp
                 unsorted = true
+                a = 2/0
     return values
 
-func square(values):
+func square2(values):
     _print a

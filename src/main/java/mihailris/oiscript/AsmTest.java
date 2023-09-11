@@ -42,9 +42,9 @@ public class AsmTest {
                 long spent = System.nanoTime() - tm;
                 System.out.println("OI [" + result.getClass().getSimpleName() + "] in " + spent / 1000_000.0 + " ms");
             } catch (Throwable e) {
-                StackTraceElement[] cleanedUpStackTrace = new StackTraceElement[e.getStackTrace().length -1];
+                /*StackTraceElement[] cleanedUpStackTrace = new StackTraceElement[e.getStackTrace().length -1];
                 System.arraycopy(e.getStackTrace(), 1, cleanedUpStackTrace, 0, cleanedUpStackTrace.length);
-                e.setStackTrace(cleanedUpStackTrace);
+                e.setStackTrace(cleanedUpStackTrace);*/
                 throw e;
             }
         }
