@@ -6,6 +6,9 @@ import mihailris.oiscript.exceptions.ParsingException;
 import mihailris.oiscript.jit.OiType;
 
 public class Value {
+    protected Value() {
+    }
+
     public Value optimize() {
         return this;
     }

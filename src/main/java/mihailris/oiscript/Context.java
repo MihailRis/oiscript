@@ -1,5 +1,6 @@
 package mihailris.oiscript;
 
+import mihailris.oiscript.exceptions.NameException;
 import mihailris.oiscript.runtime.OiRunHandle;
 
 import java.util.HashMap;
@@ -37,6 +38,13 @@ public class Context {
                 return included.get(name);
             return value;
         }
+        return value;
+    }
+
+    public Object require(String name) {
+        Object value = get(name);
+        if (value == null)
+            throw new NameException(name);
         return value;
     }
 }

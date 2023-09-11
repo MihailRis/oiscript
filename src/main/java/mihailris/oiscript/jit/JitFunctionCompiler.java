@@ -59,6 +59,10 @@ public class JitFunctionCompiler {
     }
 
     private void compile(Command command, CompilerContext context) {
+        Label label = new Label();
+        methodVisitor.visitLineNumber(command.getPosition().getLine()+1, label);
+        methodVisitor.visitLabel(label);
+
         if (command instanceof Return) {
             Return ret = (Return) command;
             Value value = ret.getValue();
@@ -411,7 +415,7 @@ public class JitFunctionCompiler {
             pushContext();
             String name = namedValue.getName();
             ldc(name);
-            invokeVirtual("mihailris/oiscript/Context", "get", "(Ljava/lang/String;)Ljava/lang/Object;");
+            invokeVirtual("mihailris/oiscript/Context", "require", "(Ljava/lang/String;)Ljava/lang/Object;");
         }
         else if (value instanceof Call) {
             Call call = (Call) value;

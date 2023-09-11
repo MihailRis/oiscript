@@ -8,7 +8,7 @@ import org.objectweb.asm.Opcodes;
 
 public class JitCompiler extends ClassLoader {
     private static final String DESC_EXECUTE = "(Lmihailris/oiscript/Context;[Ljava/lang/Object;)Ljava/lang/Object;";
-    public OiExecutable compile(RawFunction function) throws InstantiationException, IllegalAccessException {
+    public OiExecutable compile(String source, RawFunction function) throws InstantiationException, IllegalAccessException {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         String className = "oiscript_jit/Function$"+function.hashCode();
         writer.visit(
@@ -32,6 +32,7 @@ public class JitCompiler extends ClassLoader {
 
         compileFunction(className, writer, function);
 
+        writer.visitSource(source, null);
         writer.visitEnd();
         byte[] bytes = writer.toByteArray();
 

@@ -8,7 +8,7 @@ func square2(values):
     while unsorted:
         unsorted = false
         for i : values.len-1:
-            if values[i] < values[i+1]:
+            if values[i] > values[i+1]:
                 tmp = values[i+1]
                 values[i+1] = values[i]
                 values[i] = tmp
@@ -16,4 +16,4 @@ func square2(values):
     return values
 
 func square(values):
-    print("test"[1:])
+    _print a
